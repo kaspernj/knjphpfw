@@ -4,7 +4,6 @@
 * Now run the install-file "sudo php5 install_knjphpframework.php". This will create symlinks in "/usr/share/php5", "usr/share/php4" and "/usr/share/php"..
 
 
-
 #HOW TO USE
 
 * After running the setup-script, you can include a part of the framework like this:
