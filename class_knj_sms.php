@@ -57,23 +57,20 @@
 			if ($this->opts["mode"] == "cbb"){
 				$this->http->connect("cbb.dk");
 				$html = $this->http->post("cbb?cmd=login", array(
-						"mobilenumber" => $this->opts["mobilenumber"],
-						"password" => $this->opts["password"]
-					)
-				);
+					"mobilenumber" => $this->opts["mobilenumber"],
+					"password" => $this->opts["password"]
+				));
 			}elseif($this->opts["mode"] == "bibob"){
 				$this->soap_client = new SoapClient("https://www.bibob.dk/SmsSender.asmx?WSDL", array(
-						"verify_peer" => false,
-						"allow_self_signed" => true
-					)
-				);
+					"verify_peer" => false,
+					"allow_self_signed" => true
+				));
 			}elseif($this->opts["mode"] == "happii"){
 				$this->http->connect("www.happiimobil.dk", 443);
 				$this->http->post("login/check.asp", array(
-						"username" => $this->opts["mobilenumber"],
-						"password" => $this->opts["password"]
-					)
-				);
+					"username" => $this->opts["mobilenumber"],
+					"password" => $this->opts["password"]
+				));
 				$html = $this->http->getAddr("login/");
 				
 				if (strpos($html, "<div class=\"login_menu_txt\"><a href=\"/login/websms/\">WebSMS</a></div>") === false){
@@ -190,16 +187,15 @@
 				}
 				
 				$html = $this->http->post("cbb?cmd=websmssend", array(
-						"newentry" => "",
-						"receivers" => $number,
-						"message" => $msg,
-						"smssize" => strlen($msg),
-						"smsprice" => "0.19",
-						"sendDate" => "",
-						"sendDateHour" => "",
-						"sendDateMinute" => ""
-					)
-				);
+					"newentry" => "",
+					"receivers" => $number,
+					"message" => $msg,
+					"smssize" => strlen($msg),
+					"smsprice" => "0.19",
+					"sendDate" => "",
+					"sendDateHour" => "",
+					"sendDateMinute" => ""
+				));
 				
 				if (strpos($html, "<td>" . $number . "</td>") !== false){
 					//do nothing.
@@ -215,13 +211,12 @@
 				$action = $match[1];
 				
 				$html = $this->http->post($action, array(
-						"sender" => "",
-						"Recipient" => substr($number, 3),
-						"sMessage" => $msg,
-						"sCharsLeft" => 960 - strlen($msg),
-						"sSmsCount" => strlen($msg)
-					)
-				);
+					"sender" => "",
+					"Recipient" => substr($number, 3),
+					"sMessage" => $msg,
+					"sCharsLeft" => 960 - strlen($msg),
+					"sSmsCount" => strlen($msg)
+				));
 				if (strpos($html, "This object may be found") === false){
 					throw new Exception("Could not send SMS.");
 				}
@@ -231,16 +226,14 @@
 				}
 				
 				$status_ob = $this->soap_client->__soapCall("SendMessage", array("parameters" => array(
-							"cellphone" => $this->opts["mobilenumber"],
-							"password" => md5($this->opts["password"]),
-							"smsTo" => array("string" => $number),
-							"smscontents" => $msg,
-							"sendDate" => date("Y-m-d"),
-							"deliveryReport" => "0",
-							"fromNumber" => $this->opts["mobilenumber"]
-						)
-					)
-				);
+					"cellphone" => $this->opts["mobilenumber"],
+					"password" => md5($this->opts["password"]),
+					"smsTo" => array("string" => $number),
+					"smscontents" => $msg,
+					"sendDate" => date("Y-m-d"),
+					"deliveryReport" => "0",
+					"fromNumber" => $this->opts["mobilenumber"]
+				)));
 				if ($status_ob->SendMessageResult->ErrorString != "Ingen fejl."){
 					throw new Exception("Could not send SMS (" . $status_ob->SendMessageResult->ErrorString . ").");
 				}

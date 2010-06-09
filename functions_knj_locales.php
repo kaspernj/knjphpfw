@@ -194,7 +194,9 @@
 		}
 		
 		global $functions_knjlocales;
-		if ($functions_knjlocales["language"] == "da_DK"){
+		$lang = substr($functions_knjlocales["language"], 0, 5);
+		
+		if ($lang == "da_DK"){
 			return array(
 				"decimal_point" => ",",
 				"thousands_sep" => "."
