@@ -1,0 +1,1 @@
+functions_knj_strings.php

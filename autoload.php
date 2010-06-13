@@ -11,7 +11,9 @@
 				"knj_os" => "os",
 				"objects" => "objects",
 				"knjdb" => "db",
-				"knjobjects" => "objects"
+				"knjobjects" => "objects",
+				"knj_login" => "web_login",
+				"knj_strings" => "strings"
 			);
 			$this->classes = array();
 		}
