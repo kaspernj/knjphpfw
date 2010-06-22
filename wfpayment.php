@@ -21,10 +21,35 @@
 			}
 		}
 		
+		function http(){
+			return $this->http;
+		}
+		
 		function listPayments($paras = array()){
-			$html = $this->http->getaddr("pg.frontend/pg.transactions.php");
+			if ($paras["awaiting"]){
+				$html = $this->http->getaddr("pg.frontend/pg.transactions.php");
+			}else{
+				$sparas = array(
+					"searchtype" => "",
+					"fromday" => "01",
+					"frommonth" => "01",
+					"fromyear" => date("Y"),
+					"today" => "31",
+					"tomonth" => "12",
+					"toyear" => date("Y"),
+					"transacknum" => ""
+				);
+				
+				if ($paras["order_id"]){
+					$sparas["orderid"] = $paras["order_id"];
+				}
+				
+				$html = $this->http->post("pg.frontend/pg.search.php?search=doit", $sparas);
+			}
 			
-			if (!preg_match_all("/<a href=\"pg\.transactionview\.php\?id=([0-9]+)&page=([0-9]+)\">([0-9]+)<\/a><\/td>\s*<td.*>(.+)<\/td>\s*<td.*>(.+)<\/td>\s*<td.*>(.+)<\/td>\s*<td.*>.*<\/td>\s*<td.*>(.*)<\/td>/U", $html, $matches)){
+			if (!preg_match_all("/<a href=\"pg\.transactionview\.php\?id=([0-9]+)&page=([0-9]+)\">([0-9]+)<\/a><\/td>\s*<td.*>(.+)<\/td>\s*<td.*>(.+)<\/td>\s*<td.*>(.+)<\/td>\s*<td.*>.*<\/td>\s*<td.*>(.*)<\/td>\s*<td.*>(.*)<\/td>/U", $html, $matches)){
+				echo $html . "\n\n";
+				
 				throw new exception("Could not parse payments.");
 			}
 			
@@ -45,6 +70,8 @@
 					$card_type = "visa_electron";
 				}elseif(strpos($card_type, "mc.png") !== false){
 					$card_type = "mastercard";
+				}elseif(strpos($card_type, "visa.png") !== false){
+					$card_type = "visa";
 				}else{
 					throw new exception("Unknown card-type image: " . $card_type);
 				}
@@ -70,16 +97,26 @@
 				
 				$unixt = mktime($match[4], $match[5], $match[6], $match[2], $match[1], $match[3]);
 				
+				$state = $matches[8][$key];
+				if ($state == "Gennemført"){
+					$state = "done";
+				}else{
+					throw new exception("Unknown state: " . $state);
+				}
+				
 				if ($this->payments[$id]){
 					$payment = $this->payments[$id];
+					$payment->set("state", $matches[8][$key]);
 				}else{
-					$payment = new wfpayment_payment(array(
+					$payment = new wfpayment_payment($this, array(
 						"id" => $id,
+						"order_id" => substr($matches[4][$key], 4),
 						"customer_id" => $matches[3][$key],
 						"customer_string" => $matches[4][$key],
 						"date" => $unixt,
 						"amount" => $amount,
-						"card_type" => $card_type
+						"card_type" => $card_type,
+						"state" => $state
 					));
 				}
 				
@@ -91,8 +128,14 @@
 	}
 	
 	class wfpayment_payment{
-		function __construct($paras){
+		function __construct($wfpayment, $paras){
+			$this->wfpayment = $wfpayment;
+			$this->http = $this->wfpayment->http();
 			$this->paras = $paras;
+		}
+		
+		function set($key, $value){
+			$this->paras[$key] = $value;
 		}
 		
 		function get($key){
@@ -101,6 +144,19 @@
 			}
 			
 			return $this->paras[$key];
+		}
+		
+		function accept(){
+			if ($this->state() == "done"){
+				throw new exception("This payment is already accepted.");
+			}
+			
+			$html = $this->http->getaddr("pg.frontend/pg.transactions.php?capture=singlecapture&transid=" . $this->get("id") . "&page=1&orderby=&direction=");
+		}
+		
+		function state(){
+			$payments = $this->wfpayment->listPayments(array("order_id" => $this->get("order_id")));
+			return $this->get("state");
 		}
 	}
 ?>
