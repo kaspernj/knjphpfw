@@ -350,6 +350,7 @@
 				}
 				
 				$line = fgets($this->fp, $readsize);
+				
 				if (strlen($line) == 0){
 					break;
 				}elseif($line === false){
@@ -375,10 +376,11 @@
 					}else{
 						$headers .= $line;
 						
-						if (preg_match("/^Content-Length: ([0-9]+)\r\n$/", $line, $match)){
+						if (preg_match("/^Content-Length: ([0-9]+)\s+$/", $line, $match)){
+							print_r($match);
 							$contentlength = $match[1];
 							$contentlength_set = true;
-						}elseif(preg_match("/^Transfer-Encoding: chunked\r\n$/", $line, $match)){
+						}elseif(preg_match("/^Transfer-Encoding: chunked\s+$/", $line, $match)){
 							$chunked = true;
 						}elseif(preg_match("/^Set-Cookie: (\S+)=(\S+)(;|)( path=\/;| path=\/)\s+/U", $line, $match)){
 							$key = urldecode($match[1]);
@@ -390,9 +392,9 @@
 							$value = urldecode($match[2]);
 							
 							$this->cookies[$this->host][$key] = $value;
-						}elseif(preg_match("/^HTTP\/1\.1 100 Continue\r\n$/", $line, $match)){
+						}elseif(preg_match("/^HTTP\/1\.1 100 Continue\s+$/", $line, $match)){
 							$cont100 = true;
-						}elseif(preg_match("/^Location: (.*)\r\n$/", $line, $match)){
+						}elseif(preg_match("/^Location: (.*)\s+$/", $line, $match)){
 							$location = $match[1];
 						}else{
 							//echo "NU: " . $line;

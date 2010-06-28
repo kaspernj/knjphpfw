@@ -3,8 +3,10 @@
 		public $conn;
 		private $args = array(
 			"col_id" => "id",
-			"autoconnect" => true
+			"autoconnect" => true,
+			"stats" => false
 		);
+		public $stats = array();
 		private $drivers = array();
 		public $insert_autocommit, $insert_countcommit; //variables used by the transaction-autocommit-feature.
 		
@@ -141,13 +143,26 @@
 				$this->args[$key] = $value;
 			}
 			
-			if ($this->args["autoconnect"]){
+			if ($this->args["autoconnect"] and !$this->conn){
 				$this->connect();
 			}
 		}
 		
 		/** Performs a query. */
 		function query($sql){
+			if ($this->args["stats"]){
+				$this->stats["query_called"]++;
+				
+				if ($this->args["debug"]){
+					$bt = debug_backtrace();
+					
+					echo("Query " . $this->stats["query_called"] . "\n");
+					echo("File: " . $bt[0]["file"] . ":" . $bt[0]["line"] . "\n");
+					echo("File: " . $bt[1]["file"] . ":" . $bt[1]["line"] . "\n");
+					echo("SQL: " . $sql . "\n\n");
+				}
+			}
+			
 			return $this->conn->query($sql);
 		}
 		
