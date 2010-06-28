@@ -377,7 +377,6 @@
 						$headers .= $line;
 						
 						if (preg_match("/^Content-Length: ([0-9]+)\s+$/", $line, $match)){
-							print_r($match);
 							$contentlength = $match[1];
 							$contentlength_set = true;
 						}elseif(preg_match("/^Transfer-Encoding: chunked\s+$/", $line, $match)){
