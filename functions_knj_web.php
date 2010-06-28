@@ -499,7 +499,7 @@
 			}elseif(trim($ua) == ""){
 				return false;
 			}else{
-				throw new exception("Unknown OS: " . $_SERVER["HTTP_USER_AGENT"]);
+				return "unknown";
 			}
 		}
 	}
