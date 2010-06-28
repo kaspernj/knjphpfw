@@ -19,6 +19,10 @@
 			if (!array_key_exists("check_id", $this->config)){
 				$this->config["check_id"] = true;
 			}
+			
+			if (!array_key_exists("require", $this->config)){
+				$this->config["require"] = true;
+			}
 		}
 		
 		function cleanMemory(){
@@ -29,12 +33,14 @@
 		}
 		
 		function requirefile($obname){
-			$fn = $this->config["class_path"] . "/class" . $this->config["class_sep"] . $obname . ".php";
-			if (!file_exists($fn)){
-				throw new exception("File not found: " . $fn);
+			if ($this->config["require"]){
+				$fn = $this->config["class_path"] . "/class" . $this->config["class_sep"] . $obname . ".php";
+				if (!file_exists($fn)){
+					throw new exception("File not found: " . $fn);
+				}
+				
+				require_once($fn);
 			}
-			
-			require_once($fn);
 		}
 		
 		function listObs($ob, $paras = array()){

@@ -40,14 +40,17 @@
 		}
 		
 		$language = strtr($language, array(
-				"-" => "_"
-			)
-		);
+			"-" => "_"
+		));
 		if (preg_match("/^([A-z]{2})_([A-z]{2})$/", $language, $match)){
 			$language = strtolower($match[1]) . "_" . strtoupper($match[2]);
 		}
 		
 		$functions_knjlocales["language"] = $language;
+		
+		if (!file_exists($dir)){
+			throw new exception("Dir does not exist: " . $dir);
+		}
 		
 		if ($module == "php-gettext"){
 			require_once "php-gettext/gettext.inc";
@@ -61,7 +64,7 @@
 		}elseif($module == "ext"){
 			require_once "knjphpframework/functions_knj_extensions.php";
 			if (!knj_dl("gettext")){
-				echo("Warning: gettext-module could not be loaded.");
+				throw new exception("gettext-module could not be loaded.");
 			}
 			
 			$functions_knjlocales["module"] = "ext";
@@ -72,6 +75,7 @@
 			putenv("LANG=" . $language); 
 			
 			setlocale(LC_ALL, $language);
+			setlocale(LC_MESSAGES, $language);
 			
 			bindtextdomain($domain, $dir);
 			bind_textdomain_codeset($domain, "UTF-8");
