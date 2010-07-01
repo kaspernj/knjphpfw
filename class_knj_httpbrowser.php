@@ -8,9 +8,26 @@
 		private $debug = false;
 		private $reconnect_max;
 		private $reconnect_count;
+		private $nl = "\r\n";
 		public $fp;
 		public $headers_last;
 		private $useragent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)";
+		
+		function __construct($args = array()){
+			foreach($args AS $key => $value){
+				if ($key == "ssl" or $key == "nl" or $key == "debug"){
+					$this->$key = $value;
+				}else{
+					throw new exception("Invalid argument: " . $key);
+				}
+			}
+		}
+		
+		function debug($msg){
+			if ($this->debug == "kasper"){
+				echo $msg;
+			}
+		}
 		
 		/** Connects to a server. */
 		function connect($host, $port = 80, $args = array()){
@@ -23,7 +40,7 @@
 			}
 			
 			foreach($args AS $key => $value){
-				if ($key == "ssl"){
+				if ($key == "ssl" or $key == "nl" or $key == "debug"){
 					$this->$key = $value;
 				}else{
 					throw new exception("Invalid argument: " . $key);
@@ -110,22 +127,22 @@
 			}
 			
 			$headers = 
-				"POST /" . $addr . " HTTP/1.1\r\n" .
-				"Content-Type: application/x-www-form-urlencoded\r\n" .
-				"User-Agent: " . $this->useragent . "\r\n" .
-				"Host: " . $this->host . "\r\n" .
-				"Content-Length: " . strlen($postdata) . "\r\n" .
-				"Connection: Keep-Alive\r\n"
+				"POST /" . $addr . " HTTP/1.1" . $this->nl .
+				"Content-Type: application/x-www-form-urlencoded" . $this->nl .
+				"User-Agent: " . $this->useragent . $this->nl .
+				"Host: " . $this->host . $this->nl .
+				"Content-Length: " . strlen($postdata) . $this->nl .
+				"Connection: Keep-Alive" . $this->nl
 			;
 			$headers .= $this->getRestHeaders();
 			
 			if ($this->cookies[$this->host]){
 				foreach($this->cookies[$this->host] AS $key => $value){
-					$headers .= "Cookie: " . urlencode($key) . "=" . $value . "\r\n";
+					$headers .= "Cookie: " . urlencode($key) . "=" . $value . $this->nl;
 				}
 			}
 			
-			$headers .= "\r\n";
+			$headers .= "" . $this->nl;
 			
 			if (!fwrite($this->fp, $headers . $postdata)){
 				throw new exception("Could not write to socket.");
@@ -143,35 +160,35 @@
 			$postdata = "";
 			foreach($post AS $key => $value){
 				if ($postdata){
-					$postdata .= "\r\n";
+					$postdata .= "" . $this->nl;
 				}
 				
-				$postdata .= "--" . $boundary . "\r\n";
-				$postdata .= "Content-Disposition: form-data; name=\"" . $key . "\"\r\n";
-				$postdata .= "\r\n";
+				$postdata .= "--" . $boundary . $this->nl;
+				$postdata .= "Content-Disposition: form-data; name=\"" . $key . "\"" . $this->nl;
+				$postdata .= "" . $this->nl;
 				$postdata .= $value;
 			}
 			
-			$postdata .= "\r\n--" . $boundary . "--";
+			$postdata .= $this->nl . "--" . $boundary . "--";
 			
-			$headers = 
-				"POST /" . $addr . " HTTP/1.1\r\n" . 
-				"Host: " . $this->host . "\r\n" . 
-				"User-Agent: " . $this->useragent . "\r\n" . 
-				"Keep-Alive: 300\r\n" . 
-				"Connection: keep-alive\r\n" . 
-				"Content-Length: " . strlen($postdata) . "\r\n" .
-				"Content-Type: multipart/form-data; boundary=" . $boundary . "\r\n"
+			$headers =
+				"POST /" . $addr . " HTTP/1.1" . $this->nl .
+				"Host: " . $this->host . $this->nl .  $this->nl .
+				"User-Agent: " . $this->useragent . $this->nl .
+				"Keep-Alive: 300" .  $this->nl .
+				"Connection: keep-alive" .  $this->nl .
+				"Content-Length: " . strlen($postdata) . $this->nl .
+				"Content-Type: multipart/form-data; boundary=" . $boundary . $this->nl
 			;
 			$headers .= $this->getRestHeaders();
 			
 			if ($this->cookies[$this->host]){
 				foreach($this->cookies[$this->host] AS $key => $value){
-					$headers .= "Cookie: " . urlencode($key) . "=" . urlencode($value) . "; FService=Password=miden&Fkode=F0623\r\n";
+					$headers .= "Cookie: " . urlencode($key) . "=" . urlencode($value) . "; FService=Password=miden&Fkode=F0623" .  $this->nl;
 				}
 			}
 			
-			$headers .= "\r\n";
+			$headers .= $this->nl;
 			
 			fputs($this->fp, $headers);
 			
@@ -192,12 +209,12 @@
 			if (is_array($file) && $file["content"] && $file["filename"] && $file["inputname"]){
 				$boundary = "---------------------------" . round(mktime(true), 0);
 				
-				$postdata .= "--" . $boundary . "\r\n";
-				$postdata .= "Content-Disposition: form-data; name=\"" . htmlspecialchars($file["inputname"]) . "\"; filename=\"" . htmlspecialchars($file["filename"]) . "\"\r\n";
-				$postdata .= "Content-Type: application/octet-stream\r\n";
-				$postdata .= "\r\n";
+				$postdata .= "--" . $boundary .  $this->nl;
+				$postdata .= "Content-Disposition: form-data; name=\"" . htmlspecialchars($file["inputname"]) . "\"; filename=\"" . htmlspecialchars($file["filename"]) . "\"" . $this->nl;
+				$postdata .= "Content-Type: application/octet-stream" .  $this->nl;
+				$postdata .= $this->nl;
 				$postdata .= $file["content"];
-				$postdata .= "\r\n--" . $boundary . "--\r\n";
+				$postdata .= $this->nl . "-" . $boundary . "--" .  $this->nl;
 			}else{
 				$input_name = $file[0]["input"];
 				$file = $file[0]["file"];
@@ -206,12 +223,12 @@
 				$cont = file_get_contents($file);
 				$info = pathinfo($file);
 				
-				$postdata .= "--" . $boundary . "\r\n";
-				$postdata .= "Content-Disposition: form-data; name=\"" . htmlspecialchars($input_name) . "\"; filename=\"" . htmlspecialchars($info["basename"]) . "\"\r\n";
-				$postdata .= "Content-Type: application/octet-stream\r\n";
-				$postdata .= "\r\n";
+				$postdata .= "--" . $boundary . $this->nl;
+				$postdata .= "Content-Disposition: form-data; name=\"" . htmlspecialchars($input_name) . "\"; filename=\"" . htmlspecialchars($info["basename"]) . "\"" . $this->nl;
+				$postdata .= "Content-Type: application/octet-stream" . $this->nl;
+				$postdata .= $this->nl;
 				$postdata .= $cont;
-				$postdata .= "\r\n--" . $boundary . "--\r\n";
+				$postdata .= $this->nl . "--" . $boundary . "--" . $this->nl;
 			}
 			
 			if (is_array($post)){
@@ -224,21 +241,21 @@
 				}
 			}
 			
-			$headers .= "POST /" . $addr . " HTTP/1.1\r\n";
-			$headers .= "Host: " . $this->host . "\r\n";
-			$headers .= "Content-Type: multipart/form-data; boundary=" . $boundary . "\r\n";
-			$headers .= "Content-Length: " . strlen($postdata) . "\r\n";
-			$headers .= "Connection: Keep-Alive\r\n";
-			$headers .= "User-Agent: " . $this->useragent . "\r\n";
+			$headers .= "POST /" . $addr . " HTTP/1.1" . $this->nl;
+			$headers .= "Host: " . $this->host . $this->nl;
+			$headers .= "Content-Type: multipart/form-data; boundary=" . $boundary . $this->nl;
+			$headers .= "Content-Length: " . strlen($postdata) . $this->nl;
+			$headers .= "Connection: Keep-Alive" . $this->nl;
+			$headers .= "User-Agent: " . $this->useragent . $this->nl;
 			$headers .= $this->getRestHeaders();
 			
 			if ($this->cookies[$this->host]){
 				foreach($this->cookies[$this->host] AS $key => $value){
-					$headers .= "Cookie: " . urlencode($key) . "=" . $value . "\r\n";
+					$headers .= "Cookie: " . urlencode($key) . "=" . $value . $this->nl;
 				}
 			}
 			
-			$headers .= "\r\n";
+			$headers .= "" . $this->nl;
 			
 			
 			$sendd = $headers . $postdata;
@@ -260,7 +277,7 @@
 			
 			if ($this->httpauth){
 				$auth = base64_encode($this->httpauth["user"] . ":" . $this->httpauth["passwd"]);
-				$headers .= "Authorization: Basic " . $auth . "\r\n";
+				$headers .= "Authorization: Basic " . $auth . $this->nl;
 			}
 			
 			return $headers;
@@ -292,32 +309,28 @@
 			}
 			
 			$headers = 
-				"GET /" . $addr . " HTTP/1.1\r\n" .
-				"Host: " . $host . "\r\n" .
-				"User-Agent: " . $this->useragent . "\r\n" .
-				"Connection: Keep-Alive\r\n"
+				"GET /" . $addr . " HTTP/1.1" . $this->nl .
+				"Host: " . $host . $this->nl .
+				"User-Agent: " . $this->useragent . $this->nl .
+				"Connection: Keep-Alive" . $this->nl
 			;
 			
 			if ($args["addheader"]){
 				foreach($args["addheader"] AS $header){
-					$headers .= $header . "\r\n";
+					$headers .= $header . $this->nl;
 				}
 			}
 			
 			if ($this->cookies[$this->host]){
 				foreach($this->cookies[$this->host] AS $key => $value){
-					$headers .= "Cookie: " . urlencode($key) . "=" . urlencode($value) . "\r\n";
+					$headers .= "Cookie: " . urlencode($key) . "=" . urlencode($value) . $this->nl;
 				}
 			}
 			
 			$headers .= $this->getRestHeaders();
-			$headers .= 
-				"\r\n"
-			;
+			$headers .= $this->nl;
 			
-			if ($this->debug){
-				echo("getAddr()-headers:\n" . $headers . "\n\n");
-			}
+			$this->debug("getAddr()-headers:\n" . $headers);
 			
 			//Sometimes trying more times than one fixes the problem.
 			$tries = 0;
@@ -356,11 +369,11 @@
 				}elseif($line === false){
 					throw new exception("Could not read from socket.");
 				}elseif($first && $line == "\r\n"){
-					$line = fgets($this->fp, $readsize); //fixes an error when some servers sometimes sends "\r\n" in the end, if this is a second request.
+					$line = fgets($this->fp, $readsize); //fixes an error when some servers sometimes sends \r\n in the end, if this is a second request.
 				}
 				
 				if ($state == "headers"){
-					if ($line == "\r\n"){
+					if ($line == "\r\n" or $line == "\n" or $line == $this->nl){
 						if ($cont100 == true){
 							unset($cont100);
 						}else{
@@ -376,33 +389,32 @@
 					}else{
 						$headers .= $line;
 						
-						if (preg_match("/^Content-Length: ([0-9]+)\s+$/", $line, $match)){
-							print_r($match);
+						if (preg_match("/^Content-Length: ([0-9]+)\s*$/", $line, $match)){
 							$contentlength = $match[1];
 							$contentlength_set = true;
-						}elseif(preg_match("/^Transfer-Encoding: chunked\s+$/", $line, $match)){
+						}elseif(preg_match("/^Transfer-Encoding: chunked\s*$/", $line, $match)){
 							$chunked = true;
-						}elseif(preg_match("/^Set-Cookie: (\S+)=(\S+)(;|)( path=\/;| path=\/)\s+/U", $line, $match)){
+						}elseif(preg_match("/^Set-Cookie: (\S+)=(\S+)(;|)( path=\/;| path=\/)\s*/U", $line, $match)){
 							$key = urldecode($match[1]);
 							$value = urldecode($match[2]);
 							
 							$this->cookies[$this->host][$key] = $value;
-						}elseif(preg_match("/^Set-Cookie: (\S+)=(\S+)\s+/U", $line, $match)){
+						}elseif(preg_match("/^Set-Cookie: (\S+)=(\S+)\s*/U", $line, $match)){
 							$key = urldecode($match[1]);
 							$value = urldecode($match[2]);
 							
 							$this->cookies[$this->host][$key] = $value;
-						}elseif(preg_match("/^HTTP\/1\.1 100 Continue\s+$/", $line, $match)){
+						}elseif(preg_match("/^HTTP\/1\.1 100 Continue\s*$/", $line, $match)){
 							$cont100 = true;
-						}elseif(preg_match("/^Location: (.*)\s+$/", $line, $match)){
-							$location = $match[1];
+						}elseif(preg_match("/^Location: (.*)\s*$/", $line, $match)){
+							$location = trim($match[1]);
 						}else{
 							//echo "NU: " . $line;
 						}
 					}
 				}elseif($state == "body"){
 					if ($chunked == true){
-						if ($line == "0\r\n" || $line == "0\n"){
+						if ($line == "0\r\n" or $line == "0\n"){
 							break;
 						}
 						
@@ -445,26 +457,16 @@
 				$first = false;
 			}
 			
-			if ($this->debug){
-				echo("Received headers:\n" . $headers . "\n\n\n");
-			}
-			
-			if ($this->debug){
-				echo("Received HTML:\n" . $html . "\n\n\n");
-			}
+			$this->debug("Received headers:\n" . $headers . "\n\n\n");
+			$this->debug("Received HTML:\n" . $html . "\n\n\n");
 			
 			if ($location){
-				if ($this->debug){
-					echo("Received location-header - trying to follow \"" . $match[1] . "\".\n");
-				}
+				$this->debug("Received location-header - trying to follow \"" . $match[1] . "\".\n");
 				return $this->getAddr($location);
 			}
 			
 			if (preg_match("/<h2>Object moved to <a href=\"(.*)\">here<\/a>.<\/h2>/", $html, $match)){
-				if ($this->debug){
-					echo("\"Object moved to\" found in HTML - trying to follow.\n");
-				}
-				
+				$this->debug("\"Object moved to\" found in HTML - trying to follow.\n");
 				return $this->getAddr(urldecode($match[1]));
 			}
 			
