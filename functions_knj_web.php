@@ -66,6 +66,12 @@
 			return $string;
 		}
 		
+		function rewriteback($string){
+			return strtr($string, array(
+				"_" => " "
+			));
+		}
+		
 		function htmlspecialchars_textarea($input){
 			return htmlspecialchars_textarea($input);
 		}
