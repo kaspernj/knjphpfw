@@ -62,7 +62,7 @@
 			_bind_textdomain_codeset($domain, "UTF-8");
 			_textdomain($domain);
 		}elseif($module == "ext"){
-			require_once "knjphpframework/functions_knj_extensions.php";
+			require_once "knjnj_extensions.php";
 			if (!knj_dl("gettext")){
 				throw new exception("gettext-module could not be loaded.");
 			}

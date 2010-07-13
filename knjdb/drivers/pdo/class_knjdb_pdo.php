@@ -12,7 +12,7 @@
 			$this->args = $args;
 			$this->knjdb = $knjdb;
 			
-			require_once("knjphpframework/functions_knj_extensions.php");
+			require_once("knj/functions_knj_extensions.php");
 			knj_dl("pdo");
 			
 			if ($args["dbtype"] == "sqlite3"){

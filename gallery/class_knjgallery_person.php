@@ -75,7 +75,7 @@
 			}
 			
 			//Create new.
-			require_once("knjphpframework/gallery/class_knjgallery_view.php");
+			require_once("knj/gallery/class_knjgallery_view.php");
 			$view = knj_gallery_view::createNew($this->knj_gallery, array("person_id" => $this->get("id")));
 			return $view;
 		}

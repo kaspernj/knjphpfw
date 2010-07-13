@@ -219,7 +219,7 @@
 		$return = false;
 		if ($result == Gtk::RESPONSE_YES){
 			if ($args["multiple"] == true){
-				require_once("knjphpframework/functions_treeview.php");
+				require_once("knj/functions_treeview.php");
 				$rows = $tv_items->get_selection()->get_selected_rows();
 				
 				if ($rows[1]){

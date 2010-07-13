@@ -35,7 +35,7 @@
 				$grep = $args["grep"];
 				$command = "ps aux | " . $grep;
 			}elseif(is_string($args) && strlen($args) > 0){
-				require_once "knjphpframework/functions_knj_strings.php";
+				require_once "knj/functions_knj_strings.php";
 				$grep = "grep " . knj_string_unix_safe($args);
 				$command = "ps aux | " . $grep;
 			}else{

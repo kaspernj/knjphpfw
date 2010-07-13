@@ -1,6 +1,6 @@
 <?
 	/** This file contains functions that may come in handy when building web-applications. */
-	//require_once("knjphpframework/functions_knj_sql.php");
+	//require_once("knj/functions_knj_sql.php");
 	global $knj_web;
 	$knj_web = array(
 		"col_id_name" => "id"
@@ -455,7 +455,7 @@
 		
 		/** Returns the registered operating-system - "windows", "linux", "mac" or "bot". */
 		static function getOS(){
-			require_once("knjphpframework/functions_array.php");
+			require_once("knj/functions_array.php");
 			$bots = array(
 				"yahoo! slurp",
 				"msnbot",

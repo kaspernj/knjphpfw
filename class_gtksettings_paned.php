@@ -1,5 +1,5 @@
 <?php
-	require_once("knjphpframework/class_exceptions.php");
+	require_once("knj/class_exceptions.php");
 	
 	/** This object handels paned-settings. */
 	class GtkSettingsPaned{

@@ -1,5 +1,5 @@
 <?php
-	require_once("knjphpframework/knjdb/class_knjdb_row.php");
+	require_once("knj/knjdb/class_knjdb_row.php");
 	
 	class knjobjects{
 		private $objects;

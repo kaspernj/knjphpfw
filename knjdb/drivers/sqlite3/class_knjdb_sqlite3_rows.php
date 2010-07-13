@@ -1,5 +1,5 @@
 <?php
-	require_once("knjphpframework/knjdb/interfaces/class_knjdb_driver_rows.php");
+	require_once("knj/knjdb/interfaces/class_knjdb_driver_rows.php");
 	
 	class knjdb_sqlite3_rows implements knjdb_driver_rows{
 		function __construct(knjdb $knjdb){

@@ -5,7 +5,7 @@
 		private $proc;
 		
 		function __construct(){
-			require_once("knjphpframework/class_knj_eventmanager.php");
+			require_once("knj/class_knj_eventmanager.php");
 			$this->em = new EventManager();
 			$this->em->addEvent(array("mouseclick", "north", "east", "south", "west", "northeast", "northwest", "southeast", "southwest"));
 			
