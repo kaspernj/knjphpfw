@@ -191,6 +191,8 @@
 				$paras["type"] = "text";
 			}elseif($f3 == "sel" or $paras["opts"]){
 				$paras["type"] = "select";
+			}elseif($f3 == "fil"){
+				$paras["type"] = "file";
 			}
 		}
 		
@@ -477,7 +479,8 @@
 				"sslbot",
 				"browsershots",
 				"perl",
-				"wget"
+				"wget",
+				"w3c_validator"
 			);
 			
 			$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);

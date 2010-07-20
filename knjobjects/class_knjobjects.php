@@ -123,8 +123,8 @@
 		}
 		
 		function unsetOb($ob, $id = null){
-			if (is_object($ob) && is_null($id)){
-				$id = $ob->get($this->config["col_id"]);
+			if (is_object($ob) and is_null($id)){
+				$id = $ob->id();
 				
 				if ($this->objects[get_class($ob)][$id]){
 					unset($this->objects[get_class($ob)][$id]);
