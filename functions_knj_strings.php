@@ -156,6 +156,14 @@
 			
 			return $string;
 		}
+		
+		function tf_str($value, $yesstr, $nostr){
+			if ($value){
+				return $yesstr;
+			}
+			
+			return $nostr;
+		}
 	}
 	
 	/**
