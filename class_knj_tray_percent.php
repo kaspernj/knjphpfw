@@ -1,5 +1,5 @@
 <?
-	require_once "knjphpframework/functions_knj_extensions.php";
+	require_once "knj/functions_knj_extensions.php";
 	if (!knj_dl("gd")){
 		die("Could not load the GD-extension.\n");
 	}

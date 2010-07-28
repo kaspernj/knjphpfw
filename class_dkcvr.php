@@ -5,7 +5,7 @@
 		private $http;
 		
 		function __construct(){
-			require_once("knjphpframework/class_knj_httpbrowser.php");
+			require_once("knj/class_knj_httpbrowser.php");
 			$this->http = new knj_httpbrowser();
 			$this->http->connect("cvr.dk");
 		}

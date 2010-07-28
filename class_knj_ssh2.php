@@ -9,7 +9,7 @@
 				throw new Exception("No conn supplied in parameters.");
 			}
 			
-			require_once("knjphpframework/functions_knj_filesystem.php");
+			require_once("knj/functions_knj_filesystem.php");
 			$this->conn = $args["conn"];
 			
 			if (!$args["shell"]){
@@ -109,7 +109,7 @@
 		
 		/** Saves a file on the server. */
 		function putFile($path, $content){
-			require_once("knjphpframework/functions_knj_strings.php");
+			require_once("knj/functions_knj_strings.php");
 			
 			$lines = explode("\n", $content);
 			$first = true;

@@ -3,7 +3,7 @@
 	class knj_doc{
 		/** Converts a Word-content (or Word-file) into plain-text. */
 		static function wordtext($cont, $type = null){
-			require_once "knjphpframework/functions_knj_os.php";
+			require_once "knj/functions_knj_os.php";
 			$catdoc_status = knj_os::checkCMD("catdoc");
 			if (!$catdoc_status){
 				throw new Exception("catdoc could not be found on this system.");

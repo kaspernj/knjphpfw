@@ -1,6 +1,6 @@
 <?
 	/** This file contains functions that may come in handy when building web-applications. */
-	//require_once("knjphpframework/functions_knj_sql.php");
+	//require_once("knj/functions_knj_sql.php");
 	global $knj_web;
 	$knj_web = array(
 		"col_id_name" => "id"
@@ -64,6 +64,12 @@
 			$string = preg_replace("/\s+/", "_", $string);
 			
 			return $string;
+		}
+		
+		function rewriteback($string){
+			return strtr($string, array(
+				"_" => " "
+			));
 		}
 		
 		function htmlspecialchars_textarea($input){
@@ -218,27 +224,36 @@
 			$colspan_cont = $paras["colspan"] - 1;
 		}
 		
+		if (!array_key_exists("tr", $paras) or $paras["tr"]){
+			?><tr><?
+		}
+		
+		$td_html = "<td class=\"tdc\"";
+		if ($paras["td_width"]){
+			$td_html .= " style=\"width: " . $paras["td_width"] . ";\"";
+		}
+		if ($colspan_cont > 1){
+			$td_html .= " colspan=\"" . $colspan_cont . "\"";
+		}
+		$td_html .= ">";
+		
 		if ($paras["type"] == "checkbox"){
 			?>
-				<tr>
-					<td colspan="2" class="tdcheck">
-						<input type="<?=$paras["type"]?>" name="<?=$paras["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?> />
-						<label for="<?=$id?>"><?=htmlspecialchars($paras["title"])?></label>
-					</td>
-				</tr>
+				<td colspan="2" class="tdcheck">
+					<input type="<?=$paras["type"]?>" name="<?=$paras["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?> />
+					<label for="<?=$id?>"><?=htmlspecialchars($paras["title"])?></label>
+				</td>
 			<?
 		}elseif($paras["type"] == "select"){
 			?>
-				<tr>
-					<td class="tdt">
-						<?=htmlspecialchars($paras["title"])?>
-					</td>
-					<td class="tdc">
-						<select<?if ($paras["size"]){?> size="<?=htmlspecialchars($paras["size"])?>"<?}?> name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=$paras["class"]?>"<?if ($paras["onchange"]){?> onchange="<?=$paras["onchange"]?>"<?}?>>
-						<?=select_drawOpts($paras["opts"], $paras["value"])?>
-						</select>
-					</td>
-				</tr>
+				<td class="tdt">
+					<?=htmlspecialchars($paras["title"])?>
+				</td>
+				<?=$td_html?>
+					<select<?if ($paras["size"]){?> size="<?=htmlspecialchars($paras["size"])?>"<?}?> name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=$paras["class"]?>"<?if ($paras["onchange"]){?> onchange="<?=$paras["onchange"]?>"<?}?>>
+					<?=select_drawOpts($paras["opts"], $paras["value"])?>
+					</select>
+				</td>
 			<?
 		}elseif($paras["type"] == "imageupload"){
 			if (!$value){
@@ -264,86 +279,80 @@
 			}
 			
 			?>
-				<tr>
-					<td class="tdt">
-						<?=htmlspecialchars($paras["title"])?>
-					</td>
-					<td class="tdc">
-						<table class="designtable">
-							<tr>
-								<td style="width: 100%;">
-									<input type="file" name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($paras["class"])?>" />
-								</td>
-								<td>
-									<?if ($fn){?>
-										<img src="image.php?picture=<?=urlencode($fn)?>&amp;smartsize=80&amp;edgesize=20&amp;equaldim=true" alt="Preview" />
-									<?}?>
-									<?if ($found and $paras["dellink"]){?>
-										<div style="text-align: center;">
-											(<a href="javascript: if (confirm('<?=gtext("Do you want to delete the picture?")?>')){location.href='<?=$paras["dellink"]?>';}"><?=gtext("delete")?></a>)
-										</div>
-									<?}?>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
+				<td class="tdt">
+					<?=htmlspecialchars($paras["title"])?>
+				</td>
+				<?=$td_html?>
+					<table class="designtable">
+						<tr>
+							<td style="width: 100%;">
+								<input type="file" name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($paras["class"])?>" />
+							</td>
+							<td>
+								<?if ($fn){?>
+									<img src="image.php?picture=<?=urlencode($fn)?>&amp;smartsize=80&amp;edgesize=20&amp;equaldim=true" alt="Preview" />
+								<?}?>
+								<?if ($found and $paras["dellink"]){?>
+									<div style="text-align: center;">
+										(<a href="javascript: if (confirm('<?=gtext("Do you want to delete the picture?")?>')){location.href='<?=$paras["dellink"]?>';}"><?=gtext("delete")?></a>)
+									</div>
+								<?}?>
+							</td>
+						</tr>
+					</table>
+				</td>
 			<?
 		}elseif($paras["type"] == "file"){
 			?>
-				<tr>
-					<td class="tdt">
-						<?=htmlspecialchars($paras["title"])?>
-					</td>
-					<td class="tdc">
-						<input type="file" class="input_<?=$paras["type"]?>" name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" />
-					</td>
-				</tr>
+				<td class="tdt">
+					<?=htmlspecialchars($paras["title"])?>
+				</td>
+				<?=$td_html?>
+					<input type="file" class="input_<?=$paras["type"]?>" name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" />
+				</td>
 			<?
 		}elseif($paras["type"] == "textarea"){
 			?>
-				<tr>
-					<td class="tdt">
-						<?=htmlspecialchars($paras["title"])?>
-					</td>
-					<td class="tdc"<?if ($colspan_cont > 1){?> colspan="<?=$colspan_cont?>"<?}?>>
-						<textarea name="<?=htmlspecialchars($paras["name"])?>" class="<?=htmlspecialchars($paras["class"])?>"<?if ($paras["height"]){?> style="height: <?=$paras["height"]?>;"<?}?>><?=htmlspecialchars_textarea($value)?></textarea>
-					</td>
-				</tr>
+				<td class="tdt">
+					<?=htmlspecialchars($paras["title"])?>
+				</td>
+				<?=$td_html?>
+					<textarea name="<?=htmlspecialchars($paras["name"])?>" class="<?=htmlspecialchars($paras["class"])?>"<?if ($paras["height"]){?> style="height: <?=$paras["height"]?>;"<?}?>><?=htmlspecialchars_textarea($value)?></textarea>
+				</td>
 			<?
 		}elseif($paras["type"] == "fckeditor"){
 			?>
-				<tr>
-					<td class="tdt">
-						<?=htmlspecialchars($paras["title"])?>
-					</td>
-					<td class="tdc"<?if ($colspan_cont > 1){?> colspan="<?=$colspan_cont?>"<?}?>>
-						<?
-							$fck = new fckeditor($paras["name"]);
-							
-							if ($paras["height"]){
-								$fck->Height = $paras["height"];
-							}else{
-								$fck->Height = 300;
-							}
-							
-							$fck->Value = $value;
-							$fck->Create();
-						?>
-					</td>
-				</tr>
+				<td class="tdt">
+					<?=htmlspecialchars($paras["title"])?>
+				</td>
+				<?=$td_html?>
+					<?
+						$fck = new fckeditor($paras["name"]);
+						
+						if ($paras["height"]){
+							$fck->Height = $paras["height"];
+						}else{
+							$fck->Height = 300;
+						}
+						
+						$fck->Value = $value;
+						$fck->Create();
+					?>
+				</td>
 			<?
 		}else{
 			?>
-				<tr>
-					<td class="tdt">
-						<?=htmlspecialchars($paras["title"])?>
-					</td>
-					<td class="tdc">
-						<input type="<?=htmlspecialchars($paras["type"])?>"<?if ($paras["maxlength"]){?> maxlength="<?=$paras["maxlength"]?>"<?}?> class="<?=$paras["class"]?>" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($paras["name"])?>" value="<?=htmlspecialchars($value)?>" />
-					</td>
-				</tr>
+				<td class="tdt">
+					<?=htmlspecialchars($paras["title"])?>
+				</td>
+				<?=$td_html?>
+					<input type="<?=htmlspecialchars($paras["type"])?>"<?if ($paras["disabled"]){?> disabled<?}?><?if ($paras["maxlength"]){?> maxlength="<?=$paras["maxlength"]?>"<?}?> class="<?=$paras["class"]?>" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($paras["name"])?>" value="<?=htmlspecialchars($value)?>" />
+				</td>
 			<?
+		}
+		
+		if (!array_key_exists("tr", $paras) or $paras["tr"]){
+			?><tr><?
 		}
 		
 		if ($paras["descr"]){
@@ -448,7 +457,7 @@
 		
 		/** Returns the registered operating-system - "windows", "linux", "mac" or "bot". */
 		static function getOS(){
-			require_once("knjphpframework/functions_array.php");
+			require_once("knj/functions_array.php");
 			$bots = array(
 				"yahoo! slurp",
 				"msnbot",
@@ -502,7 +511,7 @@
 			}elseif(trim($ua) == ""){
 				return false;
 			}else{
-				throw new exception("Unknown OS: " . $_SERVER["HTTP_USER_AGENT"]);
+				return "unknown";
 			}
 		}
 	}

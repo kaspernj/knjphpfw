@@ -137,7 +137,7 @@
 			}
 		}
 		
-		require_once("knjphpframework/functions_knj_web.php");
+		require_once("knj/functions_knj_web.php");
 		
 		$activate = true;
 		if (($knj_error_reporter["ignore_javabots"] || $knj_error_reporter["ignore_bots"]) && preg_match("/Java\/[0-9\.]+/i", $_SERVER["HTTP_USER_AGENT"], $match)){

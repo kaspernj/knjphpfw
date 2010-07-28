@@ -1,5 +1,5 @@
 <?
-	require_once("knjphpframework/functions_knj_sql.php");
+	require_once("knj/functions_knj_sql.php");
 	
 	/** This class represents a single row in a table. */
 	class dbconn_row{

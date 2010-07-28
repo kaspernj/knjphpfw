@@ -80,7 +80,7 @@
 		}
 		
 		function id(){
-			return $this->get($this->col_id);
+			return $this->id;
 		}
 	}
 	

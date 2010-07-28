@@ -142,6 +142,10 @@
 			return $string;
 		}
 		
+		static function htmlspecialchars_textarea($text){
+			return preg_replace("/<\/textarea>/i", "&lt;/textarea>", $text);
+		}
+		
 		function jsparse($string, $paras = array()){
 			$string = strtr($string, array(
 				"'" => "\\'",
