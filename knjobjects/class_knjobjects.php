@@ -59,7 +59,14 @@
 			$opts = array();
 			if ($paras["none"]){
 				unset($paras["none"]);
-				$opts = array(0 => gtext("None"));
+				
+				if (function_exists("gtext")){
+					$opts = array(0 => $this->gtext("None"));
+				}elseif(function_exists("_")){
+					$opts = array(0 => _("None"));
+				}elseif(function_exists("gettext")){
+					$opts = array(0 => gettext("None"));
+				}
 			}
 			
 			$list = $this->listObs($ob, $paras);
@@ -70,27 +77,39 @@
 			return $opts;
 		}
 		
+		function gtext($string){
+			if (function_exists("gtext")){
+				return $this->gtext($string);
+			}elseif(function_exists("_")){
+				return _($string);
+			}elseif(function_exists("gettext")){
+				return gettext($string);
+			}else{
+				return $string;
+			}
+		}
+		
 		function listOpts($ob, $getkey, $paras = null){
 			$opts = array();
 			
 			if ($paras["addnew"]){
 				unset($paras["addnew"]);
-				$opts[0] = gtext("Add new");
+				$opts[0] = $this->gtext("Add new");
 			}
 			
 			if ($paras["none"]){
 				unset($paras["none"]);
-				$opts[0] = gtext("None");
+				$opts[0] = $this->gtext("None");
 			}
 			
 			if ($paras["choose"]){
 				unset($paras["choose"]);
-				$opts[0] = gtext("Choose") . ":";
+				$opts[0] = $this->gtext("Choose") . ":";
 			}
 			
 			if ($paras["all"]){
 				unset($paras["all"]);
-				$opts[0] = gtext("All");
+				$opts[0] = $this->gtext("All");
 			}
 			
 			if (!$paras["col_id"]){
