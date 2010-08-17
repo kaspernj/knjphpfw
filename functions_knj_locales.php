@@ -74,8 +74,9 @@
 			putenv("LC_MESSAGE=" . $language);
 			putenv("LANG=" . $language); 
 			
-			setlocale(LC_ALL, $language);
-			setlocale(LC_MESSAGES, $language);
+			$locales_language_real = $language . ".utf8";
+			setlocale(LC_ALL, $locales_language_real);
+			setlocale(LC_MESSAGES, $locales_language_real);
 			
 			bindtextdomain($domain, $dir);
 			bind_textdomain_codeset($domain, "UTF-8");

@@ -79,7 +79,7 @@
 		
 		function gtext($string){
 			if (function_exists("gtext")){
-				return $this->gtext($string);
+				return gtext($string);
 			}elseif(function_exists("_")){
 				return _($string);
 			}elseif(function_exists("gettext")){
@@ -131,6 +131,16 @@
 		
 		function list_opts($ob, $getkey, $paras = null){
 			return $this->listOpts($ob, $getkey, $paras);
+		}
+		
+		function list_bysql($ob, $sql){
+			$ret = array();
+			$q_obs = $this->config["db"]->query($sql);
+			while($d_obs = $q_obs->fetch()){
+				$ret[] = $this->get($ob, $d_obs);
+			}
+			
+			return $ret;
 		}
 		
 		function add($ob, $arr){
