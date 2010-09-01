@@ -370,6 +370,15 @@
 					</label>
 				</td>
 			<?
+		}elseif($paras["type"] == "info"){
+			?>
+				<td class="tdt">
+					<?=$title_html?>
+				</td>
+				<?=$td_html?>
+					<?=$value?>
+				</td>
+			<?
 		}else{
 			?>
 				<td class="tdt">
