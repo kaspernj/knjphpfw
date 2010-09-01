@@ -75,6 +75,18 @@
 		function htmlspecialchars_textarea($input){
 			return htmlspecialchars_textarea($input);
 		}
+		
+		static function current_url(){
+			if ($_SERVER["HTTPS"] == "on"){
+				$url = "https://";
+			}else{
+				$url = "http://";
+			}
+			
+			$url .= $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+			
+			return $url;
+		}
 	}
 	
 	function secCheckInclude($file){
@@ -199,6 +211,8 @@
 				$paras["type"] = "select";
 			}elseif($f3 == "fil"){
 				$paras["type"] = "file";
+			}elseif($f3 == "rad"){
+				$paras["type"] = "radio";
 			}
 		}
 		
@@ -228,6 +242,12 @@
 			?><tr><?
 		}
 		
+		if ($paras["title"]){
+			$title_html = htmlspecialchars($paras["title"]);
+		}elseif($paras["title_html"]){
+			$title_html = $paras["title_html"];
+		}
+		
 		$td_html = "<td class=\"tdc\"";
 		if ($paras["td_width"]){
 			$td_html .= " style=\"width: " . $paras["td_width"] . ";\"";
@@ -241,13 +261,13 @@
 			?>
 				<td colspan="2" class="tdcheck">
 					<input type="<?=$paras["type"]?>" name="<?=$paras["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?> />
-					<label for="<?=$id?>"><?=htmlspecialchars($paras["title"])?></label>
+					<label for="<?=$id?>"><?=$title_html?></label>
 				</td>
 			<?
 		}elseif($paras["type"] == "select"){
 			?>
 				<td class="tdt">
-					<?=htmlspecialchars($paras["title"])?>
+					<?=$title_html?>
 				</td>
 				<?=$td_html?>
 					<select<?if ($paras["size"]){?> size="<?=htmlspecialchars($paras["size"])?>"<?}?> name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=$paras["class"]?>"<?if ($paras["onchange"]){?> onchange="<?=$paras["onchange"]?>"<?}?>>
@@ -280,7 +300,7 @@
 			
 			?>
 				<td class="tdt">
-					<?=htmlspecialchars($paras["title"])?>
+					<?=$title_html?>
 				</td>
 				<?=$td_html?>
 					<table class="designtable">
@@ -305,7 +325,7 @@
 		}elseif($paras["type"] == "file"){
 			?>
 				<td class="tdt">
-					<?=htmlspecialchars($paras["title"])?>
+					<?=$title_html?>
 				</td>
 				<?=$td_html?>
 					<input type="file" class="input_<?=$paras["type"]?>" name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" />
@@ -314,7 +334,7 @@
 		}elseif($paras["type"] == "textarea"){
 			?>
 				<td class="tdt">
-					<?=htmlspecialchars($paras["title"])?>
+					<?=$title_html?>
 				</td>
 				<?=$td_html?>
 					<textarea name="<?=htmlspecialchars($paras["name"])?>" class="<?=htmlspecialchars($paras["class"])?>"<?if ($paras["height"]){?> style="height: <?=$paras["height"]?>;"<?}?>><?=htmlspecialchars_textarea($value)?></textarea>
@@ -323,7 +343,7 @@
 		}elseif($paras["type"] == "fckeditor"){
 			?>
 				<td class="tdt">
-					<?=htmlspecialchars($paras["title"])?>
+					<?=$title_html?>
 				</td>
 				<?=$td_html?>
 					<?
@@ -340,10 +360,20 @@
 					?>
 				</td>
 			<?
+		}elseif($paras["type"] == "radio"){
+			$id = $id . "_" . $value;
+			?>
+				<td class="tdt" colspan="2">
+					<input type="radio" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($paras["name"])?>" value="<?=htmlspecialchars($paras["value"])?>"<?if ($paras["checked"]){?> checked="checked"<?}?> />
+					<label for="<?=htmlspecialchars($id)?>">
+						<?=$title_html?>
+					</label>
+				</td>
+			<?
 		}else{
 			?>
 				<td class="tdt">
-					<?=htmlspecialchars($paras["title"])?>
+					<?=$title_html?>
 				</td>
 				<?=$td_html?>
 					<input type="<?=htmlspecialchars($paras["type"])?>"<?if ($paras["disabled"]){?> disabled<?}?><?if ($paras["maxlength"]){?> maxlength="<?=$paras["maxlength"]?>"<?}?> class="<?=$paras["class"]?>" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($paras["name"])?>" value="<?=htmlspecialchars($value)?>" />

@@ -133,11 +133,15 @@
 			return $this->listOpts($ob, $getkey, $paras);
 		}
 		
-		function list_bysql($ob, $sql){
+		function list_bysql($ob, $sql, $paras = array()){
 			$ret = array();
 			$q_obs = $this->config["db"]->query($sql);
 			while($d_obs = $q_obs->fetch()){
-				$ret[] = $this->get($ob, $d_obs);
+				if ($paras["col_id"]){
+					$ret[] = $this->get($ob, $d_obs[$paras["col_id"]], $d_obs);
+				}else{
+					$ret[] = $this->get($ob, $d_obs);
+				}
 			}
 			
 			return $ret;
@@ -176,7 +180,11 @@
 			}
 			
 			if ($this->config["check_id"] and !is_numeric($id)){
-				throw new exception("Invalid ID: " . gettype($id));
+				if (is_object($id)){
+					throw new exception("Invalid ID: \"" . get_class($id) . "\", \"" . gettype($id) . "\".");
+				}else{
+					throw new exception("Invalid ID: \"" . $id . "\", \"" . gettype($id) . "\".");
+				}
 			}
 			
 			if (!is_string($ob)){

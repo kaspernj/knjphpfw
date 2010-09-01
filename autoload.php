@@ -10,8 +10,10 @@
 				"web" => "web",
 				"knj_os" => "os",
 				"objects" => "objects",
+				"knjarray" => "functions_array",
 				"knjdb" => "db",
 				"knjobjects" => "objects",
+				"knj_csv" => "csv",
 				"knj_login" => "web_login",
 				"knj_strings" => "strings",
 				"knj_ssh2" => "class_knj_ssh2"
