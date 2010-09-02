@@ -314,7 +314,7 @@
 								<?}?>
 								<?if ($found and $paras["dellink"]){?>
 									<div style="text-align: center;">
-										(<a href="javascript: if (confirm('<?=gtext("Do you want to delete the picture?")?>')){location.href='<?=$paras["dellink"]?>';}"><?=gtext("delete")?></a>)
+										(<a href="javascript: if (confirm('<?=_("Do you want to delete the picture?")?>')){location.href='<?=$paras["dellink"]?>';}"><?=_("delete")?></a>)
 									</div>
 								<?}?>
 							</td>
