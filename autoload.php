@@ -8,6 +8,7 @@
 			);
 			$this->knj = array(
 				"web" => "web",
+				"knj_browser" => "web",
 				"knj_os" => "os",
 				"objects" => "objects",
 				"knjarray" => "functions_array",

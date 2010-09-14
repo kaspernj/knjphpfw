@@ -10,7 +10,7 @@
 			$this->knj_gallery = $knj_gallery_group->getKNJGallery();
 			$this->dbconn = $this->knj_gallery->getDBConn();
 			
-			parent::__construct($this->dbconn, "picture", $id, $data);
+			parent::__construct($this->dbconn, "pictures", $id, $data);
 		}
 		
 		function getViews(){

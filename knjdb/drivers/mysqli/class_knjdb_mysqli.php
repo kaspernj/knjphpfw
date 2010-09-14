@@ -113,6 +113,47 @@
 			$this->query($sql);
 		}
 		
+		function insert_multi($table, $rows){
+			$sql = "INSERT INTO " . $this->sep_table . $table . $this->sep_table . " (";
+			
+			$first = true;
+			foreach($rows[0] AS $key => $value){
+				if ($first == true){
+					$first = false;
+				}else{
+					$sql .= ", ";
+				}
+				
+				$sql .= $this->sep_col . $key . $this->sep_col;
+			}
+			
+			$sql .= ") VALUES";
+			
+			$first_row = true;
+			foreach($rows AS $arr){
+				if ($first_row){
+					$first_row = false;
+				}else{
+					$sql .= ",";
+				}
+				
+				$sql .= " (";
+				$first = true;
+				foreach($arr AS $key => $value){
+					if ($first == true){
+						$first = false;
+					}else{
+						$sql .= ", ";
+					}
+					
+					$sql .= $this->sep_val . $this->sql($value) . $this->sep_val;
+				}
+				$sql .= ")";
+			}
+			
+			$this->query($sql);
+		}
+		
 		function select($table, $where = null, $args = null){
 			$sql = "SELECT";
 			
@@ -173,7 +214,11 @@
 					$sql .= " AND ";
 				}
 				
-				$sql .= $this->sep_col . $key . $this->sep_col . " = " . $this->sep_val . $this->sql($value) . $this->sep_val;
+				if (is_array($value)){
+					$sql .= $this->sep_col . $key . $this->sep_col . " IN (" . knjarray::implode(array("array" => $value, "impl" => ",", "surr" => "'", "self_callback" => array($this, "sql"))) . ")";
+				}else{
+					$sql .= $this->sep_col . $key . $this->sep_col . " = " . $this->sep_val . $this->sql($value) . $this->sep_val;
+				}
 			}
 			
 			return $sql;

@@ -25,11 +25,31 @@
 			}
 		}
 		
+		static function array_data($objects, $args = array()){
+			$return = array();
+			
+			foreach($objects AS $object){
+				if (!$args or $args["ids"]){
+					$return[] = $object->id();
+				}elseif($args["data"]){
+					$return[] = $object->g($args["data"]);
+				}else{
+					throw new exception("No data-identifier given.");
+				}
+			}
+			
+			return $return;
+		}
+		
 		function cleanMemory(){
 			$usage = (memory_get_usage() / 1024) / 1024;
 			if ($usage > 54){
 				$this->objects = array();
 			}
+		}
+		
+		function clean_memory(){
+			$this->cleanMemory();
 		}
 		
 		function requirefile($obname){
@@ -171,6 +191,12 @@
 		
 		function unset_ob($ob, $id = null){
 			return $this->unsetOb($ob, $id);
+		}
+		
+		function unset_obs($obs){
+			foreach($obs AS $ob){
+				$this->unset_ob($ob);
+			}
 		}
 		
 		function get($ob, $id, $data = null){
