@@ -148,6 +148,10 @@
 			}
 		}
 		
+		function cloneself(){
+			return new knjdb($this->args);
+		}
+		
 		/** Performs a query. */
 		function query($sql){
 			if ($this->args["stats"]){
@@ -164,6 +168,23 @@
 			}
 			
 			return $this->conn->query($sql);
+		}
+		
+		function query_ubuf($sql){
+			if ($this->args["stats"]){
+				$this->stats["query_called"]++;
+				
+				if ($this->args["debug"]){
+					$bt = debug_backtrace();
+					
+					echo("Query " . $this->stats["query_called"] . "\n");
+					echo("File: " . $bt[0]["file"] . ":" . $bt[0]["line"] . "\n");
+					echo("File: " . $bt[1]["file"] . ":" . $bt[1]["line"] . "\n");
+					echo("SQL: " . $sql . "\n\n");
+				}
+			}
+			
+			return $this->conn->query_ubuf($sql);
 		}
 		
 		/** Fetches a result. */
@@ -235,6 +256,16 @@
 					$this->trans_commit();
 					$this->trans_begin();
 					$this->insert_countcommit = 0;
+				}
+			}
+		}
+		
+		function insert_multi($table, $rows){
+			if (method_exists($this->conn, "insert_multi")){
+				$this->conn->insert_multi($table, $rows);
+			}else{
+				foreach($rows AS $row){
+					$this->conn->insert($table, $row);
 				}
 			}
 		}

@@ -323,7 +323,13 @@
 								<?}?>
 								<?if ($found and $args["dellink"]){?>
 									<div style="text-align: center;">
-										(<a href="javascript: if (confirm('<?=gtext("Do you want to delete the picture?")?>')){location.href='<?=$args["dellink"]?>';}"><?=gtext("delete")?></a>)
+										<?if (function_exists("gtext")){?>
+											(<a href="javascript: if (confirm('<?=gtext("Do you want to delete the picture?")?>')){location.href='<?=$args["dellink"]?>';}"><?=gtext("delete")?></a>)
+										<?}elseif(function_exists("_")){?>
+											(<a href="javascript: if (confirm('<?=_("Do you want to delete the picture?")?>')){location.href='<?=$args["dellink"]?>';}"><?=_("delete")?></a>)
+										<?}else{?>
+											(<a href="javascript: if (confirm('Do you want to delete the picture?')){location.href='<?=$args["dellink"]?>';}"><?=_("delete")?></a>)
+										<?}?>
 									</div>
 								<?}?>
 							</td>

@@ -82,31 +82,51 @@
 			return $string;
 		}
 		
-		function implode($paras){
+		function implode($args){
 			$string = "";
 			
 			$first = true;
-			foreach($paras["array"] AS $key => $value){
+			foreach($args["array"] AS $key => $value){
 				if ($first){
 					$first = false;
-				}else{
-					$string .= $paras["impl"];
+				}elseif($args["impl"]){
+					$string .= $args["impl"];
 				}
 				
-				if ($paras["bykey"]){
+				if ($args["bykey"]){
 					$val = $key;
 				}else{
 					$val = $value;
 				}
 				
-				if ($paras["func_callback"]){
-					$string .= call_user_func(array($val, $paras["func_callback"]), $paras["func_paras"]);
+				if ($args["surr"]){
+					$string .= $args["surr"];
+				}
+				
+				if ($args["self_callback"]){
+					$string .= call_user_func($args["self_callback"], $val);
+				}elseif($args["func_callback"]){
+					$string .= call_user_func(array($val, $args["func_callback"]), $args["func_paras"]);
 				}else{
 					$string .= $val;
+				}
+				
+				if ($args["surr"]){
+					$string .= $args["surr"];
 				}
 			}
 			
 			return $string;
+		}
+		
+		function remove_value($arr, $value){
+			foreach($arr AS $key => $value){
+				if ($value == $value){
+					unset($arr[$key]);
+				}
+			}
+			
+			return $arr;
 		}
 	}
 ?>

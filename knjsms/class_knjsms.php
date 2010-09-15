@@ -1,5 +1,7 @@
 <?php
 	class knjsms{
+		public $ob;
+		
 		function __construct($arr_opts){
 			$ob_file = "knj/knjsms/drivers/class_knjsms_" . $arr_opts["type"] . ".php";
 			$ob_name = "knjsms_" . $arr_opts["type"];
