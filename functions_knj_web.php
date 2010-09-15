@@ -7,16 +7,25 @@
 	);
 	
 	class web{
-		function input($paras){
+		function inputs($args){
+			$html = "";
+			foreach($args AS $arg){
+				$html .= web::input($arg);
+			}
+			
+			return $html;
+		}
+		
+		function input($args){
 			ob_start();
-			form_drawInput($paras);
+			form_drawInput($args);
 			$html = ob_get_contents();
 			ob_end_clean();
 			return $html;
 		}
 		
-		function drawInput($paras){
-			return form_drawInput($paras);
+		function drawInput($args){
+			return form_drawInput($args);
 		}
 		
 		function drawOpts($opts, $selected = null){
@@ -172,16 +181,16 @@
 		return $html;
 	}
 	
-	function form_drawInput($paras){
-		if (is_array($paras["value"]) && is_callable($paras["value"])){
-			$value = call_user_func($paras["value"]);
-		}elseif(is_array($paras["value"]) && is_object($paras["value"][0])){
-			$value = $paras["value"][0]->$paras["value"][1]($paras["value"][2]);
+	function form_drawInput($args){
+		if (is_array($args["value"]) && is_callable($args["value"])){
+			$value = call_user_func($args["value"]);
+		}elseif(is_array($args["value"]) && is_object($args["value"][0])){
+			$value = $args["value"][0]->$args["value"][1]($args["value"][2]);
 		}else{
-			if ($paras["value"] === null && array_key_exists("default", $paras)){
-				$value = $paras["default"];
+			if ($args["value"] === null && array_key_exists("default", $args)){
+				$value = $args["default"];
 			}else{
-				$value = $paras["value"];
+				$value = $args["value"];
 			}
 		}
 		
@@ -189,97 +198,97 @@
 			$value = null;
 		}
 		
-		if ($value and $paras["value_callback"]){
-			if ($paras["value_callback"][1]){
-				$value = call_user_func($paras["value_callback"][0], $value, $paras["value_callback"][1]);
+		if ($value and $args["value_callback"]){
+			if ($args["value_callback"][1]){
+				$value = call_user_func($args["value_callback"][0], $value, $args["value_callback"][1]);
 			}else{
-				$value = call_user_func($paras["value_callback"][0], $value);
+				$value = call_user_func($args["value_callback"][0], $value);
 			}
 		}
 		
-		if (is_null($value) and array_key_exists("default", $paras)){
-			$value = $paras["default"];
+		if (is_null($value) and array_key_exists("default", $args)){
+			$value = $args["default"];
 		}
 		
-		if (!$paras["type"]){
-			$f3 = substr($paras["name"], 0, 3);
+		if (!$args["type"]){
+			$f3 = substr($args["name"], 0, 3);
 			if ($f3 == "che"){
-				$paras["type"] = "checkbox";
+				$args["type"] = "checkbox";
 			}elseif($f3 == "tex"){
-				$paras["type"] = "text";
-			}elseif($f3 == "sel" or $paras["opts"]){
-				$paras["type"] = "select";
+				$args["type"] = "text";
+			}elseif($f3 == "sel" or $args["opts"]){
+				$args["type"] = "select";
 			}elseif($f3 == "fil"){
-				$paras["type"] = "file";
+				$args["type"] = "file";
 			}elseif($f3 == "rad"){
-				$paras["type"] = "radio";
+				$args["type"] = "radio";
 			}
 		}
 		
-		if (!$paras["id"]){
-			$id = $paras["name"];
+		if (!$args["id"]){
+			$id = $args["name"];
 		}else{
-			$id = $paras["id"];
+			$id = $args["id"];
 		}
 		
-		if (!$paras["type"]){
-			$paras["type"] = "text";
+		if (!$args["type"]){
+			$args["type"] = "text";
 		}
 		
-		if ($paras["type"] == "password" and !$paras["class"]){
-			$paras["class"] = "input_text";
+		if ($args["type"] == "password" and !$args["class"]){
+			$args["class"] = "input_text";
 		}
 		
-		if (!$paras["class"]){
-			$paras["class"] = "input_" . $paras["type"];
+		if (!$args["class"]){
+			$args["class"] = "input_" . $args["type"];
 		}
 		
-		if ($paras["colspan"]){
-			$colspan_cont = $paras["colspan"] - 1;
+		if ($args["colspan"]){
+			$colspan_cont = $args["colspan"] - 1;
 		}
 		
-		if (!array_key_exists("tr", $paras) or $paras["tr"]){
+		if (!array_key_exists("tr", $args) or $args["tr"]){
 			?><tr><?
 		}
 		
-		if ($paras["title"]){
-			$title_html = htmlspecialchars($paras["title"]);
-		}elseif($paras["title_html"]){
-			$title_html = $paras["title_html"];
+		if ($args["title"]){
+			$title_html = htmlspecialchars($args["title"]);
+		}elseif($args["title_html"]){
+			$title_html = $args["title_html"];
 		}
 		
 		$td_html = "<td class=\"tdc\"";
-		if ($paras["td_width"]){
-			$td_html .= " style=\"width: " . $paras["td_width"] . ";\"";
+		if ($args["td_width"]){
+			$td_html .= " style=\"width: " . $args["td_width"] . ";\"";
 		}
 		if ($colspan_cont > 1){
 			$td_html .= " colspan=\"" . $colspan_cont . "\"";
 		}
 		$td_html .= ">";
 		
-		if ($paras["type"] == "checkbox"){
+		if ($args["type"] == "checkbox"){
 			?>
 				<td colspan="2" class="tdcheck">
-					<input type="<?=$paras["type"]?>" name="<?=$paras["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?> />
+					<input type="<?=$args["type"]?>" name="<?=$args["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?> />
 					<label for="<?=$id?>"><?=$title_html?></label>
 				</td>
 			<?
-		}elseif($paras["type"] == "select"){
+		}elseif($args["type"] == "select"){
 			?>
 				<td class="tdt">
 					<?=$title_html?>
 				</td>
 				<?=$td_html?>
-					<select<?if ($paras["size"]){?> size="<?=htmlspecialchars($paras["size"])?>"<?}?> name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=$paras["class"]?>"<?if ($paras["onchange"]){?> onchange="<?=$paras["onchange"]?>"<?}?>>
-					<?=select_drawOpts($paras["opts"], $paras["value"])?>
+					<select<?if ($args["size"]){?> size="<?=htmlspecialchars($args["size"])?>"<?}?> name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=$args["class"]?>"<?if ($args["onchange"]){?> onchange="<?=$args["onchange"]?>"<?}?>>
+					<?=select_drawOpts($args["opts"], $args["value"])?>
 					</select>
 				</td>
 			<?
-		}elseif($paras["type"] == "imageupload"){
+		}elseif($args["type"] == "imageupload"){
 			if (!$value){
 				$fn = null;
 			}else{
-				$fn = $paras["path"] . "/" . $value . ".jpg";
+				$fn = $args["path"] . "/" . $value . ".jpg";
 			}
 			
 			if (!$fn or !file_exists($fn)){
@@ -294,8 +303,8 @@
 				$found = true;
 			}
 			
-			if ($paras["dellink"]){
-				$paras["dellink"] = str_replace("%value%", $value, $paras["dellink"]);
+			if ($args["dellink"]){
+				$args["dellink"] = str_replace("%value%", $value, $args["dellink"]);
 			}
 			
 			?>
@@ -306,15 +315,15 @@
 					<table class="designtable">
 						<tr>
 							<td style="width: 100%;">
-								<input type="file" name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($paras["class"])?>" />
+								<input type="file" name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($args["class"])?>" />
 							</td>
 							<td>
 								<?if ($fn){?>
 									<img src="image.php?picture=<?=urlencode($fn)?>&amp;smartsize=80&amp;edgesize=20&amp;equaldim=true" alt="Preview" />
 								<?}?>
-								<?if ($found and $paras["dellink"]){?>
+								<?if ($found and $args["dellink"]){?>
 									<div style="text-align: center;">
-										(<a href="javascript: if (confirm('<?=gtext("Do you want to delete the picture?")?>')){location.href='<?=$paras["dellink"]?>';}"><?=gtext("delete")?></a>)
+										(<a href="javascript: if (confirm('<?=gtext("Do you want to delete the picture?")?>')){location.href='<?=$args["dellink"]?>';}"><?=gtext("delete")?></a>)
 									</div>
 								<?}?>
 							</td>
@@ -322,35 +331,35 @@
 					</table>
 				</td>
 			<?
-		}elseif($paras["type"] == "file"){
+		}elseif($args["type"] == "file"){
 			?>
 				<td class="tdt">
 					<?=$title_html?>
 				</td>
 				<?=$td_html?>
-					<input type="file" class="input_<?=$paras["type"]?>" name="<?=htmlspecialchars($paras["name"])?>" id="<?=htmlspecialchars($id)?>" />
+					<input type="file" class="input_<?=$args["type"]?>" name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" />
 				</td>
 			<?
-		}elseif($paras["type"] == "textarea"){
+		}elseif($args["type"] == "textarea"){
 			?>
 				<td class="tdt">
 					<?=$title_html?>
 				</td>
 				<?=$td_html?>
-					<textarea name="<?=htmlspecialchars($paras["name"])?>" class="<?=htmlspecialchars($paras["class"])?>"<?if ($paras["height"]){?> style="height: <?=$paras["height"]?>;"<?}?>><?=htmlspecialchars_textarea($value)?></textarea>
+					<textarea name="<?=htmlspecialchars($args["name"])?>" class="<?=htmlspecialchars($args["class"])?>"<?if ($args["height"]){?> style="height: <?=$args["height"]?>;"<?}?>><?=htmlspecialchars_textarea($value)?></textarea>
 				</td>
 			<?
-		}elseif($paras["type"] == "fckeditor"){
+		}elseif($args["type"] == "fckeditor"){
 			?>
 				<td class="tdt">
 					<?=$title_html?>
 				</td>
 				<?=$td_html?>
 					<?
-						$fck = new fckeditor($paras["name"]);
+						$fck = new fckeditor($args["name"]);
 						
-						if ($paras["height"]){
-							$fck->Height = $paras["height"];
+						if ($args["height"]){
+							$fck->Height = $args["height"];
 						}else{
 							$fck->Height = 300;
 						}
@@ -360,17 +369,17 @@
 					?>
 				</td>
 			<?
-		}elseif($paras["type"] == "radio"){
+		}elseif($args["type"] == "radio"){
 			$id = $id . "_" . $value;
 			?>
 				<td class="tdt" colspan="2">
-					<input type="radio" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($paras["name"])?>" value="<?=htmlspecialchars($paras["value"])?>"<?if ($paras["checked"]){?> checked="checked"<?}?> />
+					<input type="radio" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($args["name"])?>" value="<?=htmlspecialchars($args["value"])?>"<?if ($args["checked"]){?> checked="checked"<?}?> />
 					<label for="<?=htmlspecialchars($id)?>">
 						<?=$title_html?>
 					</label>
 				</td>
 			<?
-		}elseif($paras["type"] == "info"){
+		}elseif($args["type"] == "info"){
 			?>
 				<td class="tdt">
 					<?=$title_html?>
@@ -385,20 +394,20 @@
 					<?=$title_html?>
 				</td>
 				<?=$td_html?>
-					<input type="<?=htmlspecialchars($paras["type"])?>"<?if ($paras["disabled"]){?> disabled<?}?><?if ($paras["maxlength"]){?> maxlength="<?=$paras["maxlength"]?>"<?}?> class="<?=$paras["class"]?>" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($paras["name"])?>" value="<?=htmlspecialchars($value)?>" />
+					<input type="<?=htmlspecialchars($args["type"])?>"<?if ($args["disabled"]){?> disabled<?}?><?if ($args["maxlength"]){?> maxlength="<?=$args["maxlength"]?>"<?}?> class="<?=$args["class"]?>" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($args["name"])?>" value="<?=htmlspecialchars($value)?>" />
 				</td>
 			<?
 		}
 		
-		if (!array_key_exists("tr", $paras) or $paras["tr"]){
+		if (!array_key_exists("tr", $args) or $args["tr"]){
 			?><tr><?
 		}
 		
-		if ($paras["descr"]){
+		if ($args["descr"]){
 			?>
 				<tr>
 					<td colspan="2" class="tdd">
-						<?=$paras["descr"]?>
+						<?=$args["descr"]?>
 					</td>
 				</tr>
 			<?
