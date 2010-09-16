@@ -155,8 +155,8 @@
 	
 	function select_drawOpts($opts, $selected = null){
 		if (is_object($selected)){
-			$selected = $selected->get("id");
-		}elseif(is_array($selected) && is_object($selected[0])){
+			$selected = $selected->id();
+		}elseif(is_array($selected) and is_object($selected[0])){
 			$selected = call_user_func(array($selected[0], $selected[1]), $selected[2]);
 		}
 		
@@ -165,10 +165,12 @@
 			$html .= "<option";
 			
 			$is_selected = false;
-			if (is_array($selected) && in_array($key, $selected)){
+			if (is_array($selected) and in_array($key, $selected)){
 				$is_selected = true;
 			}elseif($key == $selected){
-				$is_selected = true;
+				if (!is_numeric($key) or intval($key) != 0){
+					$is_selected = true;
+				}
 			}
 			
 			if ($is_selected){
