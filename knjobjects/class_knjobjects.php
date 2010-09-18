@@ -5,8 +5,8 @@
 		private $objects;
 		private $config;
 		
-		function __construct($paras){
-			$this->config = $paras;
+		function __construct($args){
+			$this->config = $args;
 			
 			if (!$this->config["class_sep"]){
 				$this->config["class_sep"] = "_";
@@ -63,22 +63,74 @@
 			}
 		}
 		
-		function listObs($ob, $paras = array()){
+		function listObs($ob, $args = array()){
 			if (!$this->objects[$ob]){
 				$this->requirefile($ob);
 			}
 			
-			return call_user_func(array($ob, "getList"), $paras);
+			if (!$ob){
+				throw new exception("No object given.");
+			}
+			
+			return call_user_func(array($ob, "getList"), $args);
 		}
 		
-		function list_obs($ob, $paras = array()){
-			return $this->listObs($ob, $paras);
+		function list_obs($ob, $args = array()){
+			return $this->listObs($ob, $args);
 		}
 		
-		function listArr($ob, $paras = null){
+		function list_reader($args){
+			if (!$args){
+				throw new exception("No arguments given.");
+			}
+			
+			if (!$args["ob"]){
+				throw new exception("No object name given.");
+			}
+			
+			if (!$args["obargs"]){
+				throw new exception("No object-arguments given.");
+			}
+			
+			$this->list_reader_count++;
+			$id = $this->list_reader_count;
+			$this->list_reader[$id]["from"] = 0;
+			$this->list_reader[$id]["add"] = 1000;
+			$this->list_reader[$id]["args"] = $args;
+			
+			return $id;
+		}
+		
+		function list_reader_read($id){
+			$data = &$this->list_reader[$id];
+			if (!$data){
+				throw new exception("No data with ID: " . $id);
+			}
+			
+			if ($data["obs"]){
+				foreach($data["obs"] AS $ob){
+					$this->unset_ob($ob);
+				}
+			}
+			
+			$args = $data["args"]["obargs"];
+			$args["limit_from"] = $data["from"];
+			$args["limit_to"] = $data["add"];
+			$data["obs"] = $this->list_obs($data["args"]["ob"], $args);
+			
+			if (!$data["obs"]){
+				unset($this->list_reader[$id]);
+				return false;
+			}
+			
+			$data["from"] += $data["add"];
+			return $data["obs"];
+		}
+		
+		function listArr($ob, $args = null){
 			$opts = array();
-			if ($paras["none"]){
-				unset($paras["none"]);
+			if ($args["none"]){
+				unset($args["none"]);
 				
 				if (function_exists("gtext")){
 					$opts = array(0 => $this->gtext("None"));
@@ -89,7 +141,7 @@
 				}
 			}
 			
-			$list = $this->listObs($ob, $paras);
+			$list = $this->listObs($ob, $args);
 			foreach($list AS $listitem){
 				$opts[$listitem->get($this->config["col_id"])] = $listitem->getTitle();
 			}
@@ -109,31 +161,31 @@
 			}
 		}
 		
-		function listOpts($ob, $getkey, $paras = null){
+		function listOpts($ob, $getkey, $args = null){
 			$opts = array();
 			
-			if ($paras["addnew"]){
-				unset($paras["addnew"]);
+			if ($args["addnew"]){
+				unset($args["addnew"]);
 				$opts[0] = $this->gtext("Add new");
 			}
 			
-			if ($paras["none"]){
-				unset($paras["none"]);
+			if ($args["none"]){
+				unset($args["none"]);
 				$opts[0] = $this->gtext("None");
 			}
 			
-			if ($paras["choose"]){
-				unset($paras["choose"]);
+			if ($args["choose"]){
+				unset($args["choose"]);
 				$opts[0] = $this->gtext("Choose") . ":";
 			}
 			
-			if ($paras["all"]){
-				unset($paras["all"]);
+			if ($args["all"]){
+				unset($args["all"]);
 				$opts[0] = $this->gtext("All");
 			}
 			
-			if (!$paras["col_id"]){
-				$paras["col_id"] = "id";
+			if (!$args["col_id"]){
+				$args["col_id"] = "id";
 			}
 			
 			foreach($this->listObs($ob) AS $object){
@@ -143,22 +195,22 @@
 					$value = $object->get($getkey);
 				}
 				
-				$opts[$object->get($paras["col_id"])] = $value;
+				$opts[$object->get($args["col_id"])] = $value;
 			}
 			
 			return $opts;
 		}
 		
-		function list_opts($ob, $getkey, $paras = null){
-			return $this->listOpts($ob, $getkey, $paras);
+		function list_opts($ob, $getkey, $args = null){
+			return $this->listOpts($ob, $getkey, $args);
 		}
 		
-		function list_bysql($ob, $sql, $paras = array()){
+		function list_bysql($ob, $sql, $args = array()){
 			$ret = array();
 			$q_obs = $this->config["db"]->query($sql);
 			while($d_obs = $q_obs->fetch()){
-				if ($paras["col_id"]){
-					$ret[] = $this->get($ob, $d_obs[$paras["col_id"]], $d_obs);
+				if ($args["col_id"]){
+					$ret[] = $this->get($ob, $d_obs[$args["col_id"]], $d_obs);
 				}else{
 					$ret[] = $this->get($ob, $d_obs);
 				}

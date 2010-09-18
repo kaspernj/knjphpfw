@@ -103,13 +103,15 @@
 					$string .= $args["surr"];
 				}
 				
-				if ($args["self_callback"]){
-					$string .= call_user_func($args["self_callback"], $val);
-				}elseif($args["func_callback"]){
-					$string .= call_user_func(array($val, $args["func_callback"]), $args["func_paras"]);
-				}else{
-					$string .= $val;
+				if ($args["func_callback"]){
+					$val = call_user_func(array($val, $args["func_callback"]), $args["func_paras"]);
 				}
+				
+				if ($args["self_callback"]){
+					$val = call_user_func($args["self_callback"], $val);
+				}
+				
+				$string .= $val;
 				
 				if ($args["surr"]){
 					$string .= $args["surr"];
