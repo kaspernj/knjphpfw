@@ -200,16 +200,16 @@
 			$value = null;
 		}
 		
+		if (is_null($value) and array_key_exists("default", $args)){
+			$value = $args["default"];
+		}
+		
 		if ($value and $args["value_callback"]){
 			if ($args["value_callback"][1]){
 				$value = call_user_func($args["value_callback"][0], $value, $args["value_callback"][1]);
 			}else{
 				$value = call_user_func($args["value_callback"][0], $value);
 			}
-		}
-		
-		if (is_null($value) and array_key_exists("default", $args)){
-			$value = $args["default"];
 		}
 		
 		if (!$args["type"]){
