@@ -104,7 +104,13 @@
 				}
 				
 				if ($args["func_callback"]){
-					$val = call_user_func(array($val, $args["func_callback"]), $args["func_paras"]);
+					if (is_array($args["func_callback"])){
+						foreach($args["func_callback"] AS $func_callback){
+							$val = call_user_func(array($val, $func_callback));
+						}
+					}else{
+						$val = call_user_func(array($val, $args["func_callback"]), $args["func_paras"]);
+					}
 				}
 				
 				if ($args["self_callback"]){
