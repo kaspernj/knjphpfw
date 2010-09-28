@@ -82,31 +82,59 @@
 			return $string;
 		}
 		
-		function implode($paras){
+		function implode($args){
 			$string = "";
 			
 			$first = true;
-			foreach($paras["array"] AS $key => $value){
+			foreach($args["array"] AS $key => $value){
 				if ($first){
 					$first = false;
-				}else{
-					$string .= $paras["impl"];
+				}elseif($args["impl"]){
+					$string .= $args["impl"];
 				}
 				
-				if ($paras["bykey"]){
+				if ($args["bykey"]){
 					$val = $key;
 				}else{
 					$val = $value;
 				}
 				
-				if ($paras["func_callback"]){
-					$string .= call_user_func(array($val, $paras["func_callback"]), $paras["func_paras"]);
-				}else{
-					$string .= $val;
+				if ($args["surr"]){
+					$string .= $args["surr"];
+				}
+				
+				if ($args["func_callback"]){
+					if (is_array($args["func_callback"])){
+						foreach($args["func_callback"] AS $func_callback){
+							$val = call_user_func(array($val, $func_callback));
+						}
+					}else{
+						$val = call_user_func(array($val, $args["func_callback"]), $args["func_paras"]);
+					}
+				}
+				
+				if ($args["self_callback"]){
+					$val = call_user_func($args["self_callback"], $val);
+				}
+				
+				$string .= $val;
+				
+				if ($args["surr"]){
+					$string .= $args["surr"];
 				}
 			}
 			
 			return $string;
+		}
+		
+		function remove_value($arr, $value){
+			foreach($arr AS $key => $value){
+				if ($value == $value){
+					unset($arr[$key]);
+				}
+			}
+			
+			return $arr;
 		}
 	}
 ?>

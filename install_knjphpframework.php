@@ -23,13 +23,13 @@
 		chdir($dir);
 		echo("Found PHP extensions-dir: " . $dir . ".\n");
 		
-		if (is_link($dir . "/knjphpframework")){
+		if (is_link($dir . "/knj")){
 			echo("Its already there - unlinking.\n");
-			unlink($dir . "/knjphpframework");
+			unlink($dir . "/knj");
 		}
 		
 		echo "Making symlink.\n";
-		system("ln -s " . $dirunix . " knjphpframework");
+		system("ln -s " . $dirunix . " knj");
 	}
 	
 	echo "\n\nDone.\n";

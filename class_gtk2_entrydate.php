@@ -11,7 +11,7 @@
 		function __construct(){
 			parent::__construct();
 			
-			require_once "knjphpframework/class_knj_eventmanager.php";
+			require_once "knj/class_knj_eventmanager.php";
 			$this->eventm = new EventManager();
 			$this->eventm->addEvent("changed");
 			$this->eventm->addEvent("changed-manually");

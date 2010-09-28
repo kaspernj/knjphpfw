@@ -109,17 +109,16 @@
 		
 		static function RegexSafe($string){
 			return strtr($string, array(
-					"/" => "\\/",
-					"." => "\\.",
-					"(" => "\\(",
-					")" => "\\)",
-					"[" => "\\[",
-					"]" => "\\]",
-					"^" => "\\^",
-					"\$" => "\\\$",
-					"+" => "\\+"
-				)
-			);
+				"/" => "\\/",
+				"." => "\\.",
+				"(" => "\\(",
+				")" => "\\)",
+				"[" => "\\[",
+				"]" => "\\]",
+				"^" => "\\^",
+				"\$" => "\\\$",
+				"+" => "\\+"
+			));
 		}
 		
 		static function HeaderSafe($string){
@@ -142,6 +141,10 @@
 			return $string;
 		}
 		
+		static function htmlspecialchars_textarea($text){
+			return preg_replace("/<\/textarea>/i", "&lt;/textarea>", $text);
+		}
+		
 		function jsparse($string, $paras = array()){
 			$string = strtr($string, array(
 				"'" => "\\'",
@@ -155,6 +158,22 @@
 			}
 			
 			return $string;
+		}
+		
+		function tf_str($value, $yesstr, $nostr){
+			if ($value){
+				return $yesstr;
+			}
+			
+			return $nostr;
+		}
+		
+		function shorten($text, $maxlength = nil){
+			if (!$maxlength or strlen($text) <= $maxlength){
+				return $text;
+			}
+			
+			return trim(substr($text, 0, $maxlength)) . "...";
 		}
 	}
 	
@@ -190,18 +209,17 @@
 			//parse windows-filename here.
 		}elseif($os == "linux"){
 			$string = strtr($string, array(
-					"å" => "aa",
-					"ø" => "oe",
-					"æ" => "ae",
-					utf8_decode("å") => "aa",
-					utf8_decode("æ") => "ae",
-					utf8_decode("ø") => "oe",
-					"|" => "",
-					"&" => "",
-					"/" => "",
-					"\\" => ""
-				)
-			);
+				"å" => "aa",
+				"ø" => "oe",
+				"æ" => "ae",
+				utf8_decode("å") => "aa",
+				utf8_decode("æ") => "ae",
+				utf8_decode("ø") => "oe",
+				"|" => "",
+				"&" => "",
+				"/" => "",
+				"\\" => ""
+			));
 		}else{
 			throw new Exception("Unsupported OS.");
 		}

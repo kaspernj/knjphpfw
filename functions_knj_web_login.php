@@ -84,8 +84,20 @@
 			$this->setDBInfo($args);
 		}
 		
-		function tryLogin($nick, $pass, $remember = false){
-			$f_gu = $this->query("SELECT * FROM " . $this->sql($this->table) . " WHERE LOWER(" . $this->nick_col . ") = LOWER('" . $this->sql($nick) . "') AND " . $this->sql($this->pass_col) . " = MD5('" . $this->sql($pass) . "') LIMIT 1") or die($this->error());
+		function tryLogin($nick, $pass = nil, $remember = false){
+			if (is_array($nick)){
+				$args = $nick;
+				$nick = $args["nick"];
+				$pass = $args["passwd"];
+				$remember = $args["remember"];
+			}
+			
+			if ($args["is_md5_hash"]){
+				$f_gu = $this->query("SELECT * FROM " . $this->sql($this->table) . " WHERE LOWER(" . $this->nick_col . ") = LOWER('" . $this->sql($nick) . "') AND " . $this->sql($this->pass_col) . " = '" . $this->sql($pass) . "' LIMIT 1") or die($this->error());
+			}else{
+				$f_gu = $this->query("SELECT * FROM " . $this->sql($this->table) . " WHERE LOWER(" . $this->nick_col . ") = LOWER('" . $this->sql($nick) . "') AND " . $this->sql($this->pass_col) . " = MD5('" . $this->sql($pass) . "') LIMIT 1") or die($this->error());
+			}
+			
 			$d_gu = $this->query_fetch($f_gu);
 			
 			if ($d_gu){

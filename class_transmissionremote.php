@@ -1,6 +1,6 @@
 <?php
-	require_once("knjphpframework/functions_knj_strings.php");
-	require_once("knjphpframework/functions_knj_os.php");
+	require_once("knj/functions_knj_strings.php");
+	require_once("knj/functions_knj_os.php");
 	
 	/** This is a PHP-framework for the transmission-remote. */
 	class transmissionremote{

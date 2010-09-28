@@ -53,7 +53,7 @@
 	}
 	
 	/** NOTE: The user does not have the picture, and it has not been cached - generate it. */
-	require_once("knjphpframework/functions_knj_picture.php");
+	require_once("knj/functions_knj_picture.php");
 	$image = ImageOpen($_GET["picture"]);
 	if (!$image){
 		if (!file_exists($_GET["picture"])){

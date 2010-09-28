@@ -55,7 +55,7 @@
 		Written by Kasper Johansen <kaspernj@gmail.com>
 	*/
 	
-	require_once "knjphpframework/functions_knj_strings.php";
+	require_once "knj/functions_knj_strings.php";
 	class knj_clist{
 		//This variabled is passed when a object from knj_clist() is dragged somewhere.
 		var $other;

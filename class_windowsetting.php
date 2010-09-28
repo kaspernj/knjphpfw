@@ -1,7 +1,7 @@
 <?
 	//Check if function exists to make it compatible, if somehow the function already got loaded through another file.
 	if (!function_exists("destroy_obj")){
-		require_once("knjphpframework/functions_knj_objects.php");
+		require_once("knj/functions_knj_objects.php");
 	}
 	
 	/** This class keeps track of window sizes- and positions. It also loads and restores them, when they are created again. */

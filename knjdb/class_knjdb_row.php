@@ -66,6 +66,10 @@
 		
 		/** Updates the row. */
 		function setData($arr){
+			if (!is_array($arr) or count($arr) <= 0){
+				throw new exception("No array given or array was empty.");
+			}
+			
 			$this->dbconn->update($this->table, $arr, array($this->col_id => $this->id));
 			$this->updateData();
 			return true;
@@ -76,7 +80,7 @@
 		}
 		
 		function id(){
-			return $this->get($this->col_id);
+			return $this->id;
 		}
 	}
 	

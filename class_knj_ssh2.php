@@ -9,7 +9,7 @@
 				throw new Exception("No conn supplied in parameters.");
 			}
 			
-			require_once("knjphpframework/functions_knj_filesystem.php");
+			require_once("knj/functions_knj_filesystem.php");
 			$this->conn = $args["conn"];
 			
 			if (!$args["shell"]){
@@ -34,6 +34,10 @@
 		}
 		
 		static function quickConnect($host, $user, $pass, $port = 22){
+			if (!function_exists("ssh2_connect")){
+				throw new exception(_("SSH2 extension is not loaded."));
+			}
+			
 			$conn = ssh2_connect($host, $port);
 			if (!$conn){
 				throw new Exception("Could not connect to the server.");
@@ -60,11 +64,15 @@
 		/** Returns the content of a file. */
 		function getFile($path, $args = array()){
 			if ($args["readmode"] == "shell"){
+				$startstring = md5("[THE START]" . time() . "-" . microtime(true));
 				$endstring = md5("[THE END]" . time() . "-" . microtime(true));
 				
-				fwrite($this->shell, "cat " . $path . PHP_EOL);
-				fwrite($this->shell, "echo " . $endstring . PHP_EOL);
-				usleep(350000);
+				$commands = "echo " . $startstring . ";";
+				$commands .= "cat " . $path . ";";
+				$commands .= "echo " . $endstring . PHP_EOL;
+				
+				fwrite($this->shell, $commands);
+				usleep(450000);
 				
 				while(true){
 					$new = fgets($this->shell, 4096);
@@ -74,6 +82,22 @@
 						break;
 					}
 				}
+				
+				if (!preg_match("/" . knj_strings::regexsafe($startstring) . "\s\s([\s\S]+)\s\s" . knj_strings::regexsafe($endstring) . "/", $string, $match)){
+					throw new exception("Could not read result from server.");
+				}
+				
+				$result = $match[1];
+				if (strpos($result, "cat: command not found") !== false){
+					throw new exception("cat-command is not supported on that server using that user.");
+				}
+				
+				$notfound_string = "cat: " . $path . ": No such file or directory";
+				if (strpos($result, $notfound_string) !== false){
+					throw new exception("File was not found: " . $path);
+				}
+				
+				return $result;
 			}else{
 				$stream = ssh2_exec($this->conn, "cat " . $path);
 				stream_set_blocking($stream, true);
@@ -85,7 +109,7 @@
 		
 		/** Saves a file on the server. */
 		function putFile($path, $content){
-			require_once("knjphpframework/functions_knj_strings.php");
+			require_once("knj/functions_knj_strings.php");
 			
 			$lines = explode("\n", $content);
 			$first = true;

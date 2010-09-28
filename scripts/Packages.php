@@ -3,9 +3,9 @@
 	/** NOTE: This script is used to generate the "Packages" and "Packages.gz" files that Debian-based repositories uses. It can also be used to make OPKG-repositories. */
 	
 	function ipkg_parse($file){
-		require_once("knjphpframework/functions_knj_os.php");
-		require_once("knjphpframework/functions_knj_filesystem.php");
-		require_once("knjphpframework/functions_knj_strings.php");
+		require_once("knj/functions_knj_os.php");
+		require_once("knj/functions_knj_filesystem.php");
+		require_once("knj/functions_knj_strings.php");
 		
 		$fileinfo = fileinfo($file);
 		if (strpos($fileinfo, "gzip compressed data") !== false){
@@ -74,7 +74,7 @@
 	}
 	
 	function md5sum($file){
-		require_once("knjphpframework/functions_knj_os.php");
+		require_once("knj/functions_knj_os.php");
 		$res = knj_os::shellCMD("md5sum " . $file);
 		if (strlen($res["error"]) > 0){
 			throw new Exception($res["error"]);
@@ -85,8 +85,8 @@
 	}
 	
 	function fileinfo($file){
-		require_once("knjphpframework/functions_knj_os.php");
-		require_once("knjphpframework/functions_knj_strings.php");
+		require_once("knj/functions_knj_os.php");
+		require_once("knj/functions_knj_strings.php");
 		
 		$res = knj_os::shellCMD("file " . knj_string_unix_safe($file));
 		if (strlen($res["error"]) > 0){

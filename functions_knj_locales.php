@@ -62,7 +62,7 @@
 			_bind_textdomain_codeset($domain, "UTF-8");
 			_textdomain($domain);
 		}elseif($module == "ext"){
-			require_once "knjphpframework/functions_knj_extensions.php";
+			require_once "knj/functions_knj_extensions.php";
 			if (!knj_dl("gettext")){
 				throw new exception("gettext-module could not be loaded.");
 			}
@@ -74,8 +74,9 @@
 			putenv("LC_MESSAGE=" . $language);
 			putenv("LANG=" . $language); 
 			
-			setlocale(LC_ALL, $language);
-			setlocale(LC_MESSAGES, $language);
+			$locales_language_real = $language . ".utf8";
+			setlocale(LC_ALL, $locales_language_real);
+			setlocale(LC_MESSAGES, $locales_language_real);
 			
 			bindtextdomain($domain, $dir);
 			bind_textdomain_codeset($domain, "UTF-8");

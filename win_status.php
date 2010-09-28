@@ -9,7 +9,7 @@
 		
 		/** The constructor. It builds the window. */
 		function __construct($args = array()){
-			require_once("knjphpframework/functions_knj_gtk2.php");
+			require_once("knj/functions_knj_gtk2.php");
 			
 			//Create window.
 			$this->window = new GtkWindow();

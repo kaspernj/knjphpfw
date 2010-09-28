@@ -1,12 +1,12 @@
 <?php
-	require_once("knjphpframework/knjdb/class_knjdb_row.php");
+	require_once("knj/knjdb/class_knjdb_row.php");
 	
 	class knjobjects{
 		private $objects;
 		private $config;
 		
-		function __construct($paras){
-			$this->config = $paras;
+		function __construct($args){
+			$this->config = $args;
 			
 			if (!$this->config["class_sep"]){
 				$this->config["class_sep"] = "_";
@@ -25,11 +25,31 @@
 			}
 		}
 		
+		static function array_data($objects, $args = array()){
+			$return = array();
+			
+			foreach($objects AS $object){
+				if (!$args or $args["ids"]){
+					$return[] = $object->id();
+				}elseif($args["data"]){
+					$return[] = $object->g($args["data"]);
+				}else{
+					throw new exception("No data-identifier given.");
+				}
+			}
+			
+			return $return;
+		}
+		
 		function cleanMemory(){
 			$usage = (memory_get_usage() / 1024) / 1024;
 			if ($usage > 54){
 				$this->objects = array();
 			}
+		}
+		
+		function clean_memory(){
+			$this->cleanMemory();
 		}
 		
 		function requirefile($obname){
@@ -43,26 +63,85 @@
 			}
 		}
 		
-		function listObs($ob, $paras = array()){
+		function listObs($ob, $args = array()){
 			if (!$this->objects[$ob]){
 				$this->requirefile($ob);
 			}
 			
-			return call_user_func(array($ob, "getList"), $paras);
-		}
-		
-		function list_obs($ob, $paras = array()){
-			return $this->listObs($ob, $paras);
-		}
-		
-		function listArr($ob, $paras = null){
-			$opts = array();
-			if ($paras["none"]){
-				unset($paras["none"]);
-				$opts = array(0 => gtext("None"));
+			if (!$ob){
+				throw new exception("No object given.");
 			}
 			
-			$list = $this->listObs($ob, $paras);
+			return call_user_func(array($ob, "getList"), $args);
+		}
+		
+		function list_obs($ob, $args = array()){
+			return $this->listObs($ob, $args);
+		}
+		
+		function list_reader($args){
+			if (!$args){
+				throw new exception("No arguments given.");
+			}
+			
+			if (!$args["ob"]){
+				throw new exception("No object name given.");
+			}
+			
+			if (!$args["obargs"]){
+				throw new exception("No object-arguments given.");
+			}
+			
+			$this->list_reader_count++;
+			$id = $this->list_reader_count;
+			$this->list_reader[$id]["from"] = 0;
+			$this->list_reader[$id]["add"] = 1000;
+			$this->list_reader[$id]["args"] = $args;
+			
+			return $id;
+		}
+		
+		function list_reader_read($id){
+			$data = &$this->list_reader[$id];
+			if (!$data){
+				throw new exception("No data with ID: " . $id);
+			}
+			
+			if ($data["obs"]){
+				foreach($data["obs"] AS $ob){
+					$this->unset_ob($ob);
+				}
+			}
+			
+			$args = $data["args"]["obargs"];
+			$args["limit_from"] = $data["from"];
+			$args["limit_to"] = $data["add"];
+			$data["obs"] = $this->list_obs($data["args"]["ob"], $args);
+			
+			if (!$data["obs"]){
+				unset($this->list_reader[$id]);
+				return false;
+			}
+			
+			$data["from"] += $data["add"];
+			return $data["obs"];
+		}
+		
+		function listArr($ob, $args = null){
+			$opts = array();
+			if ($args["none"]){
+				unset($args["none"]);
+				
+				if (function_exists("gtext")){
+					$opts = array(0 => $this->gtext("None"));
+				}elseif(function_exists("_")){
+					$opts = array(0 => _("None"));
+				}elseif(function_exists("gettext")){
+					$opts = array(0 => gettext("None"));
+				}
+			}
+			
+			$list = $this->listObs($ob, $args);
 			foreach($list AS $listitem){
 				$opts[$listitem->get($this->config["col_id"])] = $listitem->getTitle();
 			}
@@ -70,31 +149,43 @@
 			return $opts;
 		}
 		
-		function listOpts($ob, $getkey, $paras = null){
+		function gtext($string){
+			if (function_exists("gtext")){
+				return gtext($string);
+			}elseif(function_exists("_")){
+				return _($string);
+			}elseif(function_exists("gettext")){
+				return gettext($string);
+			}else{
+				return $string;
+			}
+		}
+		
+		function listOpts($ob, $getkey, $args = null){
 			$opts = array();
 			
-			if ($paras["addnew"]){
-				unset($paras["addnew"]);
-				$opts[0] = gtext("Add new");
+			if ($args["addnew"]){
+				unset($args["addnew"]);
+				$opts[0] = $this->gtext("Add new");
 			}
 			
-			if ($paras["none"]){
-				unset($paras["none"]);
-				$opts[0] = gtext("None");
+			if ($args["none"]){
+				unset($args["none"]);
+				$opts[0] = $this->gtext("None");
 			}
 			
-			if ($paras["choose"]){
-				unset($paras["choose"]);
-				$opts[0] = gtext("Choose") . ":";
+			if ($args["choose"]){
+				unset($args["choose"]);
+				$opts[0] = $this->gtext("Choose") . ":";
 			}
 			
-			if ($paras["all"]){
-				unset($paras["all"]);
-				$opts[0] = gtext("All");
+			if ($args["all"]){
+				unset($args["all"]);
+				$opts[0] = $this->gtext("All");
 			}
 			
-			if (!$paras["col_id"]){
-				$paras["col_id"] = "id";
+			if (!$args["col_id"]){
+				$args["col_id"] = "id";
 			}
 			
 			foreach($this->listObs($ob) AS $object){
@@ -104,14 +195,28 @@
 					$value = $object->get($getkey);
 				}
 				
-				$opts[$object->get($paras["col_id"])] = $value;
+				$opts[$object->get($args["col_id"])] = $value;
 			}
 			
 			return $opts;
 		}
 		
-		function list_opts($ob, $getkey, $paras = null){
-			return $this->listOpts($ob, $getkey, $paras);
+		function list_opts($ob, $getkey, $args = null){
+			return $this->listOpts($ob, $getkey, $args);
+		}
+		
+		function list_bysql($ob, $sql, $args = array()){
+			$ret = array();
+			$q_obs = $this->config["db"]->query($sql);
+			while($d_obs = $q_obs->fetch()){
+				if ($args["col_id"]){
+					$ret[] = $this->get($ob, $d_obs[$args["col_id"]], $d_obs);
+				}else{
+					$ret[] = $this->get($ob, $d_obs);
+				}
+			}
+			
+			return $ret;
 		}
 		
 		function add($ob, $arr){
@@ -123,8 +228,8 @@
 		}
 		
 		function unsetOb($ob, $id = null){
-			if (is_object($ob) && is_null($id)){
-				$id = $ob->get($this->config["col_id"]);
+			if (is_object($ob) and is_null($id)){
+				$id = $ob->id();
 				
 				if ($this->objects[get_class($ob)][$id]){
 					unset($this->objects[get_class($ob)][$id]);
@@ -140,6 +245,12 @@
 			return $this->unsetOb($ob, $id);
 		}
 		
+		function unset_obs($obs){
+			foreach($obs AS $ob){
+				$this->unset_ob($ob);
+			}
+		}
+		
 		function get($ob, $id, $data = null){
 			if (is_array($id)){
 				$data = $id;
@@ -147,7 +258,11 @@
 			}
 			
 			if ($this->config["check_id"] and !is_numeric($id)){
-				throw new exception("Invalid ID: " . gettype($id));
+				if (is_object($id)){
+					throw new exception("Invalid ID: \"" . get_class($id) . "\", \"" . gettype($id) . "\".");
+				}else{
+					throw new exception("Invalid ID: \"" . $id . "\", \"" . gettype($id) . "\".");
+				}
 			}
 			
 			if (!is_string($ob)){

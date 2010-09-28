@@ -12,12 +12,12 @@
 			$this->args = $args;
 			$this->knjdb = $knjdb;
 			
-			require_once("knjphpframework/functions_knj_extensions.php");
+			require_once("knj/functions_knj_extensions.php");
 			knj_dl("mysql");
 		}
 		
 		function connect(){
-			if ($this->args["port"] && $this->args["port"] != 3306){
+			if ($this->args["port"] && $this->args["port"] && $this->args["port"] != 3306){
 				$this->conn = mysql_connect($this->args["host"] . ":" . $this->args["port"], $this->args["user"], $this->args["pass"], true);
 			}else{
 				$this->conn = mysql_connect($this->args["host"], $this->args["user"], $this->args["pass"], true);
@@ -41,6 +41,15 @@
 		
 		function query($query){
 			$res = mysql_query($query, $this->conn);
+			if (!$res){
+				throw new Exception("Query error: " . $this->error() . "\n\nSQL: " . $query);
+			}
+			
+			return new knjdb_result($this->knjdb, $this, $res);
+		}
+		
+		function query_ubuf($query){
+			$res = mysql_unbuffered_query($query, $this->conn);
 			if (!$res){
 				throw new Exception("Query error: " . $this->error() . "\n\nSQL: " . $query);
 			}
@@ -89,7 +98,7 @@
 			$sql .= ") VALUES (";
 			$first = true;
 			foreach($arr AS $key => $value){
-				if ($first == true){
+				if ($first){
 					$first = false;
 				}else{
 					$sql .= ", ";
@@ -98,6 +107,47 @@
 				$sql .= $this->sep_val . $this->sql($value) . $this->sep_val;
 			}
 			$sql .= ")";
+			
+			$this->query($sql);
+		}
+		
+		function insert_multi($table, $rows){
+			$sql = "INSERT INTO " . $this->sep_table . $table . $this->sep_table . " (";
+			
+			$first = true;
+			foreach($rows[0] AS $key => $value){
+				if ($first == true){
+					$first = false;
+				}else{
+					$sql .= ", ";
+				}
+				
+				$sql .= $this->sep_col . $key . $this->sep_col;
+			}
+			
+			$sql .= ") VALUES";
+			
+			$first_row = true;
+			foreach($rows AS $arr){
+				if ($first_row){
+					$first_row = false;
+				}else{
+					$sql .= ",";
+				}
+				
+				$sql .= " (";
+				$first = true;
+				foreach($arr AS $key => $value){
+					if ($first == true){
+						$first = false;
+					}else{
+						$sql .= ", ";
+					}
+					
+					$sql .= $this->sep_val . $this->sql($value) . $this->sep_val;
+				}
+				$sql .= ")";
+			}
 			
 			$this->query($sql);
 		}
@@ -166,7 +216,11 @@
 					$sql .= " AND ";
 				}
 				
-				$sql .= $this->sep_col . $key . $this->sep_col . " = " . $this->sep_val . $this->sql($value) . $this->sep_val;
+				if (is_array($value)){
+					$sql .= $this->sep_col . $key . $this->sep_col . " IN (" . knjarray::implode(array("array" => $value, "impl" => ",", "surr" => "'", "self_callback" => array($this, "sql"))) . ")";
+				}else{
+					$sql .= $this->sep_col . $key . $this->sep_col . " = " . $this->sep_val . $this->sql($value) . $this->sep_val;
+				}
 			}
 			
 			return $sql;
