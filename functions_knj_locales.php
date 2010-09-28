@@ -1,1 +1,2 @@
-locales.php
+<?
+require_once "knj/locales.php";
