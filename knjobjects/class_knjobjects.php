@@ -161,7 +161,7 @@
 			}
 		}
 		
-		function listOpts($ob, $getkey, $args = null){
+		function listOpts($ob, $getkey, $args = array()){
 			$opts = array();
 			
 			if ($args["addnew"]){
@@ -188,7 +188,11 @@
 				$args["col_id"] = "id";
 			}
 			
-			foreach($this->listObs($ob) AS $object){
+			if (!$args["list_args"]){
+				$args["list_args"] = array();
+			}
+			
+			foreach($this->list_obs($ob, $args["list_args"]) AS $object){
 				if (is_array($getkey) and $getkey["funccall"]){
 					$value = call_user_func(array($object, $getkey["funccall"]));
 				}else{
