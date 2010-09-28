@@ -181,7 +181,7 @@
 	/** Parse a string so it will be a valid filename. */
 	function knj_string_filename($string, $os = null){
 		if (!$os){
-			require_once("functions_knj_os.php");
+			require_once("knj/os.php");
 			$os = knj_os::getOS();
 			$os = $os["os"];
 		}

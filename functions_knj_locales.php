@@ -121,8 +121,8 @@
 		}elseif($functions_knjlocales["module"] == "php-gettext"){
 			$return = _gettext($msgid);
 		}else{
-			alert($functions_knjlocales["module"]);
-			throw new exception("No supported module chosen.");
+			$return = $msgid;
+			#throw new exception("No supported module chosen.");
 		}
 		
 		if ($functions_knjlocales["encodeout"] == "decode_utf8"){
