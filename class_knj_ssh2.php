@@ -129,19 +129,27 @@
 			return $lines[count($lines) - 2];
 		}
 		
-		function sulogin($password){
-			fwrite($this->shell, "su -" . PHP_EOL);
+		function sulogin($password, $args = array()){
+			if ($args["sudo"]){
+				echo("sudo!\n");
+				fwrite($this->shell, "sudo su -" . PHP_EOL);
+			}else{
+				fwrite($this->shell, "su -" . PHP_EOL);
+			}
+			
 			usleep(500000);
 			fwrite($this->shell, $password . PHP_EOL);
 			usleep(200000);
 			fwrite($this->shell, PHP_EOL);
 			
+			$read = "";
 			while(true){
-				$read = fgets($this->shell, 4096);
+				$read .= fgets($this->shell, 4096);
+				echo $read;
 				
 				if (preg_match("/^Password:(\s*)$/", $read)){
 					//do nothing - password already sent.
-				}elseif(preg_match("/^su: incorrect password(\s*)$/", $read)){
+				}elseif(preg_match("/^su: incorrect password(\s*)$/", $read) or strpos($read, "Authentication failure") !== false){
 					throw new Exception("Incorrect root password.");
 				}elseif(strpos($read, "root@") !== false){
 					break; //logged in as root.

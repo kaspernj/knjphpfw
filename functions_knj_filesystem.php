@@ -90,8 +90,8 @@
 			throw new Exception("fs_getMods(): The file does not exist (" . $file . ").");
 		}
 		
-		require_once "knj/functions_knj_strings.php";
-		require_once "knj/functions_knj_os.php";
+		require_once "knj/strings.php";
+		require_once "knj/os.php";
 		$stat = knj_os::systemCMD("ls -l " . knj_string_unix_safe($file));
 		
 		$return["mods"]["user"]["mod"] = substr($stat, 1, 3);
@@ -293,8 +293,8 @@
 				throw new Exception("The file does not exist (" . $file . ").");
 			}
 			
-			require_once("knj/functions_knj_os.php");
-			require_once("knj/functions_knj_strings.php");
+			require_once("knj/os.php");
+			require_once("knj/strings.php");
 			
 			$result = knj_os::shellCMD("file " . knj_string_unix_safe($file));
 			$result = substr($result["result"], strlen($file) + 2, -1);

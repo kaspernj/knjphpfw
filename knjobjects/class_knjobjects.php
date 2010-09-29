@@ -86,6 +86,54 @@
 			return $return;
 		}
 		
+		function list_reader($args){
+			if (!$args){
+				throw new exception("No arguments given.");
+			}
+			
+			if (!$args["ob"]){
+				throw new exception("No object name given.");
+			}
+			
+			if (!$args["obargs"]){
+				throw new exception("No object-arguments given.");
+			}
+			
+			$this->list_reader_count++;
+			$id = $this->list_reader_count;
+			$this->list_reader[$id]["from"] = 0;
+			$this->list_reader[$id]["add"] = 1000;
+			$this->list_reader[$id]["args"] = $args;
+			
+			return $id;
+		}
+		
+		function list_reader_read($id){
+			$data = &$this->list_reader[$id];
+			if (!$data){
+				throw new exception("No data with ID: " . $id);
+			}
+			
+			if ($data["obs"]){
+				foreach($data["obs"] AS $ob){
+					$this->unset_ob($ob);
+				}
+			}
+			
+			$args = $data["args"]["obargs"];
+			$args["limit_from"] = $data["from"];
+			$args["limit_to"] = $data["add"];
+			$data["obs"] = $this->list_obs($data["args"]["ob"], $args);
+			
+			if (!$data["obs"]){
+				unset($this->list_reader[$id]);
+				return false;
+			}
+			
+			$data["from"] += $data["add"];
+			return $data["obs"];
+		}
+		
 		function listArr($ob, $args = null){
 			$opts = array();
 			if ($args["none"]){
@@ -106,6 +154,28 @@
 			}
 			
 			return $opts;
+		}
+		
+		function sqlargs_orderbylimit($args){
+			$sql = "";
+			
+			if ($args["orderby"] and preg_match("/^[A-z]+$/", $args["orderby"])){
+				$sql .= " ORDER BY " . $args["orderby"];
+				
+				if ($args["ordermode"] == "desc"){
+					$sql .= " DESC";
+				}
+			}
+			
+			if ($args["limit"] and is_numeric($args["limit"])){
+				$sql .= " LIMIT " . $args["limit"];
+			}
+			
+			if ($args["limit_from"] and $args["limit_to"] and is_numeric($args["limit_from"]) and is_numeric($args["limit_to"])){
+				$sql .= " LIMIT " . $args["limit_from"] . ", " . $args["limit_to"];
+			}
+			
+			return $sql;
 		}
 		
 		function gtext($string){
