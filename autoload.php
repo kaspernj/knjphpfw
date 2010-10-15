@@ -8,6 +8,7 @@
 			);
 			$this->knj = array(
 				"web" => "web",
+				"knj_date" => "functions_knj_date",
 				"knj_browser" => "web",
 				"knj_os" => "os",
 				"objects" => "objects",
@@ -15,12 +16,14 @@
 				"knjdb" => "db",
 				"knjobjects" => "objects",
 				"knj_csv" => "csv",
+				"knj_fs" => "functions_knj_filesystem",
 				"knj_login" => "web_login",
 				"knj_strings" => "strings",
 				"knj_ssh2" => "class_knj_ssh2"
 			);
 			$this->classes = array(
-				"net_ftp" => "Net/FTP.php"
+				"net_ftp" => "Net/FTP.php",
+				"pclzip" => "libphp-pclzip/pclzip.lib.php"
 			);
 		}
 		

@@ -25,6 +25,8 @@
 		
 		/** Parses a string into an array of strings, which should all be searched for. */
 		static function searchstring($string){
+			$array = array();
+			
 			if (preg_match_all("/\"(.*)\"/U", $string, $matches)){
 				foreach($matches[1] AS $key => $value){
 					$array[] = $value;
@@ -32,9 +34,9 @@
 				}
 			}
 			
-			if ($string){
+			if (strlen($string) > 0){
 				foreach(preg_split("/\s/", $string) AS $value){
-					if (trim($value)){
+					if (strlen(trim($value)) > 0){
 						$array[] = $value;
 					}
 				}

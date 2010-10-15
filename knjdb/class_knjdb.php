@@ -201,6 +201,10 @@
 			return $this->conn->sql($string);
 		}
 		
+		function escape_table($string){
+			return $this->conn->escape_table($string);
+		}
+		
 		/** Used with transactions. */
 		function insert_autocommit($value){
 			if (is_numeric($value)){
@@ -282,6 +286,10 @@
 			}
 			
 			$this->conn->delete($table, $where);
+		}
+		
+		function optimize($tables){
+			$this->conn->optimize($tables);
 		}
 		
 		function countRows($res){

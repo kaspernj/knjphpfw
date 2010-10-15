@@ -338,5 +338,9 @@
 			
 			return $return;
 		}
+		
+		static function rmdir($path){
+			fs_cleanDir($path, true);
+		}
 	}
 ?>

@@ -74,6 +74,14 @@
 			return $this->conn->real_escape_string($string);
 		}
 		
+		function escape_table($string){
+			if (strpos($string, "`")){
+				throw new exception("Tablename contains invalid character.");
+			}
+			
+			return $string;
+		}
+		
 		function trans_begin(){
 			$this->conn->autocommit(false); //turn off autocommit.
 		}
@@ -201,6 +209,22 @@
 			if ($where){
 				$sql .= " WHERE " . $this->makeWhere($where);
 			}
+			
+			return $this->query($sql);
+		}
+		
+		function optimize($tables){
+			if (!is_array($tables)){
+				$tables = array($tables);
+			}
+			
+			$sql = "OPTIMIZE TABLE ";
+			$sql .= knjarray::implode(array(
+				"array" => $tables,
+				"surr" => "`",
+				"impl" => ",",
+				"self_callback" => array($this, "escape_table")
+			));
 			
 			return $this->query($sql);
 		}
