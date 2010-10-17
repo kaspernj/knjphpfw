@@ -18,10 +18,13 @@ class knj_autoload{
 			"knj_csv" => "csv",
 			"knj_login" => "web_login",
 			"knj_strings" => "strings",
-			"knj_ssh2" => "class_knj_ssh2"
+			"knj_ssh2" => "class_knj_ssh2",
+			"knj_fs" => "functions_knj_filesystem",
+			"knj_date" => "date",
 		);
 		$this->classes = array(
 			"net_ftp" => "Net/FTP.php"
+			"pclzip" => "libphp-pclzip/pclzip.lib.php"
 		);
 	}
 	

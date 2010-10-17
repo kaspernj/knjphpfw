@@ -221,7 +221,11 @@
 		$number = str_replace($moneyformat["thousands_sep"], "", $number);
 		if ($moneyformat["decimal_point"] != "."){
 			$temp = explode($moneyformat["decimal_point"], $number);
-			$number = $temp[0] . "." . $temp[1];
+			if ($temp[1]){
+				$number = $temp[0] . "." . $temp[1];
+			}else{
+				$number = $temp[0];
+			}
 		}
 		
 		return $number;

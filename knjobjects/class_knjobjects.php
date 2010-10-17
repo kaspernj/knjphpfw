@@ -68,15 +68,22 @@
 				$this->requirefile($ob);
 			}
 			
-			if (!$ob){
-				throw new exception("No object given.");
-			}
-			
 			return call_user_func(array($ob, "getList"), $args);
 		}
 		
-		function list_obs($ob, $args = array()){
-			return $this->listObs($ob, $args);
+		function list_obs($ob, $args = array(), $list_args = array()){
+			$return = $this->listObs($ob, $args);
+			
+			if ($list_args["key"]){
+				$newreturn = array();
+				foreach($return AS $object){
+					$newreturn[$object->g($list_args["key"])] = $object;
+				}
+				
+				return $newreturn;
+			}
+			
+			return $return;
 		}
 		
 		function list_reader($args){
@@ -149,6 +156,28 @@
 			return $opts;
 		}
 		
+		function sqlargs_orderbylimit($args){
+			$sql = "";
+			
+			if ($args["orderby"] and preg_match("/^[A-z]+$/", $args["orderby"])){
+				$sql .= " ORDER BY " . $args["orderby"];
+				
+				if ($args["ordermode"] == "desc"){
+					$sql .= " DESC";
+				}
+			}
+			
+			if ($args["limit"] and is_numeric($args["limit"])){
+				$sql .= " LIMIT " . $args["limit"];
+			}
+			
+			if ($args["limit_from"] and $args["limit_to"] and is_numeric($args["limit_from"]) and is_numeric($args["limit_to"])){
+				$sql .= " LIMIT " . $args["limit_from"] . ", " . $args["limit_to"];
+			}
+			
+			return $sql;
+		}
+		
 		function gtext($string){
 			if (function_exists("gtext")){
 				return gtext($string);
@@ -161,7 +190,7 @@
 			}
 		}
 		
-		function listOpts($ob, $getkey, $args = null){
+		function listOpts($ob, $getkey, $args = array()){
 			$opts = array();
 			
 			if ($args["addnew"]){
@@ -188,7 +217,11 @@
 				$args["col_id"] = "id";
 			}
 			
-			foreach($this->listObs($ob) AS $object){
+			if (!$args["list_args"]){
+				$args["list_args"] = array();
+			}
+			
+			foreach($this->list_obs($ob, $args["list_args"]) AS $object){
 				if (is_array($getkey) and $getkey["funccall"]){
 					$value = call_user_func(array($object, $getkey["funccall"]));
 				}else{
@@ -270,7 +303,10 @@
 			}
 			
 			if (!$this->objects[$ob][$id]){
-				$this->requirefile($ob);
+				if (!$this->objects[$ob]){
+					$this->requirefile($ob);
+				}
+				
 				$this->objects[$ob][$id] = new $ob($id, $data);
 			}
 			

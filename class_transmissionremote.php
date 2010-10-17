@@ -1,6 +1,6 @@
 <?php
-	require_once("knj/functions_knj_strings.php");
-	require_once("knj/functions_knj_os.php");
+	require_once "knj/strings.php";
+	require_once "knj/os.php";
 	
 	/** This is a PHP-framework for the transmission-remote. */
 	class transmissionremote{
@@ -27,13 +27,14 @@
 		function getList(){
 			$cmd = "transmission-remote" . $this->getLoginString() . " --list";
 			$exec = knj_os::shellCMD($cmd);
+			
 			$this->errorCmd($exec);
 			
 			if (preg_match("/Sum:\s+None/", $exec["result"], $match)){
 				return array();
 			}
 			
-			if (!preg_match_all("/\s*([0-9]+)\s+([0-9]+)%\s+(Done|None|[0-9\.]+ \S+)\s+(Unknown|Done|[0-9.]+ (min|hrs|days))\s+([0-9.]+)\s+([0-9.]+)\s+(\S+)\s+(Seeding|Up & Down|\S+)\s+(.+)\n/", $exec["result"], $matches)){	
+			if (!preg_match_all("/\s*([\d*]+)\s+(\d+)%\s+(Done|None|[\d\.]+\s+\S+)\s+(Unknown|Done|\d+ (min|hrs|days))\s+([\d\.]+)\s+([\d\.]+)\s+(\S+)\s+(Seeding|Up & Down|\S+)\s+(.+)\n/", $exec["result"], $matches)){	
 				throw new Exception("Could not parse list.\n\n" . "Content:\n" . $exec["result"]);
 			}
 			
