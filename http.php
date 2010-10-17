@@ -399,7 +399,7 @@
 							$value = urldecode($match[2]);
 							
 							$this->cookies[$this->host][$key] = $value;
-						}elseif(preg_match("/^Set-Cookie: (\S+)=(\S+)\s*/U", $line, $match)){
+						}elseif(preg_match("/^Set-Cookie: (\S+)=(\S+)\s*$/U", urldecode($line), $match)){
 							$key = urldecode($match[1]);
 							$value = urldecode($match[2]);
 							

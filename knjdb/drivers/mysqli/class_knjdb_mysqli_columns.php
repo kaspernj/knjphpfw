@@ -131,6 +131,10 @@
 		}
 		
 		function addColumns(knjdb_table $table, $columns){
+			if (!is_array($columns)){
+				throw new exception("Second argument wasnt an array of columns.");
+			}
+			
 			foreach($columns AS $column){
 				$this->knjdb->query("ALTER TABLE " . $this->driver->sep_table . $table->get("name") . $this->driver->sep_table . " ADD COLUMN " . $this->knjdb->columns()->getColumnSQL($column) . ";");
 				$table->columns_changed = true;
