@@ -9,6 +9,7 @@ class knj_autoload{
 		);
 		$this->knj = array(
 			"web" => "web",
+			"knj_date" => "functions_knj_date",
 			"knj_browser" => "web",
 			"knj_os" => "os",
 			"objects" => "objects",
@@ -17,6 +18,7 @@ class knj_autoload{
 			"knjobjects" => "objects",
 			"knj_csv" => "csv",
 			"knj_login" => "web_login",
+			"knj_mail" => "mail",
 			"knj_strings" => "strings",
 			"knj_ssh2" => "class_knj_ssh2",
 			"knj_fs" => "functions_knj_filesystem",
