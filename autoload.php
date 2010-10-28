@@ -18,6 +18,7 @@
 				"knj_csv" => "csv",
 				"knj_fs" => "functions_knj_filesystem",
 				"knj_login" => "web_login",
+				"knj_mail" => "mail",
 				"knj_strings" => "strings",
 				"knj_ssh2" => "class_knj_ssh2"
 			);

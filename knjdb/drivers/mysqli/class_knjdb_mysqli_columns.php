@@ -72,7 +72,7 @@
 		function getColumns(knjdb_table $table){
 			if ($table->columns_changed){
 				$return = array();
-				$f_gc = $this->knjdb->query("SHOW FULL COLUMNS FROM " . $this->driverob->sep_table . $table->get("name") . $this->driverob->sep_table);
+				$f_gc = $this->knjdb->query("SHOW FULL COLUMNS FROM " . $this->driver->sep_table . $table->get("name") . $this->driver->sep_table);
 				while($d_gc = $f_gc->fetch()){
 					if (!$table->columns[$d_gc["Field"]]){
 						$value = "";
@@ -109,18 +109,17 @@
 						}
 						
 						$table->columns[$d_gc["Field"]] = new knjdb_column($table, array(
-								"name" => $d_gc["Field"],
-								"notnull" => $notnull,
-								"type" => $type,
-								"maxlength" => $maxlength,
-								"default" => $d_gc["Default"],
-								"primarykey" => $primarykey,
-								"value" => $value,
-								"input_type" => "mysql",
-								"autoincr" => $autoincr,
-								"comment" => $d_gc["Comment"]
-							)
-						);
+							"name" => $d_gc["Field"],
+							"notnull" => $notnull,
+							"type" => $type,
+							"maxlength" => $maxlength,
+							"default" => $d_gc["Default"],
+							"primarykey" => $primarykey,
+							"value" => $value,
+							"input_type" => "mysql",
+							"autoincr" => $autoincr,
+							"comment" => $d_gc["Comment"]
+						));
 					}
 				}
 				

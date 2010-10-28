@@ -205,7 +205,7 @@
 		}
 		
 		if ($value and $args["value_callback"]){
-			if ($args["value_callback"][1]){
+			if (array_key_exists(1, $args["value_callback"])){
 				$value = call_user_func($args["value_callback"][0], $value, $args["value_callback"][1]);
 			}else{
 				$value = call_user_func($args["value_callback"][0], $value);
