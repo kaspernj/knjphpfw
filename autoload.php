@@ -25,7 +25,7 @@ class knj_autoload{
 			"knj_date" => "date",
 		);
 		$this->classes = array(
-			"net_ftp" => "Net/FTP.php"
+			"net_ftp" => "Net/FTP.php",
 			"pclzip" => "libphp-pclzip/pclzip.lib.php"
 		);
 	}
