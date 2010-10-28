@@ -1,33 +1,4 @@
 <?
-<<<<<<< HEAD
-	class knj_autoload{
-		function __construct(){
-			$this->exts = array(
-				"gtk" => "gtk2",
-				"mysql" => "mysql",
-				"sqlite3" => "sqlite"
-			);
-			$this->knj = array(
-				"web" => "web",
-				"knj_date" => "functions_knj_date",
-				"knj_browser" => "web",
-				"knj_os" => "os",
-				"objects" => "objects",
-				"knjarray" => "functions_array",
-				"knjdb" => "db",
-				"knjobjects" => "objects",
-				"knj_csv" => "csv",
-				"knj_fs" => "functions_knj_filesystem",
-				"knj_login" => "web_login",
-				"knj_mail" => "mail",
-				"knj_strings" => "strings",
-				"knj_ssh2" => "class_knj_ssh2"
-			);
-			$this->classes = array(
-				"net_ftp" => "Net/FTP.php",
-				"pclzip" => "libphp-pclzip/pclzip.lib.php"
-			);
-=======
 
 class knj_autoload{
 	function __construct(){
@@ -38,6 +9,7 @@ class knj_autoload{
 		);
 		$this->knj = array(
 			"web" => "web",
+			"knj_date" => "functions_knj_date",
 			"knj_browser" => "web",
 			"knj_os" => "os",
 			"objects" => "objects",
@@ -46,6 +18,7 @@ class knj_autoload{
 			"knjobjects" => "objects",
 			"knj_csv" => "csv",
 			"knj_login" => "web_login",
+			"knj_mail" => "mail",
 			"knj_strings" => "strings",
 			"knj_ssh2" => "class_knj_ssh2",
 			"knj_fs" => "functions_knj_filesystem",
@@ -62,7 +35,6 @@ class knj_autoload{
 		
 		if (array_key_exists($class, $this->classes)){
 			require_once($this->classes[$class]);
->>>>>>> 5cc85913e90ceae0462a3f19561d659cfa01faed
 		}
 		
 		if (array_key_exists($class, $this->exts)){
