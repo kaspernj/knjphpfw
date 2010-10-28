@@ -109,18 +109,17 @@
 						}
 						
 						$table->columns[$d_gc["Field"]] = new knjdb_column($table, array(
-								"name" => $d_gc["Field"],
-								"notnull" => $notnull,
-								"type" => $type,
-								"maxlength" => $maxlength,
-								"default" => $d_gc["Default"],
-								"primarykey" => $primarykey,
-								"value" => $value,
-								"input_type" => "mysql",
-								"autoincr" => $autoincr,
-								"comment" => $d_gc["Comment"]
-							)
-						);
+							"name" => $d_gc["Field"],
+							"notnull" => $notnull,
+							"type" => $type,
+							"maxlength" => $maxlength,
+							"default" => $d_gc["Default"],
+							"primarykey" => $primarykey,
+							"value" => $value,
+							"input_type" => "mysql",
+							"autoincr" => $autoincr,
+							"comment" => $d_gc["Comment"]
+						));
 					}
 				}
 				

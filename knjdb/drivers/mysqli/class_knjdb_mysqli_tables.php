@@ -14,12 +14,11 @@
 				while($d_gt = $f_gt->fetch()){
 					if (!$this->tables[$d_gt["Name"]]){
 						$this->tables[$d_gt["Name"]] = new knjdb_table($this->knjdb, array(
-								"name" => $d_gt["Name"],
-								"engine" => $d_gt["Engine"],
-								"collation" => $d_gt["Collation"],
-								"rows" => $d_gt["Rows"]
-							)
-						);
+							"name" => $d_gt["Name"],
+							"engine" => $d_gt["Engine"],
+							"collation" => $d_gt["Collation"],
+							"rows" => $d_gt["Rows"]
+						));
 					}
 				}
 				
