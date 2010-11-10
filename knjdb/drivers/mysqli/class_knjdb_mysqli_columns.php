@@ -46,7 +46,7 @@ class knjdb_mysqli_columns implements knjdb_driver_columns{
 		//Defindes maxlength (and checks if maxlength is allowed on the current database-type).
 		if ($column["type"] == "datetime" || $column["type"] == "date" || $column["type"] == "tinytext" || $column["type"] == "text"){
 			//maxlength is not allowed in MySQL. So nothing goes here (Access can actually have a maxlength on a datetime).
-		}elseif($column['maxlength'] > 0){
+		}elseif(array_key_exists("maxlength", $column)){
 			$sql .= "(" . $column['maxlength'] . ")";
 		}
 		
