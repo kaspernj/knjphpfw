@@ -9,8 +9,9 @@ class knj_autoload{
 		);
 		$this->knj = array(
 			"web" => "web",
-			"knj_date" => "functions_knj_date",
 			"knj_browser" => "web",
+			"knj_date" => "date",
+			"knj_ftp" => "ftp",
 			"knj_os" => "os",
 			"objects" => "objects",
 			"knjarray" => "functions_array",
