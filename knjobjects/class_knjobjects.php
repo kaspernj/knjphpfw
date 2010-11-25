@@ -135,6 +135,20 @@ class knjobjects{
 		return $data["obs"];
 	}
 	
+	function list_reader_count($id){
+		$data = &$this->list_reader[$id];
+		if (!$data){
+			return false;
+		}
+		
+		$args = $data["args"]["obargs"];
+		unset($args["limit_from"], $args["limit_to"]);
+		$args["count"] = true;
+		$count = $this->list_obs($data["args"]["ob"], $args);
+		
+		return $count;
+	}
+	
 	function listArr($ob, $args = null){
 		$opts = array();
 		if ($args["none"]){

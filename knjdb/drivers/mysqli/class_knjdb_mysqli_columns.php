@@ -33,11 +33,11 @@ class knjdb_mysqli_columns implements knjdb_driver_columns{
 		}
 		
 		//Fix MSSQL-datetime-default-crash.
-		if ($column["type"] == "datetime" && $column["default"] == "getdate()"){
+		if ($column["type"] == "datetime" and $column["default"] == "getdate()"){
 			$column["default"] = "";
 		}
 		
-		if ($column["type"] == "varchar" && ($column["maxlength"] <= 0 || !$maxlength)){
+		if ($column["type"] == "varchar" and !intval($column["maxlength"])){
 			$column["maxlength"] = 255;
 		}
 		
