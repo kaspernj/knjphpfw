@@ -27,7 +27,7 @@ class knj_ftp{
 	}
 	
 	function put($args){
-		if (!ftp_put($this->ftp, $args["file"], $args["path"], FTP_BINARY)){
+		if (!ftp_put($this->ftp, $args["path"], $args["file"], FTP_BINARY)){
 			throw new exception("Could not transfer file.");
 		}
 	}
