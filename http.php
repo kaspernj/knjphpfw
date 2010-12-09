@@ -41,7 +41,7 @@ class knj_httpbrowser{
 		}
 		
 		foreach($args AS $key => $value){
-			if ($key == "ssl" or $key == "nl" or $key == "debug"){
+			if ($key == "ssl" or $key == "nl" or $key == "debug" or $key == "force_connection"){
 				$this->$key = $value;
 			}else{
 				throw new exception("Invalid argument: " . $key);
@@ -112,7 +112,7 @@ class knj_httpbrowser{
 	function checkConnected(){
 		while(true){
 			if (!$this->host or !$this->fp){
-				if ($this->args["force_connection"]){
+				if ($this->force_connection){
 					usleep(100000);
 					$this->reconnect();
 				}else{
