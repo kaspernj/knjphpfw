@@ -16,7 +16,7 @@ class knj_httpbrowser{
 	
 	function __construct($args = array()){
 		foreach($args AS $key => $value){
-			if ($key == "ssl" or $key == "nl" or $key == "debug"){
+			if ($key == "ssl" or $key == "nl" or $key == "debug" or $key == "force_connection"){
 				$this->$key = $value;
 			}else{
 				throw new exception("Invalid argument: " . $key);
@@ -41,7 +41,7 @@ class knj_httpbrowser{
 		}
 		
 		foreach($args AS $key => $value){
-			if ($key == "ssl" or $key == "nl" or $key == "debug"){
+			if ($key == "ssl" or $key == "nl" or $key == "debug" or $key == "force_connection"){
 				$this->$key = $value;
 			}else{
 				throw new exception("Invalid argument: " . $key);
@@ -55,6 +55,24 @@ class knj_httpbrowser{
 		}
 		
 		return true;
+	}
+	
+	/** Reconnects to the host. */
+	function reconnect(){
+		if ($this->fp){
+			$this->disconnect();
+		}
+		
+		if ($this->ssl == true){
+			$host = "ssl://" . $this->host;
+		}else{
+			$host = $this->host;
+		}
+		
+		$this->fp = fsockopen($host, $this->port);
+		if (!$this->fp){
+			throw new exception("Could not connect.");
+		}
 	}
 	
 	function setDebug($value){
@@ -92,26 +110,17 @@ class knj_httpbrowser{
 	}
 	
 	function checkConnected(){
-		if (!$this->host || !$this->fp){
-			throw new exception("Not connected.");
-		}
-	}
-	
-	/** Reconnects to the host. */
-	function reconnect(){
-		if ($this->fp){
-			$this->disconnect();
-		}
-		
-		if ($this->ssl == true){
-			$host = "ssl://" . $this->host;
-		}else{
-			$host = $this->host;
-		}
-		
-		$this->fp = fsockopen($host, $this->port);
-		if (!$this->fp){
-			throw new exception("Could not connect.");
+		while(true){
+			if (!$this->host or !$this->fp){
+				if ($this->force_connection){
+					usleep(100000);
+					$this->reconnect();
+				}else{
+					throw new exception("Not connected.");
+				}
+			}else{
+				break;
+			}
 		}
 	}
 	
