@@ -7,15 +7,36 @@
 		private $data;
 		
 		/** The constructor. */
-		function __construct($dbconn, $table, $id, $data = null, $args = array()){
+		function __construct($dbconn, $table = null, $id = null, $data = null, $args = array()){
+			if (is_array($dbconn)){
+				$this->row_args = $dbconn;
+				$args = &$this->row_args;
+				$dbconn = $this->row_args["db"];
+				$table = $this->row_args["table"];
+				
+				if (is_array($this->row_args["data"])){
+					$data = $this->row_args["data"];
+					$id = $data["id"];
+				}else{
+					$id = $this->row_args["data"];
+					$data = null;
+				}
+			}
+			
 			$this->dbconn = $dbconn;
 			$this->db = $dbconn;
 			$this->table = $table;
 			$this->id = $id;
 			
+			if (!$this->db or !$this->dbconn or !$dbconn){
+				throw new exception("No valid db given.");
+			}
+			
 			foreach($args AS $key => $value){
 				if ($key == "col_id"){
 					$this->$key = $value;
+				}elseif($key == "db" or $key == "data" or $key == "table"){
+					//do nothing.
 				}else{
 					throw new Exception("Invalid argument: \"" . $key . "\".");
 				}
