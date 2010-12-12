@@ -9,6 +9,10 @@ class knjdb_mysqli_columns implements knjdb_driver_columns{
 	}
 	
 	function getColumnSQL($column, $args = null){
+		if (!is_array($column)){
+			throw new exception("Column is not an array: " . gettype($column));
+		}
+		
 		if (!$column["name"]){
 			throw new Exception("Invalid name: " . $column["name"]);
 		}
