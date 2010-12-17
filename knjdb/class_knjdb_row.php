@@ -28,6 +28,10 @@
 			$this->table = $table;
 			$this->id = $id;
 			
+			if (!$id){
+				throw new exception(_("No ID was given."));
+			}
+			
 			if (!$this->db or !$this->dbconn or !$dbconn){
 				throw new exception("No valid db given.");
 			}
