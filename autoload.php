@@ -10,6 +10,7 @@ class knj_autoload{
 		$this->knj = array(
 			"web" => "web",
 			"knj_browser" => "web",
+			"knj_cartesian_additions" => "cartesian_additions",
 			"knj_date" => "date",
 			"knj_ftp" => "ftp",
 			"knj_os" => "os",
