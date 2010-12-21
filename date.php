@@ -34,6 +34,32 @@ class knj_date{
 			12 => _("December")
 		);
 	}
+	
+	static function days_between($t1, $t2){
+		if ($t2 < $t1){
+			throw new exception("Timestamp 2 should always be bigger than timestamp 1.");
+		}
+		
+		$doy1 = date("z", $t1);
+		$doy2 = date("z", $t2);
+		
+		$yot1 = date("Y", $t1);
+		$yot2 = date("Y", $t2);
+		
+		if ($yot1 == $yot2){
+			//wee - this will be easy.
+			$days_between = $doy2 - $doy1;
+			return $days_between;
+		}
+		
+		//shit - lets begin counting years... grr...
+		
+		for($i = $yot1; $i < $yot2; $i++){
+			print "Counting years: " . $i . "\n";
+		}
+		
+		exit;
+	}
 }
 
 function date_MonthNrToStr($in_str){
