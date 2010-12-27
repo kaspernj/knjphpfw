@@ -297,6 +297,10 @@ function form_drawInput($args){
 		}
 	}
 	
+	if ($args["type"] == "numeric"){
+		$value = number_out($value, $args["decis"]);
+	}
+	
 	if ($args["type"] == "checkbox"){
 		?>
 			<td colspan="2" class="tdcheck">
@@ -398,7 +402,7 @@ function form_drawInput($args){
 				<?=$title_html?>
 			</td>
 			<?=$td_html?>
-				<textarea name="<?=htmlspecialchars($args["name"])?>" class="<?=htmlspecialchars($args["class"])?>"<?if ($args["height"]){?> style="height: <?=$args["height"]?>;"<?}?><?=$js_tags?>><?=htmlspecialchars_textarea($value)?></textarea>
+				<textarea name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($args["class"])?>"<?if ($args["height"]){?> style="height: <?=$args["height"]?>;"<?}?><?=$js_tags?>><?=htmlspecialchars_textarea($value)?></textarea>
 			</td>
 		<?
 	}elseif($args["type"] == "fckeditor"){
@@ -452,7 +456,7 @@ function form_drawInput($args){
 	}
 	
 	if (!array_key_exists("tr", $args) or $args["tr"]){
-		?><tr><?
+		?></tr><?
 	}
 	
 	if ($args["descr"]){
