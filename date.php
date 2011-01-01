@@ -52,13 +52,10 @@ class knj_date{
 			return $days_between;
 		}
 		
-		//shit - lets begin counting years... grr...
+		$upto = 364 - $doy1;
+		$after = $doy2;
 		
-		for($i = $yot1; $i < $yot2; $i++){
-			print "Counting years: " . $i . "\n";
-		}
-		
-		exit;
+		return $upto + $after;
 	}
 }
 
