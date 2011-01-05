@@ -8,6 +8,7 @@ class knjobjects{
 	
 	function __construct($args){
 		$this->config = $args;
+		$this->args = &$this->config;
 		
 		if (!$this->config["class_sep"]){
 			$this->config["class_sep"] = "_";
@@ -42,15 +43,29 @@ class knjobjects{
 		return $return;
 	}
 	
+	function single_by($obj, $args){
+		$objs = $this->list_obs($obj, $args);
+		if (!$objs){
+			return false;
+		}
+		
+		$data = each($objs);
+		return $data[1];
+	}
+	
 	function cleanMemory(){
 		$usage = (memory_get_usage() / 1024) / 1024;
 		if ($usage > 54){
-			$this->objects = array();
+			$this->unset_all();
 		}
 	}
 	
 	function clean_memory(){
 		$this->cleanMemory();
+	}
+	
+	function unset_all(){
+		$this->objects = array();
 	}
 	
 	function requirefile($obname){
@@ -69,7 +84,21 @@ class knjobjects{
 			$this->requirefile($ob);
 		}
 		
-		return call_user_func(array($ob, "getList"), $args);
+		$call_args = array(
+			$args
+		);
+		
+		if ($this->args["extra_args"]){
+			$eargs = $this->args["extra_args"];
+			
+			if ($this->args["extra_args_self"]){
+				$eargs["ob"] = $this;
+			}
+			
+			$call_args[] = $eargs;
+		}
+		
+		return call_user_func_array(array($ob, "getList"), $call_args);
 	}
 	
 	function list_obs($ob, $args = array(), $list_args = array()){
@@ -272,7 +301,21 @@ class knjobjects{
 			$this->requirefile($ob);
 		}
 		
-		return call_user_func(array($ob, "addNew"), $arr);
+		$call_args = array(
+			$arr
+		);
+		
+		if ($this->args["extra_args"]){
+			$eargs = $this->args["extra_args"];
+			
+			if ($this->args["extra_args_self"]){
+				$eargs["ob"] = $this;
+			}
+			
+			$call_args[] = $eargs;
+		}
+		
+		return call_user_func_array(array($ob, "addNew"), $call_args);
 	}
 	
 	function unsetOb($ob, $id = null){
@@ -302,7 +345,10 @@ class knjobjects{
 	function get($ob, $id, $data = null){
 		if (is_array($id)){
 			$data = $id;
+			$rdata = &$data;
 			$id = $data[$this->config["col_id"]];
+		}else{
+			$rdata = &$id;
 		}
 		
 		if ($this->config["check_id"] and !is_numeric($id)){
@@ -322,7 +368,15 @@ class knjobjects{
 				$this->requirefile($ob);
 			}
 			
-			$this->objects[$ob][$id] = new $ob($id, $data);
+			if ($this->args["get_array"]){
+				$this->objects[$ob][$id] = new $ob(array(
+					"data" => $rdata,
+					"db" => $this->args["db"],
+					"ob" => $this
+				));
+			}else{
+				$this->objects[$ob][$id] = new $ob($id, $data);
+			}
 		}
 		
 		return $this->objects[$ob][$id];
