@@ -25,6 +25,9 @@ class knj_autoload{
 			"knj_ssh2" => "class_knj_ssh2",
 			"knj_fs" => "functions_knj_filesystem",
 			"knj_date" => "date",
+			"notfoundexc" => "exceptions",
+			"dbconnexc" => "exceptions",
+			"noaccessexc" => "exceptions",
 			"knj_translations" => "translations"
 		);
 		$this->classes = array(
