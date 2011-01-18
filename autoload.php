@@ -27,7 +27,7 @@ class knj_autoload{
 			"knj_date" => "date",
 			"notfoundexc" => "exceptions",
 			"dbconnexc" => "exceptions",
-			"noaccessexc" => "exceptions"
+			"noaccessexc" => "exceptions",
 			"knj_translations" => "translations"
 		);
 		$this->classes = array(
