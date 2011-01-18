@@ -90,18 +90,22 @@
 		}
 		
 		/** Updates the row. */
-		function setData($arr){
-			if (!is_array($arr) or count($arr) <= 0){
+		function setData($arr, $args = null){
+			if (!is_array($arr) or empty($arr)){
 				throw new exception("No array given or array was empty.");
 			}
 			
 			$this->dbconn->update($this->table, $arr, array($this->col_id => $this->id));
-			$this->updateData();
+			
+			if (!$args or !$args["reload"]){
+				$this->updateData();
+			}
+			
 			return true;
 		}
 		
-		function update($arr){
-			return $this->setData($arr);
+		function update($arr, $args = null){
+			return $this->setData($arr, $args);
 		}
 		
 		function id(){
