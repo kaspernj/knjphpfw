@@ -301,6 +301,15 @@ function form_drawInput($args){
 		$value = number_out($value, $args["decis"]);
 	}
 	
+	if ($args["classes"]){
+		$classes = $args["classes"];
+	}else{
+		$classes = array();
+	}
+	
+	$classes[] = $args["class"];
+	$args["class"] = implode(" ", $classes);
+	
 	if ($args["type"] == "checkbox"){
 		?>
 			<td colspan="2" class="tdcheck">
