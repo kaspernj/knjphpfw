@@ -239,7 +239,7 @@ function form_drawInput($args){
 			$args["type"] = "checkbox";
 		}elseif($f3 == "tex"){
 			$args["type"] = "text";
-		}elseif($f3 == "sel" or $args["opts"]){
+		}elseif($f3 == "sel" or array_key_exists("opts", $args)){
 			$args["type"] = "select";
 		}elseif($f3 == "fil"){
 			$args["type"] = "file";
