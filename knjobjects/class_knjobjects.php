@@ -363,6 +363,10 @@ class knjobjects{
 			throw new exception("Invalid object: " . gettype($ob));
 		}
 		
+		if (is_object($id)){
+			throw new exception("Invalid object: " . get_class($id));
+		}
+		
 		if (!$this->objects[$ob][$id]){
 			if (!$this->objects[$ob]){
 				$this->requirefile($ob);
@@ -380,5 +384,39 @@ class knjobjects{
 		}
 		
 		return $this->objects[$ob][$id];
+	}
+	
+	function sqlhelper(&$list_args, $args){
+		if ($args["table"]){
+			$table = $this->config["db"]->conn->sep_table . $this->config["db"]->escape_table($args["table"]) . $this->config["db"]->conn->sep_table . ".";
+		}else{
+			$table = "";
+		}
+		
+		$colsep = $this->config["db"]->conn->sep_col;
+		
+		if (!is_array($list_args)){
+			throw new exception("The arguments given was not an array.");
+		}
+		
+		foreach($list_args as $list_key => $list_val){
+			$found = false;
+			
+			if (array_key_exists("cols_str", $args) and in_array($list_key, $args["cols_str"])){
+				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key) . $colsep . " = '" . $this->config["db"]->sql($list_val) . "'";
+				$found = true;
+			}elseif(array_key_exists("cols_dbrows", $args) and in_array($list_key . "_id", $args["cols_dbrows"])){
+				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key . "_id") . $colsep . " = '" . $this->config["db"]->sql($list_val->id()) . "'";
+				$found = true;
+			}
+			
+			if ($found){
+				unset($list_args[$list_key]);
+			}
+		}
+		
+		return array(
+			"sql_where" => $sql_where
+		);
 	}
 }

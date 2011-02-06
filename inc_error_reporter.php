@@ -140,7 +140,15 @@
 		require_once("knj/functions_knj_web.php");
 		
 		$activate = true;
-		if (($knj_error_reporter["ignore_javabots"] || $knj_error_reporter["ignore_bots"]) && preg_match("/Java\/[0-9\.]+/i", $_SERVER["HTTP_USER_AGENT"], $match)){
+		if (
+			(
+				(array_key_exists("ignore_javabots", $knj_error_reporter) and $knj_error_reporter["ignore_javabots"]) or
+				(array_key_exists("ignore_bots", $knj_error_reporter) and $knj_error_reporter["ignore_bots"])
+			) and (
+				array_key_exists("HTTP_USER_AGENT", $_SERVER) and
+				preg_match("/Java\/[0-9\.]+/i", $_SERVER["HTTP_USER_AGENT"], $match)
+			)
+		){
 			$activate = false;
 		}elseif($knj_error_reporter["ignore_bots"] && knj_browser::getOS() == "bot"){
 			$activate = false;
