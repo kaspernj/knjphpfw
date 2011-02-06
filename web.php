@@ -313,7 +313,7 @@ function form_drawInput($args){
 	if ($args["type"] == "checkbox"){
 		?>
 			<td colspan="2" class="tdcheck">
-				<input type="<?=$args["type"]?>" name="<?=$args["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?><?=$js_tags?> />
+				<input<?if ($args["disabled"]){?> disabled<?}?> type="<?=$args["type"]?>" name="<?=$args["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?><?=$js_tags?> />
 				<label for="<?=$id?>"><?=$title_html?></label>
 			</td>
 		<?
@@ -605,7 +605,11 @@ class knj_browser{
 			"w3c_validator"
 		);
 		
-		$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);
+		if (array_key_exists("HTTP_USER_AGENT", $_SERVER)){
+			$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);
+		}else{
+			return "unknown";
+		}
 		
 		if (strpos($ua, "windows") !== false){
 			return "windows";
