@@ -23,6 +23,10 @@ class knj_ftp{
 			if (!ftp_pasv($this->ftp, true)){
 				throw new exception("Could not enable passive mode.");
 			}
+		}else{
+			if (!ftp_pasv($this->ftp, false)){
+				throw new exception("Could not disable passive mode.");
+			}
 		}
 	}
 	

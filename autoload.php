@@ -10,6 +10,7 @@ class knj_autoload{
 		$this->knj = array(
 			"web" => "web",
 			"knj_browser" => "web",
+			"knj_cartesian_additions" => "cartesian_additions",
 			"knj_date" => "date",
 			"knj_ftp" => "ftp",
 			"knj_os" => "os",
@@ -24,6 +25,9 @@ class knj_autoload{
 			"knj_ssh2" => "class_knj_ssh2",
 			"knj_fs" => "functions_knj_filesystem",
 			"knj_date" => "date",
+			"notfoundexc" => "exceptions",
+			"dbconnexc" => "exceptions",
+			"noaccessexc" => "exceptions",
 			"knj_translations" => "translations"
 		);
 		$this->classes = array(

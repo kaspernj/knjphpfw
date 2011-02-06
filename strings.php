@@ -178,6 +178,14 @@ class knj_strings{
 		
 		return trim(substr($text, 0, $maxlength)) . "...";
 	}
+	
+	function is_email($str){
+		if (preg_match("/^(.+)@(.+)\.(.+)/", $str)){
+			return true;
+		}
+		
+		return false;
+	}
 }
 
 /**

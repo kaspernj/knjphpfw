@@ -28,6 +28,10 @@
 			$this->table = $table;
 			$this->id = $id;
 			
+			if (!$id){
+				throw new exception(_("No ID was given."));
+			}
+			
 			if (!$this->db or !$this->dbconn or !$dbconn){
 				throw new exception("No valid db given.");
 			}
@@ -86,18 +90,22 @@
 		}
 		
 		/** Updates the row. */
-		function setData($arr){
-			if (!is_array($arr) or count($arr) <= 0){
+		function setData($arr, $args = null){
+			if (!is_array($arr) or empty($arr)){
 				throw new exception("No array given or array was empty.");
 			}
 			
 			$this->dbconn->update($this->table, $arr, array($this->col_id => $this->id));
-			$this->updateData();
+			
+			if (!$args or !$args["reload"]){
+				$this->updateData();
+			}
+			
 			return true;
 		}
 		
-		function update($arr){
-			return $this->setData($arr);
+		function update($arr, $args = null){
+			return $this->setData($arr, $args);
 		}
 		
 		function id(){

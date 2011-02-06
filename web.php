@@ -168,6 +168,24 @@ function select_drawOpts($opts, $selected = null){
 		$is_selected = false;
 		if (is_array($selected) and in_array($key, $selected)){
 			$is_selected = true;
+		}elseif(is_array($selected) and ($selected["type"] == "arr_rows" or $selected["type"] == "arr_values")){
+			foreach($selected["values"] AS $sel_key => $sel_val){
+				if (is_a($sel_val, "knjdb_row")){
+					if ($key == $sel_val->id()){
+						$is_selected = true;
+					}
+				}else{
+					if ($selected["type"] == "arr_values"){
+						if ($key == $sel_val){
+							$is_selected = true;
+						}
+					}else{
+						if ($key == $sel_key){
+							$is_selected = true;
+						}
+					}
+				}
+			}
 		}elseif($key == $selected){
 			if (!is_numeric($key) or intval($key) != 0){
 				$is_selected = true;
@@ -187,6 +205,8 @@ function select_drawOpts($opts, $selected = null){
 function form_drawInput($args){
 	if (is_array($args["value"]) && is_callable($args["value"])){
 		$value = call_user_func($args["value"]);
+	}elseif(is_array($args["value"]) and ($args["value"]["type"] == "arr_rows" or $args["value"]["type"] == "arr_values")){
+		//do nothing.
 	}elseif(is_array($args["value"]) && is_object($args["value"][0])){
 		$value = $args["value"][0]->$args["value"][1]($args["value"][2]);
 	}else{
@@ -219,7 +239,7 @@ function form_drawInput($args){
 			$args["type"] = "checkbox";
 		}elseif($f3 == "tex"){
 			$args["type"] = "text";
-		}elseif($f3 == "sel" or $args["opts"]){
+		}elseif($f3 == "sel" or array_key_exists("opts", $args)){
 			$args["type"] = "select";
 		}elseif($f3 == "fil"){
 			$args["type"] = "file";
@@ -269,22 +289,58 @@ function form_drawInput($args){
 	}
 	$td_html .= ">";
 	
+	$js_tags = "";
+	$js_tags_arr = array("onkeyup", "onkeydown", "onchange");
+	foreach($js_tags_arr AS $js_tag){
+		if ($args[$js_tag]){
+			$js_tags .= " " . $js_tag . "=\"" . $args[$js_tag] . "\"";
+		}
+	}
+	
+	if ($args["type"] == "numeric"){
+		$value = number_out($value, $args["decis"]);
+	}
+	
+	if ($args["classes"]){
+		$classes = $args["classes"];
+	}else{
+		$classes = array();
+	}
+	
+	$classes[] = $args["class"];
+	$args["class"] = implode(" ", $classes);
+	
 	if ($args["type"] == "checkbox"){
 		?>
 			<td colspan="2" class="tdcheck">
-				<input<?if ($args["disabled"]){?> disabled<?}?> type="<?=$args["type"]?>" name="<?=$args["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?><?if ($args["onchange"]){?> onchange="<?=$args["onchange"]?>"<?}?> />
+				<input<?if ($args["disabled"]){?> disabled<?}?> type="<?=$args["type"]?>" name="<?=$args["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?><?=$js_tags?> />
 				<label for="<?=$id?>"><?=$title_html?></label>
 			</td>
 		<?
 	}elseif($args["type"] == "select"){
+		$etags = "";
+		if ($args["multiple"]){
+			$etags .= " multiple=\"multiple\"";
+		}
+		
+		if ($args["height"]){
+			$etags .= " height=\"" . htmlspecialchars($args["height"]) . "\"";
+		}
+		
 		?>
 			<td class="tdt">
 				<?=$title_html?>
 			</td>
 			<?=$td_html?>
-				<select<?if ($args["size"]){?> size="<?=htmlspecialchars($args["size"])?>"<?}?> name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=$args["class"]?>"<?if ($args["onchange"]){?> onchange="<?=$args["onchange"]?>"<?}?>>
+				<select<?=$etags?><?if ($args["size"]){?> size="<?=htmlspecialchars($args["size"])?>"<?}?> name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=$args["class"]?>"<?=$js_tags?>>
 				<?=select_drawOpts($args["opts"], $args["value"])?>
 				</select>
+				<?if ($args["moveable"]){?>
+					<div style="padding-top: 3px;">
+						<input type="button" value="<?=_("Up")?>" onclick="select_moveup($('#<?=$id?>'));" />
+						<input type="button" value="<?=_("Down")?>" onclick="select_movedown($('#<?=$id?>'));" />
+					</div>
+				<?}?>
 			</td>
 		<?
 	}elseif($args["type"] == "imageupload"){
@@ -346,7 +402,7 @@ function form_drawInput($args){
 				<?=$title_html?>
 			</td>
 			<?=$td_html?>
-				<input type="file" class="input_<?=$args["type"]?>" name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" />
+				<input type="file" class="input_<?=$args["type"]?>" name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>"<?=$js_tags?> />
 			</td>
 		<?
 	}elseif($args["type"] == "textarea"){
@@ -355,7 +411,7 @@ function form_drawInput($args){
 				<?=$title_html?>
 			</td>
 			<?=$td_html?>
-				<textarea name="<?=htmlspecialchars($args["name"])?>" class="<?=htmlspecialchars($args["class"])?>"<?if ($args["height"]){?> style="height: <?=$args["height"]?>;"<?}?>><?=htmlspecialchars_textarea($value)?></textarea>
+				<textarea name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($args["class"])?>"<?if ($args["height"]){?> style="height: <?=$args["height"]?>;"<?}?><?=$js_tags?>><?=htmlspecialchars_textarea($value)?></textarea>
 			</td>
 		<?
 	}elseif($args["type"] == "fckeditor"){
@@ -382,7 +438,7 @@ function form_drawInput($args){
 		$id = $id . "_" . $value;
 		?>
 			<td class="tdt" colspan="2">
-				<input type="radio" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($args["name"])?>" value="<?=htmlspecialchars($args["value"])?>"<?if ($args["checked"]){?> checked="checked"<?}?> />
+				<input type="radio" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($args["name"])?>" value="<?=htmlspecialchars($args["value"])?>"<?if ($args["checked"]){?> checked="checked"<?}?><?=$js_tags?> />
 				<label for="<?=htmlspecialchars($id)?>">
 					<?=$title_html?>
 				</label>
@@ -403,13 +459,13 @@ function form_drawInput($args){
 				<?=$title_html?>
 			</td>
 			<?=$td_html?>
-				<input type="<?=htmlspecialchars($args["type"])?>"<?if ($args["disabled"]){?> disabled<?}?><?if ($args["maxlength"]){?> maxlength="<?=$args["maxlength"]?>"<?}?> class="<?=$args["class"]?>" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($args["name"])?>" value="<?=htmlspecialchars($value)?>" />
+				<input type="<?=htmlspecialchars($args["type"])?>"<?if ($args["disabled"]){?> disabled<?}?><?if ($args["maxlength"]){?> maxlength="<?=$args["maxlength"]?>"<?}?> class="<?=$args["class"]?>" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($args["name"])?>" value="<?=htmlspecialchars($value)?>"<?=$js_tags?> />
 			</td>
 		<?
 	}
 	
 	if (!array_key_exists("tr", $args) or $args["tr"]){
-		?><tr><?
+		?></tr><?
 	}
 	
 	if ($args["descr"]){
