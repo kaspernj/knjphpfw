@@ -381,4 +381,23 @@ class knjobjects{
 		
 		return $this->objects[$ob][$id];
 	}
+	
+	function get_try($ob, $key, $obname = null){
+		if (!$obname){
+			if (substr($key, -3, 3) == "_id"){
+				$obname = substr($key, 0, -3);
+			}
+		}
+		
+		$id = intval($ob->g($key));
+		if (!$id){
+			return false;
+		}
+		
+		try{
+			$retob = $this->get($obname, $id);
+		}catch(knjdb_rownotfound_exception $e){
+			return false;
+		}
+	}
 }
