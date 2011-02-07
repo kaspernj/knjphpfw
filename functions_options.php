@@ -19,11 +19,11 @@
 			$knj_options["table"] = "options";
 		}
 		
-		if (!$knj_options["keycol"]){
+		if (!array_key_exists("keycol", $knj_options) or !$knj_options["keycol"]){
 			$knj_options["keycol"] = "title";
 		}
 		
-		if (!$knj_options["valcol"]){
+		if (!array_key_exists("valcol", $knj_options) or !$knj_options["valcol"]){
 			$knj_options["valcol"] = "value";
 		}
 	}

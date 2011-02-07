@@ -240,7 +240,7 @@ function form_drawInput($args){
 			$args["type"] = "checkbox";
 		}elseif($f3 == "tex"){
 			$args["type"] = "text";
-		}elseif($f3 == "sel" or $args["opts"]){
+		}elseif($f3 == "sel" or array_key_exists("opts", $args)){
 			$args["type"] = "select";
 		}elseif($f3 == "fil"){
 			$args["type"] = "file";
@@ -302,10 +302,19 @@ function form_drawInput($args){
 		$value = number_out($value, $args["decis"]);
 	}
 	
+	if ($args["classes"]){
+		$classes = $args["classes"];
+	}else{
+		$classes = array();
+	}
+	
+	$classes[] = $args["class"];
+	$args["class"] = implode(" ", $classes);
+	
 	if ($args["type"] == "checkbox"){
 		?>
 			<td colspan="2" class="tdcheck">
-				<input type="<?=$args["type"]?>" name="<?=$args["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?><?=$js_tags?> />
+				<input<?if ($args["disabled"]){?> disabled<?}?> type="<?=$args["type"]?>" name="<?=$args["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?><?=$js_tags?> />
 				<label for="<?=$id?>"><?=$title_html?></label>
 			</td>
 		<?
@@ -597,7 +606,11 @@ class knj_browser{
 			"w3c_validator"
 		);
 		
-		$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);
+		if (array_key_exists("HTTP_USER_AGENT", $_SERVER)){
+			$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);
+		}else{
+			return "unknown";
+		}
 		
 		if (strpos($ua, "windows") !== false){
 			return "windows";
