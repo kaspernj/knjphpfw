@@ -14,7 +14,7 @@
 	class DBConn extends DBConnDBs{
 		private $rows;
 		private $type_try;
-		private $opts = array("idcol" => "id");
+		public $opts = array("idcol" => "id");
 		public $lasterror;
 		public $conn;
 		public $type;
