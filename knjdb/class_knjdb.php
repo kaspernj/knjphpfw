@@ -2,7 +2,7 @@
 
 class knjdb{
 	public $conn;
-	private $args = array(
+	public $args = array(
 		"col_id" => "id",
 		"autoconnect" => true,
 		"stats" => false
