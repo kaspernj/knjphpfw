@@ -399,7 +399,7 @@ class knjobjects{
 		}
 		
 		try{
-			$retob = $this->get($obname, $id);
+			return $this->get($obname, $id);
 		}catch(knjdb_rownotfound_exception $e){
 			return false;
 		}
@@ -426,6 +426,14 @@ class knjobjects{
 				$found = true;
 			}elseif(array_key_exists("cols_dbrows", $args) and in_array($list_key . "_id", $args["cols_dbrows"])){
 				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key . "_id") . $colsep . " = '" . $this->config["db"]->sql($list_val->id()) . "'";
+				$found = true;
+			}elseif(array_key_exists("cols_bool", $args) and in_array($list_key, $args["cols_bool"])){
+				if ($list_val){
+					$list_val = "1";
+				}else{
+					$list_val = "0";
+				}
+				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key) . $colsep . " = '" . $this->config["db"]->sql($list_val) . "'";
 				$found = true;
 			}
 			
