@@ -406,13 +406,15 @@ class knjobjects{
 	}
 	
 	function sqlhelper(&$list_args, $args){
+		$db = $this->config["db"];
+		
 		if ($args["table"]){
-			$table = $this->config["db"]->conn->sep_table . $this->config["db"]->escape_table($args["table"]) . $this->config["db"]->conn->sep_table . ".";
+			$table = $db->conn->sep_table . $db->escape_table($args["table"]) . $db->conn->sep_table . ".";
 		}else{
 			$table = "";
 		}
 		
-		$colsep = $this->config["db"]->conn->sep_col;
+		$colsep = $db->conn->sep_col;
 		
 		if (!is_array($list_args)){
 			throw new exception("The arguments given was not an array.");
@@ -422,10 +424,10 @@ class knjobjects{
 			$found = false;
 			
 			if (array_key_exists("cols_str", $args) and in_array($list_key, $args["cols_str"])){
-				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key) . $colsep . " = '" . $this->config["db"]->sql($list_val) . "'";
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
 				$found = true;
 			}elseif(array_key_exists("cols_dbrows", $args) and in_array($list_key . "_id", $args["cols_dbrows"])){
-				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key . "_id") . $colsep . " = '" . $this->config["db"]->sql($list_val->id()) . "'";
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '" . $db->sql($list_val->id()) . "'";
 				$found = true;
 			}elseif(array_key_exists("cols_bool", $args) and in_array($list_key, $args["cols_bool"])){
 				if ($list_val){
@@ -433,7 +435,10 @@ class knjobjects{
 				}else{
 					$list_val = "0";
 				}
-				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key) . $colsep . " = '" . $this->config["db"]->sql($list_val) . "'";
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				$found = true;
+			}elseif(substr($list_key, -7, 7) == "_search" and preg_match("/^(.+)_search$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " LIKE '%" . $db->sql($list_val) . "%'";
 				$found = true;
 			}
 			
