@@ -425,6 +425,10 @@ class knjobjects{
 				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key) . $colsep . " = '" . $this->config["db"]->sql($list_val) . "'";
 				$found = true;
 			}elseif(array_key_exists("cols_dbrows", $args) and in_array($list_key . "_id", $args["cols_dbrows"])){
+				if (!is_object($list_val)){
+					throw new exception("Unknown type: " . gettype($list_val));
+				}
+				
 				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key . "_id") . $colsep . " = '" . $this->config["db"]->sql($list_val->id()) . "'";
 				$found = true;
 			}
