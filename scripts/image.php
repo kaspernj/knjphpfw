@@ -126,13 +126,17 @@
 		die("Something went wrong.");
 	}
 	
-	header("Content-Type: image/" . $type);
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $mtime) . " GMT");
 	if ($image_config["tmpimagesdir"] && $cache_fn){
-		ImageOut($image, $type, $quality, $cache_fn);
+		if (ImageOut($image, $type, $quality, $cache_fn)){
+			header("Content-Type: image/" . $type);
+			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $mtime) . " GMT");
+		}
+		
 		touch($cache_fn, filemtime($_GET["picture"]));
 		readfile($cache_fn);
 	}else{
+		header("Content-Type: image/" . $type);
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $mtime) . " GMT");
 		ImageOut($image, $type, $quality, null);
 	}
 ?>
