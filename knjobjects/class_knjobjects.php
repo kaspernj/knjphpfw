@@ -436,6 +436,8 @@ class knjobjects{
 			}elseif(array_key_exists("cols_dbrows", $args) and in_array($list_key . "_id", $args["cols_dbrows"])){
 				if (!is_object($list_val)){
 					throw new exception("Unknown type: " . gettype($list_val));
+				}elseif(!method_exists($list_val, "id")){
+					throw new exception("Unknown method on object: " . get_class($list_val) . "->id().");
 				}
 				
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '" . $db->sql($list_val->id()) . "'";

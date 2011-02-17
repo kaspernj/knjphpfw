@@ -71,6 +71,10 @@ class knjdb_mysql{
 	}
 	
 	function sql($string){
+		if (is_object($string)){
+			throw new exception("Given argument was an object.");
+		}
+		
 		return mysql_real_escape_string($string);
 	}
 	
