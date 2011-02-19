@@ -399,20 +399,22 @@ class knjobjects{
 		}
 		
 		try{
-			$retob = $this->get($obname, $id);
+			return $this->get($obname, $id);
 		}catch(knjdb_rownotfound_exception $e){
 			return false;
 		}
 	}
 	
 	function sqlhelper(&$list_args, $args){
+		$db = $this->config["db"];
+		
 		if ($args["table"]){
-			$table = $this->config["db"]->conn->sep_table . $this->config["db"]->escape_table($args["table"]) . $this->config["db"]->conn->sep_table . ".";
+			$table = $db->conn->sep_table . $db->escape_table($args["table"]) . $db->conn->sep_table . ".";
 		}else{
 			$table = "";
 		}
 		
-		$colsep = $this->config["db"]->conn->sep_col;
+		$colsep = $db->conn->sep_col;
 		
 		if (!is_array($list_args)){
 			throw new exception("The arguments given was not an array.");
@@ -422,11 +424,52 @@ class knjobjects{
 			$found = false;
 			
 			if (array_key_exists("cols_str", $args) and in_array($list_key, $args["cols_str"])){
-				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key) . $colsep . " = '" . $this->config["db"]->sql($list_val) . "'";
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				$found = true;
+			}elseif(array_key_exists("cols_str", $args) and preg_match("/^(.+)_has$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
+				if ($list_val){
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " != ''";
+				}else{
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " = ''";
+				}
 				$found = true;
 			}elseif(array_key_exists("cols_dbrows", $args) and in_array($list_key . "_id", $args["cols_dbrows"])){
-				$sql_where .= " AND " . $table . $colsep . $this->config["db"]->escape_column($list_key . "_id") . $colsep . " = '" . $this->config["db"]->sql($list_val->id()) . "'";
+				if (!is_object($list_val)){
+					throw new exception("Unknown type: " . gettype($list_val));
+				}
+				
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '" . $db->sql($list_val->id()) . "'";
 				$found = true;
+			}elseif(array_key_exists("cols_bool", $args) and in_array($list_key, $args["cols_bool"])){
+				if ($list_val){
+					$list_val = "1";
+				}else{
+					$list_val = "0";
+				}
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				$found = true;
+			}elseif(substr($list_key, -7, 7) == "_search" and preg_match("/^(.+)_search$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " LIKE '%" . $db->sql($list_val) . "%'";
+				$found = true;
+			}elseif(array_key_exists("cols_dates", $args) and preg_match("/^(.+)_(date|time|from|to)/", $list_key, $match) and in_array($match[1], $args["cols_dates"])){
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
+				$found = true;
+				
+				switch($match[2]){
+					case "date":
+						$sql_where .= " = '" . $db->sql(date_dbstr($list_val, array("time" => false))) . "'";
+						break;
+					case "time":
+						$sql_where .= " = '" . $db->sql(date_dbstr($list_val, array("time" => true))) . "'";
+					case "from":
+						$sql_where .= " >= '" . $db->sql(date_dbstr($list_val, array("time" => true))) . "'";
+						break;
+					case "to":
+						$sql_where .= " <= '" . $db->sql(date_dbstr($list_val, array("time" => true))) . "'";
+						break;
+					default:
+						throw new exception("Invalid mode: " . $match[2]);
+				}
 			}
 			
 			if ($found){
