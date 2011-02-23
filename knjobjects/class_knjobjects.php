@@ -412,7 +412,11 @@ class knjobjects{
 	}
 	
 	function sqlhelper(&$list_args, $args){
-		$db = $this->config["db"];
+		if ($args["db"]){
+			$db = $args["db"];
+		}else{
+			$db = $this->config["db"];
+		}
 		
 		if ($args["table"]){
 			$table = $db->conn->sep_table . $db->escape_table($args["table"]) . $db->conn->sep_table . ".";
@@ -426,8 +430,15 @@ class knjobjects{
 			throw new exception("The arguments given was not an array.");
 		}
 		
+		$sql_limit = "";
+		$sql_order = "";
+		
 		foreach($list_args as $list_key => $list_val){
 			$found = false;
+			
+			if ($args["utf8_decode"]){
+				$list_val = utf8_decode($list_val);
+			}
 			
 			if (array_key_exists("cols_str", $args) and in_array($list_key, $args["cols_str"])){
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
@@ -479,6 +490,19 @@ class knjobjects{
 					default:
 						throw new exception("Invalid mode: " . $match[2]);
 				}
+			}elseif($list_key == "limit"){
+				$sql_limit .= " LIMIT " . intval($list_val);
+				$found = true;
+			}elseif($list_key == "limit_from" and $list_args["limit_to"]){
+				$sql_limit .= " LIMIT " . intval($list_val) . ", " . intval($list_args["limit_to"]);
+				$found = true;
+			}elseif($list_key == "limit_to"){
+				$found = true;
+			}elseif($list_key == "orderby"){
+				if (is_string($list_val)){
+					$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
+					$found = true;
+				}
 			}
 			
 			if ($found){
@@ -487,7 +511,9 @@ class knjobjects{
 		}
 		
 		return array(
-			"sql_where" => $sql_where
+			"sql_where" => $sql_where,
+			"sql_limit" => $sql_limit,
+			"sql_order" => $sql_order
 		);
 	}
 }
