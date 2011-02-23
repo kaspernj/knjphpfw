@@ -122,7 +122,7 @@
 		$quality = 85;
 	}
 	
-	if (!$image){
+	if (!$image or !is_resource($image)){
 		die("Something went wrong.");
 	}
 	
@@ -132,7 +132,10 @@
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $mtime) . " GMT");
 		}
 		
-		touch($cache_fn, filemtime($_GET["picture"]));
+		if (!touch($cache_fn, filemtime($_GET["picture"]))){
+			throw new exception(_("Could not touch file."));
+		}
+		
 		readfile($cache_fn);
 	}else{
 		header("Content-Type: image/" . $type);
