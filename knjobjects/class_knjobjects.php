@@ -43,7 +43,12 @@ class knjobjects{
 		return $return;
 	}
 	
+	/** DEPRECATED: Use get_by() instead. */
 	function single_by($obj, $args){
+		return $this->single_by($obj, $args);
+	}
+	
+	function get_by($obj, $args){
 		$objs = $this->list_obs($obj, $args);
 		if (!$objs){
 			return false;
@@ -51,6 +56,7 @@ class knjobjects{
 		
 		$data = each($objs);
 		return $data[1];
+		
 	}
 	
 	function cleanMemory(){
