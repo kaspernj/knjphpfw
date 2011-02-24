@@ -32,7 +32,8 @@ class knj_autoload{
 		);
 		$this->classes = array(
 			"net_ftp" => "Net/FTP.php",
-			"pclzip" => "libphp-pclzip/pclzip.lib.php"
+			"pclzip" => "libphp-pclzip/pclzip.lib.php",
+			"fpdf" => "fpdf/fpdf.php"
 		);
 	}
 	
