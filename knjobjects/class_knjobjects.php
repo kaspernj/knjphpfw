@@ -43,7 +43,12 @@ class knjobjects{
 		return $return;
 	}
 	
+	/** DEPRECATED: Use get_by() instead. */
 	function single_by($obj, $args){
+		return $this->single_by($obj, $args);
+	}
+	
+	function get_by($obj, $args){
 		$objs = $this->list_obs($obj, $args);
 		if (!$objs){
 			return false;
@@ -51,6 +56,7 @@ class knjobjects{
 		
 		$data = each($objs);
 		return $data[1];
+		
 	}
 	
 	function cleanMemory(){
@@ -406,7 +412,11 @@ class knjobjects{
 	}
 	
 	function sqlhelper(&$list_args, $args){
-		$db = $this->config["db"];
+		if ($args["db"]){
+			$db = $args["db"];
+		}else{
+			$db = $this->config["db"];
+		}
 		
 		if ($args["table"]){
 			$table = $db->conn->sep_table . $db->escape_table($args["table"]) . $db->conn->sep_table . ".";
@@ -420,8 +430,15 @@ class knjobjects{
 			throw new exception("The arguments given was not an array.");
 		}
 		
+		$sql_limit = "";
+		$sql_order = "";
+		
 		foreach($list_args as $list_key => $list_val){
 			$found = false;
+			
+			if ($args["utf8_decode"]){
+				$list_val = utf8_decode($list_val);
+			}
 			
 			if (array_key_exists("cols_str", $args) and in_array($list_key, $args["cols_str"])){
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
@@ -453,6 +470,9 @@ class knjobjects{
 			}elseif(substr($list_key, -7, 7) == "_search" and preg_match("/^(.+)_search$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " LIKE '%" . $db->sql($list_val) . "%'";
 				$found = true;
+			}elseif(substr($list_key, -6, 6) == "_lower" and preg_match("/^(.+)_lower$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
+				$sql_where .= " AND LOWER(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ") = LOWER('" . $db->sql($list_val) . "')";
+				$found = true;
 			}elseif(array_key_exists("cols_dates", $args) and preg_match("/^(.+)_(date|time|from|to)/", $list_key, $match) and in_array($match[1], $args["cols_dates"])){
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
 				$found = true;
@@ -472,6 +492,19 @@ class knjobjects{
 					default:
 						throw new exception("Invalid mode: " . $match[2]);
 				}
+			}elseif($list_key == "limit"){
+				$sql_limit .= " LIMIT " . intval($list_val);
+				$found = true;
+			}elseif($list_key == "limit_from" and $list_args["limit_to"]){
+				$sql_limit .= " LIMIT " . intval($list_val) . ", " . intval($list_args["limit_to"]);
+				$found = true;
+			}elseif($list_key == "limit_to"){
+				$found = true;
+			}elseif($list_key == "orderby"){
+				if (is_string($list_val)){
+					$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
+					$found = true;
+				}
 			}
 			
 			if ($found){
@@ -480,7 +513,9 @@ class knjobjects{
 		}
 		
 		return array(
-			"sql_where" => $sql_where
+			"sql_where" => $sql_where,
+			"sql_limit" => $sql_limit,
+			"sql_order" => $sql_order
 		);
 	}
 }
