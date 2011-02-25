@@ -45,7 +45,7 @@ class knjobjects{
 	
 	/** DEPRECATED: Use get_by() instead. */
 	function single_by($obj, $args){
-		return $this->single_by($obj, $args);
+		return $this->get_by($obj, $args);
 	}
 	
 	function get_by($obj, $args){
