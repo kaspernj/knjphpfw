@@ -451,13 +451,20 @@ class knjobjects{
 				}
 				$found = true;
 			}elseif(array_key_exists("cols_dbrows", $args) and in_array($list_key . "_id", $args["cols_dbrows"])){
-				if (!is_object($list_val)){
+				if (!is_object($list_val) and !is_bool($list_val)){
 					throw new exception("Unknown type: " . gettype($list_val));
-				}elseif(!method_exists($list_val, "id")){
+				}elseif(is_object($list_val) and !method_exists($list_val, "id")){
 					throw new exception("Unknown method on object: " . get_class($list_val) . "->id().");
 				}
 				
-				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '" . $db->sql($list_val->id()) . "'";
+				if ($list_val === true){
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " != '0'";
+				}elseif($list_val === false){
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '0'";
+				}else{
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '" . $db->sql($list_val->id()) . "'";
+				}
+				
 				$found = true;
 			}elseif(array_key_exists("cols_bool", $args) and in_array($list_key, $args["cols_bool"])){
 				if ($list_val){
