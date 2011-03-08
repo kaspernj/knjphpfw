@@ -43,7 +43,9 @@ function knj_error_reporter_error_handeler($errno, $errmsg, $filename, $linenum,
 	
 	$mail_body .= knj_error_reporter_getData();
 	
-	knj_error_reporter_email($mail_body);
+	knj_error_reporter_email($mail_body, array(
+		"error_msg" => utf8_encode($errmsg)
+	));
 }
 
 function knj_error_reporter_getData(){
@@ -85,18 +87,19 @@ function knj_error_reporter_exception_handler($exc){
 	$mail_body .= "*URL*:\nhttp://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] . "\n\n";
 	
 	$mail_body .= "*File*:\n" . $exc->getFile() . ":" . $exc->getLine() . "\n\n";
-	
 	$mail_body .= "*Exception text*:\n" . $exc->getMessage() . "\n\n";
 	$mail_body .= "*Trace*:\n" . $exc->getTraceAsString() . "\n\n";
 	
 	$mail_body .= knj_error_reporter_getData();
 	
-	knj_error_reporter_email($mail_body);
+	knj_error_reporter_email($mail_body, array(
+		"error_msg" => $exc->getMessage()
+	));
 	
 	echo "Uncaught exception '" . get_class($exc) . "' with message '" . $exc->getMessage() . "'\n\n" . $exc->getTraceAsString() . "\n\n";
 }
 
-function knj_error_reporter_email($msg){
+function knj_error_reporter_email($msg, $args = array()){
 	global $knj_error_reporter;
 	
 	$mail_headers = "";
@@ -113,6 +116,9 @@ function knj_error_reporter_email($msg){
 			$title = "Error reported by knj's error reporter";
 		}
 		
+		$err_msg = knj_strings::shorten($args["error_msg"], 38);
+		$title = sprintf($title, $err_msg);
+		
 		foreach($knj_error_reporter["emails"] AS $email){
 			mail($email, $title, $msg, $mail_headers);
 		}
@@ -122,6 +128,10 @@ function knj_error_reporter_email($msg){
 
 function knj_error_reporter_activate($args = array()){
 	global $knj_error_reporter;
+	
+	if (!$knj_error_reporter["emails"]){
+		$knj_error_reporter["emails"] = array();
+	}
 	
 	foreach($args AS $key => $value){
 		if ($key == "emails"){

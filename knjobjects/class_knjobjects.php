@@ -433,6 +433,8 @@ class knjobjects{
 		$sql_limit = "";
 		$sql_order = "";
 		
+		$dbrows_exist = array_key_exists("cols_dbrows", $args);
+		
 		foreach($list_args as $list_key => $list_val){
 			$found = false;
 			
@@ -450,7 +452,7 @@ class knjobjects{
 					$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " = ''";
 				}
 				$found = true;
-			}elseif(array_key_exists("cols_dbrows", $args) and in_array($list_key . "_id", $args["cols_dbrows"])){
+			}elseif($dbrows_exist and in_array($list_key . "_id", $args["cols_dbrows"])){
 				if (!is_object($list_val) and !is_bool($list_val)){
 					throw new exception("Unknown type: " . gettype($list_val));
 				}elseif(is_object($list_val) and !method_exists($list_val, "id")){
@@ -465,6 +467,9 @@ class knjobjects{
 					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '" . $db->sql($list_val->id()) . "'";
 				}
 				
+				$found = true;
+			}elseif($dbrows_exist and in_array($list_key, $args["cols_dbrows"])){
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
 				$found = true;
 			}elseif(array_key_exists("cols_bool", $args) and in_array($list_key, $args["cols_bool"])){
 				if ($list_val){
@@ -511,6 +516,20 @@ class knjobjects{
 				if (is_string($list_val)){
 					$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
 					$found = true;
+				}elseif(is_array($list_val)){
+					$found = true;
+					$sql_order .= " ORDER BY ";
+					
+					$first = true;
+					foreach($list_val as $val_ele){
+						if ($first){
+							$first = false;
+						}else{
+							$sql_order .= ", ";
+						}
+						
+						$sql_order .= $table . $colsep . $db->escape_column($val_ele) . $colsep;
+					}
 				}
 			}
 			
