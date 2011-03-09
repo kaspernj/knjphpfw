@@ -53,8 +53,8 @@ class web{
 		return jsback();
 	}
 	
-	function rewritesafe($string){
-		$string = strtr($string, array(
+	function rewrite_replaces(){
+		return array(
 			"&" => "",
 			"æ" => "ae",
 			"ø" => "oe",
@@ -62,6 +62,7 @@ class web{
 			"Æ" => "AE",
 			"Å" => "AA",
 			"Ø" => "OE",
+			"é" => "e",
 			"\"" => "",
 			"/" => "_",
 			"(" => "",
@@ -70,8 +71,16 @@ class web{
 			":" => "-",
 			"+" => "_",
 			"." => "-",
-			"," => "-"
-		));
+			"," => "-",
+			"®" => "",
+			"▒" => "",
+			"┬" => "",
+			"?" => "-"
+		);
+	}
+	
+	function rewritesafe($string){
+		$string = strtr($string, Web::rewrite_replaces());
 		$string = preg_replace("/\s+/", "_", $string);
 		
 		return $string;
