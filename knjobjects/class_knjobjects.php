@@ -10,11 +10,11 @@ class knjobjects{
 		$this->config = $args;
 		$this->args = &$this->config;
 		
-		if (!$this->config["class_sep"]){
+		if (!array_key_exists("class_sep", $this->config)){
 			$this->config["class_sep"] = "_";
 		}
 		
-		if (!$this->config["col_id"]){
+		if (!array_key_exists("col_id", $this->config)){
 			$this->config["col_id"] = "id";
 		}
 		
