@@ -64,7 +64,6 @@ class web{
 			"Ø" => "OE",
 			"é" => "e",
 			"\"" => "",
-			"/" => "_",
 			"(" => "",
 			")" => "",
 			"*" => "",
@@ -84,6 +83,13 @@ class web{
 		$string = preg_replace("/\s+/", "_", $string);
 		
 		return $string;
+	}
+	
+	function rewritesafe_removeothers($str){
+		$str = Web::rewritesafe($str);
+		preg_match_all("/[\/A-z_-]+/", $str, $matches);
+		$newstr = implode("_", $matches[0]);
+		return $newstr;
 	}
 	
 	function rewriteback($string){
