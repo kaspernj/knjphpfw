@@ -160,7 +160,7 @@ function knj_error_reporter_activate($args = array()){
 		)
 	){
 		$activate = false;
-	}elseif($knj_error_reporter["ignore_bots"] && knj_browser::getOS() == "bot"){
+	}elseif(array_key_exists("ignore_bots", $knj_error_reporter) and $knj_error_reporter["ignore_bots"] && knj_browser::getOS() == "bot"){
 		$activate = false;
 	}
 	

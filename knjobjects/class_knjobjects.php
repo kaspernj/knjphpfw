@@ -10,11 +10,11 @@ class knjobjects{
 		$this->config = $args;
 		$this->args = &$this->config;
 		
-		if (!$this->config["class_sep"]){
+		if (!array_key_exists("class_sep", $this->config)){
 			$this->config["class_sep"] = "_";
 		}
 		
-		if (!$this->config["col_id"]){
+		if (!array_key_exists("col_id", $this->config)){
 			$this->config["col_id"] = "id";
 		}
 		
@@ -49,6 +49,8 @@ class knjobjects{
 	}
 	
 	function get_by($obj, $args){
+		$args["limit"] = 1;
+		
 		$objs = $this->list_obs($obj, $args);
 		if (!$objs){
 			return false;
@@ -56,7 +58,6 @@ class knjobjects{
 		
 		$data = each($objs);
 		return $data[1];
-		
 	}
 	
 	function cleanMemory(){
@@ -469,7 +470,14 @@ class knjobjects{
 				
 				$found = true;
 			}elseif($dbrows_exist and in_array($list_key, $args["cols_dbrows"])){
-				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				if (is_array($list_val)){
+					if (empty($list_val)) throw new exception("No elements was given in array.");
+					
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " IN (" . knjarray::implode(array("array" => $list_val, "impl" => ",", "surr" => "'", "self_callback" => array($db, "sql"))) . ")";
+				}else{
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				}
+				
 				$found = true;
 			}elseif(array_key_exists("cols_bool", $args) and in_array($list_key, $args["cols_bool"])){
 				if ($list_val){
@@ -528,7 +536,20 @@ class knjobjects{
 							$sql_order .= ", ";
 						}
 						
+						if (is_array($val_ele)){
+							$ordermode = strtolower($val_ele[1]);
+							$val_ele = $val_ele[0];
+						}
+						
 						$sql_order .= $table . $colsep . $db->escape_column($val_ele) . $colsep;
+						
+						if ($ordermode == "desc"){
+							$sql_order .= " DESC";
+						}elseif($ordermode == "asc"){
+							$sql_order .= " ASC";
+						}else{
+							throw new exception("Invalid order-mode: " . $ordermode);
+						}
 					}
 				}
 			}
