@@ -70,6 +70,7 @@ foreach($tables1 AS $table1){
 	
 	if (!$found){
 		echo("Warning: Table was not found in db2: \"" . $table1["name"] . "\".\n");
+		continue;
 	}
 	
 	

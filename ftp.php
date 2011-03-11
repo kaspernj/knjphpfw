@@ -31,8 +31,26 @@ class knj_ftp{
 	}
 	
 	function put($args){
+		if (!file_exists($args["file"])){
+			throw new exception("File does not exist.");
+		}
+		
 		if (!ftp_put($this->ftp, $args["path"], $args["file"], FTP_BINARY)){
 			throw new exception("Could not transfer file.");
+		}
+	}
+	
+	function mkdir($args){
+		if (!is_array($args)){
+			throw new exception("Argument was not an array.");
+		}
+		
+		if (strlen(trim($args["path"])) <= 0){
+			throw new exception("No path was given.");
+		}
+		
+		if (!ftp_mkdir($this->ftp, $args["path"])){
+			throw new exception("Could not create dir: " . $args["path"]);
 		}
 	}
 	

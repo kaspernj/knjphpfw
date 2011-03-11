@@ -207,7 +207,7 @@ class knjdb{
 	}
 	
 	function escape_column($string){
-		if (strpos($string, $this->conn->sep_col) !== false){
+		if ($this->conn->sep_col and strpos($string, $this->conn->sep_col) !== false){
 			throw new exception("Possible trying to hack the database!");
 		}
 		

@@ -53,8 +53,8 @@ class web{
 		return jsback();
 	}
 	
-	function rewritesafe($string){
-		$string = strtr($string, array(
+	function rewrite_replaces(){
+		return array(
 			"&" => "",
 			"æ" => "ae",
 			"ø" => "oe",
@@ -62,6 +62,7 @@ class web{
 			"Æ" => "AE",
 			"Å" => "AA",
 			"Ø" => "OE",
+			"é" => "e",
 			"\"" => "",
 			"/" => "_",
 			"(" => "",
@@ -70,8 +71,16 @@ class web{
 			":" => "-",
 			"+" => "_",
 			"." => "-",
-			"," => "-"
-		));
+			"," => "-",
+			"®" => "",
+			"▒" => "",
+			"┬" => "",
+			"?" => "-"
+		);
+	}
+	
+	function rewritesafe($string){
+		$string = strtr($string, Web::rewrite_replaces());
 		$string = preg_replace("/\s+/", "_", $string);
 		
 		return $string;
@@ -347,10 +356,16 @@ function form_drawInput($args){
 			</td>
 		<?
 	}elseif($args["type"] == "imageupload"){
+		if ($args["filetype"]){
+			$ftype = $args["filetype"];
+		}else{
+			$ftype = "jpg";
+		}
+		
 		if (!$value){
 			$fn = null;
 		}else{
-			$fn = $args["path"] . "/" . $value . ".jpg";
+			$fn = $args["path"] . "/" . $value . "." . $ftype;
 		}
 		
 		if (!$fn or !file_exists($fn)){
@@ -517,18 +532,23 @@ class knj_browser{
 	static function getBrowser(){
 		global $knj_web;
 		
-		if (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE") !== false){
+		$uagent = "";
+		if (array_key_exists("HTTP_USER_AGENT", $_SERVER)){
+			$uagent = $_SERVER["HTTP_USER_AGENT"];
+		}
+		
+		if (strpos($uagent, "MSIE") !== false){
 			return "ie";
-		}elseif(strpos($_SERVER["HTTP_USER_AGENT"], "Chrome") !== false){
+		}elseif(strpos($uagent, "Chrome") !== false){
 			return "chrome";
-		}elseif(strpos($_SERVER["HTTP_USER_AGENT"], "Safari") !== false){
+		}elseif(strpos($uagent, "Safari") !== false){
 			return "safari";
-		}elseif(strpos($_SERVER["HTTP_USER_AGENT"], "Konqueror") !== false){
+		}elseif(strpos($uagent, "Konqueror") !== false){
 			return "konqueror";
-		}elseif(strpos($_SERVER["HTTP_USER_AGENT"], "Opera") !== false){
+		}elseif(strpos($uagent, "Opera") !== false){
 			return "opera";
 		}else{
-			if ($knj_web["return_mozilla"] == true){
+			if ($knj_web and array_key_exists("return_mozilla", $knj_web) and $knj_web["return_mozilla"] == true){
 				return "mozilla";
 			}else{
 				return "firefox";
@@ -538,32 +558,37 @@ class knj_browser{
 	
 	/** Returns the major version of the browser. */
 	static function getVersion(){
+		$uagent = "";
+		if (array_key_exists("HTTP_USER_AGENT", $_SERVER)){
+			$uagent = $_SERVER["HTTP_USER_AGENT"];
+		}
+		
 		if (knj_browser::getBrowser() == "ie"){
-			if (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE 8") !== false){
+			if (strpos($uagent, "MSIE 8") !== false){
 				return 8;
-			}elseif(strpos($_SERVER["HTTP_USER_AGENT"], "7.0") !== false){
+			}elseif(strpos($uagent, "7.0") !== false){
 				return 7;
 			}else{
 				return 6;
 			}
 		}elseif(knj_browser::getBrowser() == "safari"){
-			if (strpos($_SERVER["HTTP_USER_AGENT"], "Version/4.0") !== false){
+			if (strpos($uagent, "Version/4.0") !== false){
 				return 4;
 			}
 		}elseif(knj_browser::getBrowser() == "konqueror"){
-			if (strpos($_SERVER["HTTP_USER_AGENT"], "Konqueror/3") !== false){
+			if (strpos($uagent, "Konqueror/3") !== false){
 				return 3;
-			}elseif (strpos($_SERVER["HTTP_USER_AGENT"], "Konqueror/4") !== false){
+			}elseif (strpos($uagent, "Konqueror/4") !== false){
 				return 4;
 			}
 		}elseif(knj_browser::getBrowser() == "mozilla" or knj_browser::getBrowser() == "firefox"){
-			if (strpos($_SERVER["HTTP_USER_AGENT"], "Firefox/3") !== false){
+			if (strpos($uagent, "Firefox/3") !== false){
 				return 3;
-			}elseif(strpos($_SERVER["HTTP_USER_AGENT"], "Firefox/2") !== false){
+			}elseif(strpos($uagent, "Firefox/2") !== false){
 				return 2;
 			}
 		}elseif(knj_browser::getBrowser() == "chrome"){
-			if (strpos($_SERVER["HTTP_USER_AGENT"], "Chrome/4") !== false){
+			if (strpos($uagent, "Chrome/4") !== false){
 				return 4;
 			}
 		}
