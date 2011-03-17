@@ -394,9 +394,19 @@ class knjobjects{
 	}
 	
 	function get_try($ob, $key, $obname = null){
-		if (!$obname){
+		$class_name = get_class($ob);
+		
+		if (!$obname and $this->get_try_cache[$class_name][$key]){
+			$obname = $this->get_try_cache[$class_name][$key];
+		}elseif(!$obname){
 			if (substr($key, -3, 3) == "_id"){
 				$obname = substr($key, 0, -3);
+				$this->get_try_cache[$class_name][$key] = $obname;
+			}elseif(substr($key, -2, 2) == "Id"){
+				$obname = substr($key, 0, -2);
+				$this->get_try_cache[$class_name][$key] = $obname;
+			}else{
+				throw new exception("Could not figure out the object name from: " . $key);
 			}
 		}
 		
