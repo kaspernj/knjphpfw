@@ -547,7 +547,7 @@ class knjobjects{
 							$sql_order .= " DESC";
 						}elseif($ordermode == "asc"){
 							$sql_order .= " ASC";
-						}else{
+						}elseif($ordermode){
 							throw new exception("Invalid order-mode: " . $ordermode);
 						}
 					}

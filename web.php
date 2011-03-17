@@ -87,7 +87,7 @@ class web{
 	
 	function rewritesafe_removeothers($str){
 		$str = Web::rewritesafe($str);
-		preg_match_all("/[\/A-z_-]+/", $str, $matches);
+		preg_match_all("/[\/A-z_-\d]+/", $str, $matches);
 		$newstr = implode("_", $matches[0]);
 		return $newstr;
 	}
@@ -112,6 +112,12 @@ class web{
 		$url .= $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
 		
 		return $url;
+	}
+	
+	static function sxml_esc($str){
+		return strtr($str, array(
+			"&" => "&amp;"
+		));
 	}
 }
 
