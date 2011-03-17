@@ -191,6 +191,10 @@ function select_drawOpts($opts, $selected = null){
 		if (is_array($selected) and in_array($key, $selected)){
 			$is_selected = true;
 		}elseif(is_array($selected) and ($selected["type"] == "arr_rows" or $selected["type"] == "arr_values")){
+			if (!is_array($selected["values"])){
+				throw new exception("values-array was not given as an array.");
+			}
+			
 			foreach($selected["values"] AS $sel_key => $sel_val){
 				if (is_a($sel_val, "knjdb_row")){
 					if ($key == $sel_val->id()){
@@ -332,7 +336,9 @@ function form_drawInput($args){
 	$classes[] = $args["class"];
 	$args["class"] = implode(" ", $classes);
 	
-	if ($args["type"] == "checkbox"){
+	if ($args["type"] == "spacer"){
+		?><td colspan="2">&nbsp;</td><?
+	}elseif($args["type"] == "checkbox"){
 		?>
 			<td colspan="2" class="tdcheck">
 				<input<?if ($args["disabled"]){?> disabled<?}?> type="<?=$args["type"]?>" name="<?=$args["name"]?>" id="<?=$id?>"<?if ($value){?> checked="checked"<?}?><?=$js_tags?> />
