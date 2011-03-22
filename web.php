@@ -580,8 +580,8 @@ class knj_browser{
 		}
 		
 		if (knj_browser::getBrowser() == "ie"){
-			if (strpos($uagent, "MSIE 8") !== false){
-				return 8;
+			if (preg_match("/MSIE (\d+)/", $uagent, $match)){
+				return $match[1];
 			}elseif(strpos($uagent, "7.0") !== false){
 				return 7;
 			}else{
