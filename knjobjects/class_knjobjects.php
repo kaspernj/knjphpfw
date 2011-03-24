@@ -443,7 +443,6 @@ class knjobjects{
 		
 		$sql_limit = "";
 		$sql_order = "";
-		
 		$dbrows_exist = array_key_exists("cols_dbrows", $args);
 		
 		foreach($list_args as $list_key => $list_val){
@@ -497,12 +496,26 @@ class knjobjects{
 				}
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
 				$found = true;
-			}elseif(substr($list_key, -7, 7) == "_search" and preg_match("/^(.+)_search$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
+			}elseif(substr($list_key, -7, 7) == "_search" and preg_match("/^(.+)_search$/", $list_key, $match) and (in_array($match[1], $args["cols_str"]) or in_array($match[1], $args["cols_dbrows"]))){
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " LIKE '%" . $db->sql($list_val) . "%'";
 				$found = true;
 			}elseif(substr($list_key, -6, 6) == "_lower" and preg_match("/^(.+)_lower$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
 				$sql_where .= " AND LOWER(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ") = LOWER('" . $db->sql($list_val) . "')";
 				$found = true;
+			}elseif(array_key_exists("cols_num", $args) and preg_match("/^(.+)_(from|to)/", $list_key, $match) and in_array($match[1], $args["cols_num"])){
+				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
+				$found = true;
+				
+				switch($match[2]){
+					case "from":
+						$sql_where .= " >= '" . $db->sql($list_val) . "'";
+						break;
+					case "to":
+						$sql_where .= " <= '" . $db->sql($list_val) . "'";
+						break;
+					default:
+						throw new exception("Invalid mode: " . $match[2]);
+				}
 			}elseif(array_key_exists("cols_dates", $args) and preg_match("/^(.+)_(date|time|from|to)/", $list_key, $match) and in_array($match[1], $args["cols_dates"])){
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
 				$found = true;
