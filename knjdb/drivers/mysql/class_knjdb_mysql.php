@@ -259,4 +259,8 @@ class knjdb_mysql{
 			return $sql;
 		}
 	}
+	
+	function date_in($str){
+		return strtotime($str);
+	}
 }

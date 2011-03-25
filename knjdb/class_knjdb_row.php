@@ -83,6 +83,10 @@ class knjdb_row{
 		return $this->get($key);
 	}
 	
+	function g_date($key){
+		return $this->dbconn->date_in($this->g($key));
+	}
+	
 	/** Returns the row as an array. */
 	function getAsArray(){
 		return $this->data;
