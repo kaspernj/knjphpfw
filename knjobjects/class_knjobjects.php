@@ -455,13 +455,18 @@ class knjobjects{
 			if (array_key_exists("cols_str", $args) and in_array($list_key, $args["cols_str"])){
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
 				$found = true;
-			}elseif(array_key_exists("cols_str", $args) and preg_match("/^(.+)_has$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
-				if ($list_val){
-					$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " != ''";
-				}else{
-					$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " = ''";
+			}elseif(array_key_exists("cols_str", $args) and preg_match("/^(.+)_(has|not)$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
+				if ($match[2] == "has"){
+					if ($list_val){
+						$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " != ''";
+					}else{
+						$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " = ''";
+					}
+					$found = true;
+				}elseif($match[2] == "not"){
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " != '" . $db->sql($list_val) . "'";
+					$found = true;
 				}
-				$found = true;
 			}elseif($dbrows_exist and in_array($list_key . "_id", $args["cols_dbrows"])){
 				if (!is_object($list_val) and !is_bool($list_val)){
 					throw new exception("Unknown type: " . gettype($list_val));
