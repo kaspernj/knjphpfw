@@ -248,4 +248,8 @@ class knjdb_mysqli{
 		
 		return $sql;
 	}
+	
+	function date_in($str){
+		return strtotime($str);
+	}
 }
