@@ -488,6 +488,22 @@ class knjobjects{
 				}
 				
 				$found = true;
+			}elseif($dbrows_exist and in_array($list_key . "Id", $args["cols_dbrows"])){
+				if (!is_object($list_val) and !is_bool($list_val)){
+					throw new exception("Unknown type: " . gettype($list_val));
+				}elseif(is_object($list_val) and !method_exists($list_val, "id")){
+					throw new exception("Unknown method on object: " . get_class($list_val) . "->id().");
+				}
+				
+				if ($list_val === true){
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "Id") . $colsep . " != '0'";
+				}elseif($list_val === false){
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "Id") . $colsep . " = '0'";
+				}else{
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "Id") . $colsep . " = '" . $db->sql($list_val->id()) . "'";
+				}
+				
+				$found = true;
 			}elseif($dbrows_exist and in_array($list_key, $args["cols_dbrows"])){
 				if (is_array($list_val)){
 					if (empty($list_val)) throw new exception("No elements was given in array.");

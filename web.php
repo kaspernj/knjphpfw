@@ -321,6 +321,10 @@ function form_drawInput($args){
 		}
 	}
 	
+	if (array_key_exists("autocomplete", $args) and !$args["autocomplete"]){
+		$js_tags .= " autocomplete=\"off\"";
+	}
+	
 	if ($args["type"] == "numeric"){
 		$value = number_out($value, $args["decis"]);
 	}
