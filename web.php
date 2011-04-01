@@ -485,6 +485,15 @@ function form_drawInput($args){
 				<?=$value?>
 			</td>
 		<?
+	}elseif($args["type"] == "plain"){
+		?>
+			<td class="tdt">
+				<?=$title_html?>
+			</td>
+			<?=$td_html?>
+				<?=htmlspecialchars($value)?>
+			</td>
+		<?
 	}else{
 		?>
 			<td class="tdt">

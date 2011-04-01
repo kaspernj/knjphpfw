@@ -3,8 +3,8 @@
 require_once "knj/knjdb/class_knjdb_row.php";
 
 class knjobjects{
-	private $objects;
-	private $config;
+	public $objects;
+	public $config;
 	
 	function __construct($args){
 		$this->config = $args;
@@ -384,6 +384,11 @@ class knjobjects{
 					"data" => $rdata,
 					"db" => $this->args["db"],
 					"ob" => $this
+				));
+			}elseif($this->args["version"] == 2){
+				$this->objects[$ob][$id] = new $ob(array(
+					"ob" => $this,
+					"data" => $rdata
 				));
 			}else{
 				$this->objects[$ob][$id] = new $ob($id, $data);
