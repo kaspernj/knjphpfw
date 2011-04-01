@@ -65,6 +65,14 @@ class knjdb_row{
 		$this->updateData($data);
 	}
 	
+	function ob(){
+		if ($this->ob){
+			return $this->ob;
+		}
+		
+		throw new exception("Could not figure out the object handler to use.");
+	}
+	
 	function db(){
 		if ($this->db){
 			return $this->db;
