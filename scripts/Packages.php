@@ -4,9 +4,9 @@
 /** NOTE: This script is used to generate the "Packages" and "Packages.gz" files that Debian-based repositories uses. It can also be used to make OPKG-repositories. */
 
 function ipkg_parse($file){
-	require_once "knj/os.php");
-	require_once "knj/functions_knj_filesystem.php");
-	require_once "knj/strings.php");
+	require_once "knj/os.php";
+	require_once "knj/functions_knj_filesystem.php";
+	require_once "knj/strings.php";
 	
 	$fileinfo = fileinfo($file);
 	if (strpos($fileinfo, "gzip compressed data") !== false){
