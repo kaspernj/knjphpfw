@@ -354,11 +354,13 @@ class knjobjects{
 			$data = $id;
 			$rdata = &$data;
 			$id = $data[$this->config["col_id"]];
+		}elseif(is_array($data) and $data){
+			$rdata = &$data;
 		}else{
 			$rdata = &$id;
 		}
 		
-		if ($this->config["check_id"] and !is_numeric($id)){
+		if ($this->config["check_id"] and !is_numeric($id) and $this->args["version"] != 2){
 			if (is_object($id)){
 				throw new exception("Invalid ID: \"" . get_class($id) . "\", \"" . gettype($id) . "\".");
 			}else{
@@ -550,20 +552,23 @@ class knjobjects{
 						throw new exception("Invalid mode: " . $match[2]);
 				}
 			}elseif(array_key_exists("cols_dates", $args) and preg_match("/^(.+)_(date|time|from|to)/", $list_key, $match) and in_array($match[1], $args["cols_dates"])){
-				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
 				$found = true;
 				
 				switch($match[2]){
 					case "date":
-						$sql_where .= " = '" . $db->sql(date_dbstr($list_val, array("time" => false))) . "'";
+						$sql_where .= " AND DATE(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ")";
+						$sql_where .= " = '" . $db->sql($db->date_format($list_val, array("time" => false))) . "'";
 						break;
 					case "time":
-						$sql_where .= " = '" . $db->sql(date_dbstr($list_val, array("time" => true))) . "'";
+						$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
+						$sql_where .= " = '" . $db->sql($db->date_format($list_val, array("time" => true))) . "'";
 					case "from":
-						$sql_where .= " >= '" . $db->sql(date_dbstr($list_val, array("time" => true))) . "'";
+						$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
+						$sql_where .= " >= '" . $db->sql($db->date_format($list_val, array("time" => true))) . "'";
 						break;
 					case "to":
-						$sql_where .= " <= '" . $db->sql(date_dbstr($list_val, array("time" => true))) . "'";
+						$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
+						$sql_where .= " <= '" . $db->sql($db->date_format($list_val, array("time" => true))) . "'";
 						break;
 					default:
 						throw new exception("Invalid mode: " . $match[2]);

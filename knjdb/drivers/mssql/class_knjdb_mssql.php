@@ -200,8 +200,14 @@ class knjdb_mssql{
 		return $sql;
 	}
 	
-	function date_format($unixt){
-		return date("m/d/Y H:i:s", $unixt);
+	function date_format($unixt, $args = array()){
+		$format = "m/d/Y";
+		
+		if (!array_key_exists("time", $args) or $args["time"]){
+			$format .= " H:i:s";
+		}
+		
+		return date($format, $unixt);
 	}
 	
 	function date_in($str){
