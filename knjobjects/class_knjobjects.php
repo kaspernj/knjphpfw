@@ -441,7 +441,6 @@ class knjobjects{
 		}
 		
 		$colsep = $db->conn->sep_col;
-		
 		if (!is_array($list_args)){
 			throw new exception("The arguments given was not an array.");
 		}
@@ -475,7 +474,7 @@ class knjobjects{
 					$found = true;
 				}
 			}elseif($dbrows_exist and in_array($list_key . "_id", $args["cols_dbrows"])){
-				if (!is_object($list_val) and !is_bool($list_val)){
+				if (!is_object($list_val) and !is_bool($list_val) and !is_array($list_val)){
 					throw new exception("Unknown type: " . gettype($list_val));
 				}elseif(is_object($list_val) and !method_exists($list_val, "id")){
 					throw new exception("Unknown method on object: " . get_class($list_val) . "->id().");
@@ -485,6 +484,12 @@ class knjobjects{
 					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " != '0'";
 				}elseif($list_val === false){
 					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '0'";
+				}elseif(is_array($list_val)){
+					if (empty($list_val)){
+						$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '-1'";
+					}else{
+						$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " IN (" . knjarray::implode(array("array" => $list_val, "impl" => ",", "surr" => "'", "func_callback" => "id")) . ")";
+					}
 				}else{
 					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key . "_id") . $colsep . " = '" . $db->sql($list_val->id()) . "'";
 				}
