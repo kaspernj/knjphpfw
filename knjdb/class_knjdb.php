@@ -326,8 +326,8 @@ class knjdb{
 		}
 	}
 	
-	function date_format($unixt){
-		return $this->conn->date_format($unixt);
+	function date_format($unixt, $args = array()){
+		return $this->conn->date_format($unixt, $args);
 	}
 	
 	function date_in($str){
