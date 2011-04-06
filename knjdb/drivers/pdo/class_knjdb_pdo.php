@@ -71,9 +71,19 @@
 		}
 		
 		function query($sql){
-			$res = $this->conn->query($sql);
-			if (!$res){
-				throw new Exception("Query error: " . $this->error());
+			while(true){
+				$res = $this->conn->query($sql);
+				if ($res){
+					break;
+				}
+				
+				$err = $this->error();
+				if ($err == "database schema has changed"){
+					$this->connect();
+					continue;
+				}else{
+					throw new exception("Query error: " . $err);
+				}
 			}
 			
 			return new knjdb_result($this->knjdb, $this, $res);

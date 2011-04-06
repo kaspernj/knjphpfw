@@ -102,16 +102,15 @@
 						$default = substr($d_gc["dflt_value"], 1, -1); //strip slashes.
 						
 						$table->columns[$d_gc["name"]] = new knjdb_column($table, array(
-								"name" => $d_gc["name"],
-								"notnull" => $notnull,
-								"type" => $type,
-								"maxlength" => $maxlength,
-								"default" => $default,
-								"primarykey" => $primarykey,
-								"input_type" => "sqlite3",
-								"autoincr" => ""
-							)
-						);
+							"name" => $d_gc["name"],
+							"notnull" => $notnull,
+							"type" => $type,
+							"maxlength" => $maxlength,
+							"default" => $default,
+							"primarykey" => $primarykey,
+							"input_type" => "sqlite3",
+							"autoincr" => ""
+						));
 					}
 				}
 				
