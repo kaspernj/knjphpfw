@@ -531,7 +531,7 @@ class knjobjects{
 				}
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
 				$found = true;
-			}elseif(substr($list_key, -7, 7) == "_search" and preg_match("/^(.+)_search$/", $list_key, $match) and (in_array($match[1], $args["cols_str"]) or in_array($match[1], $args["cols_dbrows"]))){
+			}elseif(substr($list_key, -7, 7) == "_search" and preg_match("/^(.+)_search$/", $list_key, $match) and (in_array($match[1], $args["cols_str"]) or in_array($match[1], $args["cols_dbrows"])  or in_array($match[1], $args["cols_num"]))){
 				$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " LIKE '%" . $db->sql($list_val) . "%'";
 				$found = true;
 			}elseif(substr($list_key, -6, 6) == "_lower" and preg_match("/^(.+)_lower$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
