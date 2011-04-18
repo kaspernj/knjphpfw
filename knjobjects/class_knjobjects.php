@@ -61,18 +61,22 @@ class knjobjects{
 	}
 	
 	function cleanMemory(){
+		$this->clean_memory();
+	}
+	
+	function clean_memory(){
 		$usage = (memory_get_usage() / 1024) / 1024;
 		if ($usage > 54){
 			$this->unset_all();
 		}
 	}
 	
-	function clean_memory(){
-		$this->cleanMemory();
-	}
-	
 	function unset_all(){
 		$this->objects = array();
+	}
+	
+	function unset_class($classname){
+		unset($this->objects[$classname]);
 	}
 	
 	function requirefile($obname){
