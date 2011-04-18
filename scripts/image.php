@@ -126,7 +126,7 @@
 		die("Something went wrong.");
 	}
 	
-	if ($image_config["tmpimagesdir"] && $cache_fn){
+	if ($image_config["tmpimagesdir"] and $cache_fn){
 		if (ImageOut($image, $type, $quality, $cache_fn)){
 			header("Content-Type: image/" . $type);
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $mtime) . " GMT");
