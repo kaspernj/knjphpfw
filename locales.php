@@ -232,4 +232,11 @@ function number_in($number){
 	return $number;
 }
 
+function number_in_dk($num){
+	return floatval(strtr($num, array(
+		"," => ".",
+		"." => ""
+	)));
+}
+
 class InvalidDate extends exception{}

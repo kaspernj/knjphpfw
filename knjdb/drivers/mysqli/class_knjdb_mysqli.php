@@ -248,4 +248,18 @@ class knjdb_mysqli{
 		
 		return $sql;
 	}
+	
+	function date_in($str){
+		return strtotime($str);
+	}
+	
+	function date_format($unixt, $args = array()){
+		$format = "Y-m-d";
+		
+		if (!array_key_exists("time", $args) or $args["time"]){
+			$format .= " H:i:s";
+		}
+		
+		return date($format, $unixt);
+	}
 }

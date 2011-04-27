@@ -102,11 +102,11 @@ function ImageOpen($img_location){
 function ImageOut($img, $type = "png", $quality = "85", $filename = null){
 	if ($type == "png"){
 		$quality = round($quality / 11, 0);
-		ImagePNG($img, $filename, $quality);
+		return ImagePNG($img, $filename, $quality);
 	}elseif($type == "jpeg" || $type == "jpg"){
-		ImageJPEG($img, $filename, $quality);
+		return ImageJPEG($img, $filename, $quality);
 	}elseif($type == "gif"){
-		ImageGIF($img, $filename, $quality);
+		return ImageGIF($img, $filename, $quality);
 	}else{
 		throw new exception("Invalid type: " . $type);
 	}
