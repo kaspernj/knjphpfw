@@ -59,7 +59,7 @@
 				
 				$return[] = array(
 					"name" => $name,
-					"id" => $hash,
+					"id" => intval($hash),
 					"percent" => $percent,
 					"done" => $done,
 					"size" => $size,
