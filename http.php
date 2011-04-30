@@ -473,7 +473,7 @@ class knj_httpbrowser{
 							}
 						}
 						
-						if (strlen($html) >= $contentlength - 2){
+						if (strlen($html) >= $contentlength){
 							break;
 						}
 						

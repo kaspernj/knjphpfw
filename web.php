@@ -686,4 +686,14 @@ class knj_browser{
 			return "unknown";
 		}
 	}
+	
+	static function locale(){
+		$arr = array();
+		$locale = explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+		if (preg_match("/^([a-z]{2})(_|-)[A-Z]{2}/i", $locale[0], $match)){
+			$arr["locale"] = $match[1];
+		}
+		
+		return $arr;
+	}
 }
