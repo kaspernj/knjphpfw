@@ -687,10 +687,16 @@ class knj_browser{
 		}
 	}
 	
-	static function locale(){
+	static function locale($servervar = null){
+		if (!$servervar){
+			$servervar = $_SERVER;
+		}
+		
 		$arr = array();
-		$locale = explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+		$locale = explode(",", $servervar["HTTP_ACCEPT_LANGUAGE"]);
 		if (preg_match("/^([a-z]{2})(_|-)[A-Z]{2}/i", $locale[0], $match)){
+			$arr["locale"] = $match[1];
+		}elseif(preg_match("/^([a-z]{2})$/", $locale[0], $match)){
 			$arr["locale"] = $match[1];
 		}
 		
