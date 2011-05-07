@@ -583,8 +583,16 @@ class knjobjects{
 				$found = true;
 			}elseif($list_key == "orderby"){
 				if (is_string($list_val)){
-					$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
-					$found = true;
+					if ($args["orderby_callbacks"][$list_val]){
+						$orderby_res = $args["orderby_callbacks"][$list_val]();
+						if ($orderby_res){
+							$sql_order .= " ORDER BY " . $db->escape_column($orderby_res);
+							$found = true;
+						}
+					}else{
+						$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
+						$found = true;
+					}
 				}elseif(is_array($list_val)){
 					$found = true;
 					$sql_order .= " ORDER BY ";
