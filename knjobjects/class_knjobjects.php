@@ -61,18 +61,22 @@ class knjobjects{
 	}
 	
 	function cleanMemory(){
+		$this->clean_memory();
+	}
+	
+	function clean_memory(){
 		$usage = (memory_get_usage() / 1024) / 1024;
 		if ($usage > 54){
 			$this->unset_all();
 		}
 	}
 	
-	function clean_memory(){
-		$this->cleanMemory();
-	}
-	
 	function unset_all(){
 		$this->objects = array();
+	}
+	
+	function unset_class($classname){
+		unset($this->objects[$classname]);
 	}
 	
 	function requirefile($obname){
@@ -461,7 +465,12 @@ class knjobjects{
 			}
 			
 			if (($str_exists and in_array($list_key, $args["cols_str"]) or ($num_exists and in_array($list_key, $args["cols_num"])))){
-				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				if (is_array($list_val)){
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " IN (" . knjarray::implode(array("array" => $list_val, "impl" => ",", "surr" => "'", "self_callback" => array($db, "sql"))) . ")";
+				}else{
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				}
+				
 				$found = true;
 			}elseif($str_exists and preg_match("/^(.+)_(has|not)$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
 				if ($match[2] == "has"){

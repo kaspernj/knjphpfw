@@ -28,7 +28,8 @@ class knj_autoload{
 			"notfoundexc" => "exceptions",
 			"dbconnexc" => "exceptions",
 			"noaccessexc" => "exceptions",
-			"knj_translations" => "translations"
+			"knj_translations" => "translations",
+			"epay" => "epay"
 		);
 		$this->classes = array(
 			"net_ftp" => "Net/FTP.php",
