@@ -21,7 +21,7 @@ function knj_error_last_error(){
 
 /** Handels error on FComputer's website. */
 function knj_error_reporter_error_handeler($errno, $errmsg, $filename, $linenum, $vars, $args = null){
-	if ($errno == E_NOTICE || $errno == E_STRICT){
+	if ($errno == E_NOTICE or $errno == E_STRICT or $errno == E_DEPRECATED){
 		//Do not log notices and strict-errors.
 		return null;
 	}
