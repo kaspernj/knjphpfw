@@ -36,7 +36,15 @@ class knj_ftp{
 		}
 		
 		if (!ftp_put($this->ftp, $args["path"], $args["file"], FTP_BINARY)){
-			throw new exception("Could not transfer file.");
+			if ($this->args["reconnect_on_error_and_try_again"]){
+				$this->connect();
+				
+				if (!ftp_put($this->ftp, $args["path"], $args["file"], FTP_BINARY)){
+					throw new exception("Could not transfer file: " . $err["message"]);
+				}
+			}else{
+				throw new exception("Could not transfer file: " . $err["message"]);
+			}
 		}
 	}
 	
@@ -56,6 +64,7 @@ class knj_ftp{
 	
 	function exists($path){
 		$nlist = ftp_nlist($this->ftp, $path);
+		
 		if (!is_array($nlist)){
 			return false;
 		}
