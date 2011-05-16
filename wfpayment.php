@@ -222,6 +222,10 @@ class wfpayment_payment{
 	
 	function state(){
 		$payments = $this->wfpayment->listPayments(array("order_id" => $this->get("order_id")));
+		if (!$payments or !$payments[0]){
+			return false;
+		}
+		
 		return $payments[0]->get("state");
 	}
 }

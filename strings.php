@@ -148,7 +148,7 @@ class knj_strings{
 		return preg_replace("/<\/textarea>/i", "&lt;/textarea>", $text);
 	}
 	
-	function jsparse($string, $paras = array()){
+	static function jsparse($string, $paras = array()){
 		$string = strtr($string, array(
 			"'" => "\\'",
 			"\"" => "&quot;",
@@ -163,7 +163,7 @@ class knj_strings{
 		return $string;
 	}
 	
-	function tf_str($value, $yesstr, $nostr){
+	static function tf_str($value, $yesstr, $nostr){
 		if ($value){
 			return $yesstr;
 		}
@@ -171,7 +171,7 @@ class knj_strings{
 		return $nostr;
 	}
 	
-	function shorten($text, $maxlength = nil){
+	static function shorten($text, $maxlength = nil){
 		if (!$maxlength or strlen($text) <= $maxlength){
 			return $text;
 		}
@@ -179,7 +179,7 @@ class knj_strings{
 		return trim(substr($text, 0, $maxlength)) . "...";
 	}
 	
-	function is_email($str){
+	static function is_email($str){
 		if (preg_match("/^(.+)@(.+)\.(.+)/", $str)){
 			return true;
 		}

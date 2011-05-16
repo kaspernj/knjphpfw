@@ -99,7 +99,7 @@ class knjobjects{
 			$args
 		);
 		
-		if ($this->args["extra_args"]){
+		if ($this->args and array_key_exists("extra_args", $this->args) and $this->args["extra_args"]){
 			$eargs = $this->args["extra_args"];
 			
 			if ($this->args["extra_args_self"]){
@@ -115,7 +115,7 @@ class knjobjects{
 	function list_obs($ob, $args = array(), $list_args = array()){
 		$return = $this->listObs($ob, $args);
 		
-		if ($list_args["key"]){
+		if ($list_args and array_key_exists("key", $list_args)){
 			$newreturn = array();
 			foreach($return AS $object){
 				$newreturn[$object->g($list_args["key"])] = $object;
@@ -434,13 +434,13 @@ class knjobjects{
 	}
 	
 	function sqlhelper(&$list_args, $args){
-		if ($args["db"]){
+		if ($args and array_key_exists("db", $args) and $args["db"]){
 			$db = $args["db"];
 		}else{
 			$db = $this->config["db"];
 		}
 		
-		if ($args["table"]){
+		if ($args and array_key_exists("table", $args) and $args["table"]){
 			$table = $db->conn->sep_table . $db->escape_table($args["table"]) . $db->conn->sep_table . ".";
 		}else{
 			$table = "";
@@ -451,6 +451,7 @@ class knjobjects{
 			throw new exception("The arguments given was not an array.");
 		}
 		
+		$sql_where = "";
 		$sql_limit = "";
 		$sql_order = "";
 		$dbrows_exist = array_key_exists("cols_dbrows", $args);
@@ -460,7 +461,7 @@ class knjobjects{
 		foreach($list_args as $list_key => $list_val){
 			$found = false;
 			
-			if ($args["utf8_decode"]){
+			if ($args and array_key_exists("utf8_decode", $args) and $args["utf8_decode"]){
 				$list_val = utf8_decode($list_val);
 			}
 			

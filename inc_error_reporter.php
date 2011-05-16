@@ -1,5 +1,24 @@
 <?
 
+function knj_error_get_specific($file, $line){
+	global $knj_error_reporter;
+	
+	if (is_array($knj_error_reporter["last"])){
+		foreach($knj_error_reporter["last"] as $error){
+			if ($error["file"] == $file and $error["line"] == $line){
+				return $error;
+			}
+		}
+	}
+	
+	return false;
+}
+
+function knj_error_last_error(){
+	global $knj_error_reporter;
+	return $knj_error_reporter["last_error"];
+}
+
 /** Handels error on FComputer's website. */
 function knj_error_reporter_error_handeler($errno, $errmsg, $filename, $linenum, $vars, $args = null){
 	if ($errno == E_NOTICE || $errno == E_STRICT){
@@ -29,12 +48,30 @@ function knj_error_reporter_error_handeler($errno, $errmsg, $filename, $linenum,
 	$backtrace = debug_backtrace();
 	$trace = "";
 	foreach($backtrace AS $key => $value){
-		$trace .= "#" . $key . " " . $value["file"] . "(" . $value["line"] . "): " . $value["function"] . "()\n";
+		$trace .= "#" . $key;
+		
+		if (array_key_exists("file", $value)){
+			$trace .= " " . $value["file"];
+		}
+		
+		if (array_key_exists("line", $value)){
+			$trace .= "(" . $value["line"] . ")";
+		}
+		
+		$trace .= ": ";
+		
+		if (array_key_exists("function", $value)){
+			$trace .= $value["function"] . "()";
+		}
+		
+		$trace .= "\n";
 	}
 	
 	$mail_body = "An error occurred on the website at " .date("d/m Y - H:i") . ".\n\n";
 	
-	$mail_body .= "*URL*:\nhttp://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] . "\n\n";
+	if ($_SERVER and array_key_exists("HTTP_HOST", $_SERVER) and array_key_exists("REQUEST_URI", $_SERVER)){
+		$mail_body .= "*URL*:\nhttp://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] . "\n\n";
+	}
 	
 	$mail_body .= "*File*:\n" . $filename . ":" . $linenum . "\n\n";
 	
@@ -51,32 +88,42 @@ function knj_error_reporter_error_handeler($errno, $errmsg, $filename, $linenum,
 function knj_error_reporter_getData(){
 	$mail_body = "";
 	
-	$mail_body .= "*Client IP*:\n";
-	$mail_body .= $_SERVER["REMOTE_ADDR"] . "\n\n";
-	
-	$mail_body .= "*Client user-agent*:\n";
-	$mail_body .= $_SERVER["HTTP_USER_AGENT"] . "\n\n";
-	
-	$mail_body .= "*Post-data*\n";
-	if (count($_POST) <= 0){
-		$mail_body .= "No post-data.";
-	}else{
-		$mail_body .= print_r($_POST, true);
+	if ($_SERVER and array_key_exists("REMOTE_ADDR", $_SERVER)){
+		$mail_body .= "*Client IP*:\n";
+		$mail_body .= $_SERVER["REMOTE_ADDR"] . "\n\n";
 	}
 	
-	$mail_body .= "\n\n";
-	
-	$mail_body .= "*Get-data*\n";
-	if (count($_GET) <= 0){
-		$mail_body .= "No get-data.";
-	}else{
-		$mail_body .= print_r($_GET, true);
+	if ($_SERVER and array_key_exists("HTTP_USER_AGENT", $_SERVER)){
+		$mail_body .= "*Client user-agent*:\n";
+		$mail_body .= $_SERVER["HTTP_USER_AGENT"] . "\n\n";
 	}
 	
-	$mail_body .= "\n\n";
+	if ($_POST){
+		$mail_body .= "*Post-data*\n";
+		if (count($_POST) <= 0){
+			$mail_body .= "No post-data.";
+		}else{
+			$mail_body .= print_r($_POST, true);
+		}
+		
+		$mail_body .= "\n\n";
+	}
 	
-	$mail_body .= "*Server-data*\n";
-	$mail_body .= print_r($_SERVER, true);
+	if ($_GET){
+		$mail_body .= "*Get-data*\n";
+		if (count($_GET) <= 0){
+			$mail_body .= "No get-data.";
+		}else{
+			$mail_body .= print_r($_GET, true);
+		}
+		
+		$mail_body .= "\n\n";
+	}
+	
+	if ($_SERVER){
+		$mail_body .= "*Server-data*\n";
+		$mail_body .= print_r($_SERVER, true);
+	}
 	
 	return $mail_body;
 }
@@ -84,7 +131,9 @@ function knj_error_reporter_getData(){
 function knj_error_reporter_exception_handler($exc){
 	$mail_body = "An exception occurred on the website at " .date("d/m Y - H:i") . ".\n\n";
 	
-	$mail_body .= "*URL*:\nhttp://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] . "\n\n";
+	if ($_SERVER and array_key_exists("HTTP_HOST", $_SERVER) and array_key_exists("REQUEST_URI", $_SERVER)){
+		$mail_body .= "*URL*:\nhttp://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] . "\n\n";
+	}
 	
 	$mail_body .= "*File*:\n" . $exc->getFile() . ":" . $exc->getLine() . "\n\n";
 	$mail_body .= "*Exception text*:\n" . $exc->getMessage() . "\n\n";
