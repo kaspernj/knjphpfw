@@ -15,7 +15,7 @@ function knjlocales_setmodule($domain, $dir, $module = "ext", $language = "auto"
 	$functions_knjlocales["module"] = $module;
 	
 	if ($language == "auto"){
-		if ($_SERVER["HTTP_ACCEPT_LANGUAGE"]){
+		if (array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER) and $_SERVER["HTTP_ACCEPT_LANGUAGE"]){
 			$accept = $_SERVER["HTTP_ACCEPT_LANGUAGE"];
 			foreach(explode(",", $accept) AS $value){
 				$value = explode(";", $value);
@@ -127,7 +127,7 @@ function knjgettext($msgid){
 		#throw new exception("No supported module chosen.");
 	}
 	
-	if ($functions_knjlocales["encodeout"] == "decode_utf8"){
+	if (array_key_exists("encodeout", $functions_knjlocales) and $functions_knjlocales["encodeout"] == "decode_utf8"){
 		$return = utf8_decode($return);
 	}
 	
