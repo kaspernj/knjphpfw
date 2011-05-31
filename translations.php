@@ -21,6 +21,15 @@ class knj_translations{
 		$this->args["locale"] = $newlocale;
 	}
 	
+	function del($obj){
+		$transs = $this->ob->list_obs("knj_translations_translation", array(
+			"object" => $obj
+		));
+		foreach($transs as $trans){
+			$trans->delete();
+		}
+	}
+	
 	function get($obj, $args = array()){
 		if (!$obj){
 			return "";
