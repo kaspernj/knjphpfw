@@ -487,7 +487,7 @@ class knjobjects{
 				}
 			}elseif($dbrows_exist and in_array($list_key . "_id", $args["cols_dbrows"])){
 				if (!is_object($list_val) and !is_bool($list_val) and !is_array($list_val)){
-					throw new exception("Unknown type: " . gettype($list_val));
+					throw new exception("Unknown type: " . gettype($list_val) . " for argument " . $list_key);
 				}elseif(is_object($list_val) and !method_exists($list_val, "id")){
 					throw new exception("Unknown method on object: " . get_class($list_val) . "->id().");
 				}
