@@ -131,7 +131,7 @@ function secCheckInclude($file){
 function redirect($url, $exit = true){
 	global $knj_web;
 	
-	if (!headers_sent() && !$knj_web[alert_sent]){
+	if (!headers_sent() and !$knj_web["alert_sent"]){
 		header("Location: " . $url);
 	}else{
 		jsredirect($url);
