@@ -498,6 +498,12 @@ function form_drawInput($args){
 				<?=htmlspecialchars($value)?>
 			</td>
 		<?
+	}elseif($args["type"] == "headline"){
+		?>
+			<td class="tdheadline" colspan="2">
+				<?=$title_html?>
+			</td>
+		<?
 	}else{
 		?>
 			<td class="tdt">
@@ -685,6 +691,34 @@ class knj_browser{
 		}else{
 			return "unknown";
 		}
+	}
+	
+	static function getOSVersion(){
+		$version = "unknown";
+		
+		if (knj_browser::getOS() == "windows"){
+			if (preg_match("/Windows\s+NT\s+([\d\.]+)/", $_SERVER["HTTP_USER_AGENT"], $match)){
+				if ($match[1] == 6.0){
+					$version = "vista";
+				}elseif($match[1] == 5.1){
+					$version = "xp";
+				}
+			}else{
+				throw new exception("Could not match version.");
+			}
+		}elseif(knj_browser::getOS() == "linux"){
+			if (preg_match("/Ubuntu\/([\d+\.]+)/", $_SERVER["HTTP_USER_AGENT"], $match)){
+				$version = "ubuntu_" . str_replace(".", "_", $match[1]);
+			}else{
+				throw new exception("Unknown user-agent for OS '" . knj_browser::getOS() . "': " . $_SERVER["HTTP_USER_AGENT"]);
+			}
+		}else{
+			throw new exception("Unknown user-agent for OS '" . knj_browser::getOS() . "': " . $_SERVER["HTTP_USER_AGENT"]);
+		}
+		
+		return array(
+			"version" => $version
+		);
 	}
 	
 	static function locale($servervar = null){

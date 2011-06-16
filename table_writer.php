@@ -38,6 +38,16 @@ class knj_table_writer{
 			
 			$this->colarr = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
 			$this->linec = 0;
+			
+			if ($this->args["date_format"]){
+				$this->date_format_excel = strtr($this->args["date_format"], array(
+					"d" => "dd",
+					"m" => "mm",
+					"Y" => "yyyy",
+					"y" => "yy",
+					"-" => "\\-"
+				));
+			}
 		}else{
 			throw new exception("Unknown format: " . $this->args["format"]);
 		}
@@ -45,6 +55,22 @@ class knj_table_writer{
 	
 	function write_row($arr){
 		if ($this->args["format"] == "csv"){
+			foreach($arr as $key => $value){
+				if (is_array($value)){
+					if ($value["type"] == "decimal"){
+						$arr[$key] = number_format($value["value"], $this->args["amount_decimals"], $this->args["amount_dsep"], $this->args["amount_tsep"]);
+					}elseif($value["type"] == "date"){
+						if (!$this->args["date_format"]){
+							throw new exception("Date-value given but no date-format in arguments.");
+						}
+						
+						$arr[$key] = date($this->args["date_format"], $value["value"]);
+					}else{
+						throw new exception("Unknown type: " . $value["type"]);
+					}
+				}
+			}
+			
 			$line = knj_csv::arr_to_csv($arr, $this->args["expl"], $this->args["surr"]) . "\n";
 			
 			if ($this->args["encoding"] == "iso8859-1"){
@@ -63,7 +89,25 @@ class knj_table_writer{
 				}
 				
 				$colval = $letter . $this->linec;
-				$this->sheet->setCellValue($colval, $setval);
+				
+				if (is_array($setval)){
+					if ($setval["type"] == "decimal"){
+						$this->sheet->setCellValue($colval, $setval["value"]);
+						$this->sheet->getStyle($colval)->getNumberFormat()->setFormatCode("#,##0.00");
+					}elseif($setval["type"] == "date"){
+						if (!$this->args["date_format"]){
+							throw new exception("Date-value given but no date-format in arguments.");
+						}
+						
+						$this->sheet->setCellValue($colval, PHPExcel_Shared_Date::PHPToExcel($setval["value"]));
+						$this->sheet->getStyle($colval)->getNumberFormat()->setFormatCode($this->date_format_excel);
+					}else{
+						throw new exception("Unknown type: " . $value["type"]);
+					}
+				}else{
+					$this->sheet->setCellValue($colval, $setval);
+				}
+				
 				$col_no++;
 			}
 		}else{

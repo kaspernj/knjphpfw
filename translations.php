@@ -35,9 +35,15 @@ class knj_translations{
 			return "";
 		}
 		
+		if (array_key_exists("locale", $args)){
+			$locale = $args["locale"];
+		}else{
+			$locale = $this->args["locale"];
+		}
+		
 		$trans = $this->ob->list_obs("knj_translations_translation", array(
 			"object" => $obj,
-			"locale" => $this->args["locale"]
+			"locale" => $locale
 		));
 		if (!$trans){
 			return "";
