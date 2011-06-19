@@ -15,12 +15,16 @@ class knj_httpbrowser{
 	private $useragent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)";
 	
 	function __construct($args = array()){
+		$this->args = array(
+			"timeout" => ini_get("default_socket_timeout")
+		);
+		
 		foreach($args AS $key => $value){
 			if ($key == "ssl" or $key == "nl" or $key == "debug" or $key == "force_connection"){
 				$this->$key = $value;
-			}else{
-				throw new exception("Invalid argument: " . $key);
 			}
+			
+			$this->args[$key] = $value;
 		}
 	}
 	
@@ -43,9 +47,9 @@ class knj_httpbrowser{
 		foreach($args AS $key => $value){
 			if ($key == "ssl" or $key == "nl" or $key == "debug" or $key == "force_connection"){
 				$this->$key = $value;
-			}else{
-				throw new exception("Invalid argument: " . $key);
 			}
+			
+			$this->args[$key] = $value;
 		}
 		
 		$this->reconnect();
@@ -69,7 +73,7 @@ class knj_httpbrowser{
 			$host = $this->host;
 		}
 		
-		$this->fp = fsockopen($host, $this->port);
+		$this->fp = fsockopen($host, $this->port, $errno, $errstr, $this->args["timeout"]);
 		if (!$this->fp){
 			throw new exception("Could not connect.");
 		}

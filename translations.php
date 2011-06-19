@@ -12,9 +12,7 @@ class knj_translations{
 			"db" => $this->db,
 			"require" => false,
 			"extra_args_self" => true,
-			"extra_args" => array(
-				"db" => $this->db
-			),
+			"extra_args" => array("db" => $this->db),
 			"get_array" => true
 		));
 	}
@@ -23,14 +21,29 @@ class knj_translations{
 		$this->args["locale"] = $newlocale;
 	}
 	
+	function del($obj){
+		$transs = $this->ob->list_obs("knj_translations_translation", array(
+			"object" => $obj
+		));
+		foreach($transs as $trans){
+			$trans->delete();
+		}
+	}
+	
 	function get($obj, $args = array()){
 		if (!$obj){
 			return "";
 		}
 		
+		if (array_key_exists("locale", $args)){
+			$locale = $args["locale"];
+		}else{
+			$locale = $this->args["locale"];
+		}
+		
 		$trans = $this->ob->list_obs("knj_translations_translation", array(
 			"object" => $obj,
-			"locale" => $this->args["locale"]
+			"locale" => $locale
 		));
 		if (!$trans){
 			return "";
@@ -88,6 +101,13 @@ class knj_translations_translation extends knjdb_row{
 		
 		$sql = "SELECT * FROM translations WHERE 1=1";
 		
+		$ret = $eargs["ob"]->sqlhelper($args, array(
+			"table" => "translations",
+			"db" => $eargs["db"],
+			"cols_str" => array("object_class", "key", "locale", "value"),
+			"cols_num" => array("object_id")
+		));
+		
 		foreach($args AS $key => $value){
 			switch($key){
 				case "object":
@@ -100,9 +120,13 @@ class knj_translations_translation extends knjdb_row{
 					$sql .= " AND `" . $key . "` = '" . $db->sql($value) . "'";
 					break;
 				default:
-					throw new exception(sprintf("Invalid key: %s."), $key);
+					throw new exception(sprintf("Invalid key: %s.", $key));
 			}
 		}
+		
+		$sql .= $ret["sql_where"];
+		$sql .= $ret["sql_order"];
+		$sql .= $ret["sql_limit"];
 		
 		return $eargs["ob"]->list_bysql("knj_translations_translation", $sql);
 	}

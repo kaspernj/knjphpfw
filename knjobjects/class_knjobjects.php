@@ -61,18 +61,22 @@ class knjobjects{
 	}
 	
 	function cleanMemory(){
+		$this->clean_memory();
+	}
+	
+	function clean_memory(){
 		$usage = (memory_get_usage() / 1024) / 1024;
 		if ($usage > 54){
 			$this->unset_all();
 		}
 	}
 	
-	function clean_memory(){
-		$this->cleanMemory();
-	}
-	
 	function unset_all(){
 		$this->objects = array();
+	}
+	
+	function unset_class($classname){
+		unset($this->objects[$classname]);
 	}
 	
 	function requirefile($obname){
@@ -95,7 +99,7 @@ class knjobjects{
 			$args
 		);
 		
-		if ($this->args["extra_args"]){
+		if ($this->args and array_key_exists("extra_args", $this->args) and $this->args["extra_args"]){
 			$eargs = $this->args["extra_args"];
 			
 			if ($this->args["extra_args_self"]){
@@ -111,7 +115,7 @@ class knjobjects{
 	function list_obs($ob, $args = array(), $list_args = array()){
 		$return = $this->listObs($ob, $args);
 		
-		if ($list_args["key"]){
+		if ($list_args and array_key_exists("key", $list_args)){
 			$newreturn = array();
 			foreach($return AS $object){
 				$newreturn[$object->g($list_args["key"])] = $object;
@@ -430,13 +434,13 @@ class knjobjects{
 	}
 	
 	function sqlhelper(&$list_args, $args){
-		if ($args["db"]){
+		if ($args and array_key_exists("db", $args) and $args["db"]){
 			$db = $args["db"];
 		}else{
 			$db = $this->config["db"];
 		}
 		
-		if ($args["table"]){
+		if ($args and array_key_exists("table", $args) and $args["table"]){
 			$table = $db->conn->sep_table . $db->escape_table($args["table"]) . $db->conn->sep_table . ".";
 		}else{
 			$table = "";
@@ -447,6 +451,7 @@ class knjobjects{
 			throw new exception("The arguments given was not an array.");
 		}
 		
+		$sql_where = "";
 		$sql_limit = "";
 		$sql_order = "";
 		$dbrows_exist = array_key_exists("cols_dbrows", $args);
@@ -456,12 +461,17 @@ class knjobjects{
 		foreach($list_args as $list_key => $list_val){
 			$found = false;
 			
-			if ($args["utf8_decode"]){
+			if ($args and array_key_exists("utf8_decode", $args) and $args["utf8_decode"]){
 				$list_val = utf8_decode($list_val);
 			}
 			
 			if (($str_exists and in_array($list_key, $args["cols_str"]) or ($num_exists and in_array($list_key, $args["cols_num"])))){
-				$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				if (is_array($list_val)){
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " IN (" . knjarray::implode(array("array" => $list_val, "impl" => ",", "surr" => "'", "self_callback" => array($db, "sql"))) . ")";
+				}else{
+					$sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " = '" . $db->sql($list_val) . "'";
+				}
+				
 				$found = true;
 			}elseif($str_exists and preg_match("/^(.+)_(has|not)$/", $list_key, $match) and in_array($match[1], $args["cols_str"])){
 				if ($match[2] == "has"){
@@ -477,7 +487,7 @@ class knjobjects{
 				}
 			}elseif($dbrows_exist and in_array($list_key . "_id", $args["cols_dbrows"])){
 				if (!is_object($list_val) and !is_bool($list_val) and !is_array($list_val)){
-					throw new exception("Unknown type: " . gettype($list_val));
+					throw new exception("Unknown type: " . gettype($list_val) . " for argument " . $list_key);
 				}elseif(is_object($list_val) and !method_exists($list_val, "id")){
 					throw new exception("Unknown method on object: " . get_class($list_val) . "->id().");
 				}
@@ -583,8 +593,16 @@ class knjobjects{
 				$found = true;
 			}elseif($list_key == "orderby"){
 				if (is_string($list_val)){
-					$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
-					$found = true;
+					if ($args["orderby_callbacks"][$list_val]){
+						$orderby_res = $args["orderby_callbacks"][$list_val]();
+						if ($orderby_res){
+							$sql_order .= " ORDER BY " . $db->escape_column($orderby_res);
+							$found = true;
+						}
+					}else{
+						$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
+						$found = true;
+					}
 				}elseif(is_array($list_val)){
 					$found = true;
 					$sql_order .= " ORDER BY ";

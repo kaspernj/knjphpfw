@@ -75,7 +75,7 @@
 			if ($table->columns_changed){
 				$f_gc = $this->knjdb->query("PRAGMA table_info(" . $table->get("name") . ")");
 				while($d_gc = $f_gc->fetch()){
-					if (!$table->columns[$d_gc["name"]]){
+					if (!array_key_exists($d_gc["name"], $table->columns)){
 						if (!$d_gc['notnull']){
 							$notnull = "no";
 						}else{
@@ -88,6 +88,7 @@
 							$primarykey = "no";
 						}
 						
+						$maxlength = "";
 						if (preg_match("/([a-zA-Z]+)\(([0-9]+)\)/", $d_gc["type"], $match)){
 							$type = strtolower($match[1]);
 							$maxlength = $match[2];
