@@ -12,7 +12,7 @@
 			$return = array();
 			$f_gt = $this->knjdb->select("sqlite_master", array("type" => "table"), array("orderby" => "name"));
 			while($d_gt = $f_gt->fetch()){
-				if ($d_gt["name"] != "sqlite_sequence" && !$this->tables[$d_gt["name"]]){
+				if ($d_gt["name"] != "sqlite_sequence" and !array_key_exists($d_gt["name"], $this->tables)){
 					$this->tables[$d_gt["name"]] = new knjdb_table($this->knjdb, array(
 							"name" => $d_gt["name"],
 							"engine" => "sqlite3",

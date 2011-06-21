@@ -62,9 +62,9 @@
 					"id" => intval($hash),
 					"percent" => $percent,
 					"done" => $done,
-					"size" => $size,
-					"size_mult" => $size_mult,
-					"size_bytes" => $size_bytes
+					//"size" => $size,
+					//"size_mult" => $size_mult,
+					//"size_bytes" => $size_bytes
 				);
 			}
 			

@@ -487,7 +487,7 @@ class knjobjects{
 				}
 			}elseif($dbrows_exist and in_array($list_key . "_id", $args["cols_dbrows"])){
 				if (!is_object($list_val) and !is_bool($list_val) and !is_array($list_val)){
-					throw new exception("Unknown type: " . gettype($list_val));
+					throw new exception("Unknown type: " . gettype($list_val) . " for argument " . $list_key);
 				}elseif(is_object($list_val) and !method_exists($list_val, "id")){
 					throw new exception("Unknown method on object: " . get_class($list_val) . "->id().");
 				}
@@ -593,8 +593,16 @@ class knjobjects{
 				$found = true;
 			}elseif($list_key == "orderby"){
 				if (is_string($list_val)){
-					$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
-					$found = true;
+					if ($args["orderby_callbacks"][$list_val]){
+						$orderby_res = $args["orderby_callbacks"][$list_val]();
+						if ($orderby_res){
+							$sql_order .= " ORDER BY " . $db->escape_column($orderby_res);
+							$found = true;
+						}
+					}else{
+						$sql_order .= " ORDER BY " . $table . $colsep . $db->escape_column($list_val) . $colsep;
+						$found = true;
+					}
 				}elseif(is_array($list_val)){
 					$found = true;
 					$sql_order .= " ORDER BY ";

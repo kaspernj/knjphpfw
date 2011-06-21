@@ -1,7 +1,7 @@
 <?
 
 class knjdb{
-	public $conn;
+	public $conn, $rows;
 	public $args = array(
 		"col_id" => "id",
 		"autoconnect" => true,
@@ -14,6 +14,7 @@ class knjdb{
 	/** The constructor. */
 	function __construct($args = null){
 		require_once("class_knjdb_result.php");
+		$this->rows = array();
 		
 		if ($args){
 			$this->setOpts($args);
@@ -55,7 +56,7 @@ class knjdb{
 			$short = substr($module, 0, -1);
 		}
 		
-		if (!$this->drivers[$module]){
+		if (!array_key_exists($module, $this->drivers)){
 			require_once("interfaces/class_knjdb_driver_" . $module . ".php");
 			require_once("class_knjdb_" . $short . ".php");
 			
@@ -111,7 +112,11 @@ class knjdb{
 			throw new Exception("ID was not valid \"" . $id . "\".");
 		}
 		
-		if (!$this->rows[$table][$id]){
+		if (!array_key_exists($table, $this->rows)){
+			$this->rows[$table] = array();
+		}
+		
+		if (!array_key_exists($id, $this->rows[$table])){
 			$this->rows[$table][$id] = new knjdb_row($this, $table, $id, $data, array("col_id" => $this->args["col_id"]));
 		}
 		
@@ -241,7 +246,7 @@ class knjdb{
 		$result = $this->select($table, $where, $args);
 		$results = array();
 		while($data = $result->fetch($result)){
-			if ($args["return"] == "array"){
+			if (array_key_exists("return", $args) and $args["return"] == "array"){
 				$results[] = $data;
 			}else{
 				$results[] = $this->getRow($data, $table);
