@@ -64,8 +64,14 @@ class epay_payment{
 		$this->args = $args;
 		$this->soap_client = $args["soap_client"];
 		
+		if ($args["obj"]->capturedamount){
+			$amount = floatval($args["obj"]->capturedamount);
+		}else{
+			$amount = floatval($args["obj"]->authamount);
+		}
+		
 		$this->data = array(
-			"amount" => floatval($args["obj"]->authamount),
+			"amount" => $amount,
 			"orderid" => intval($args["obj"]->orderid),
 			"status" => $args["obj"]->status,
 			"transactionid" => $args["obj"]->transactionid
