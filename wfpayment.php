@@ -56,23 +56,34 @@ class wfpayment{
 			$html = $this->http->post("pg.frontend/pg.search.php?search=doit", $sargs);
 		}
 		
-		if (!preg_match_all("/<a href=\"pg\.transactionview\.php\?id=([0-9]+)&page=([0-9]+)\">([0-9]+)<\/a><\/td>\s*<td.*>(.+)<\/td>\s*<td.*>(.+)<\/td>\s*<td.*>(.+)<\/td>\s*<td.*>.*<\/td>\s*<td.*>(.*)<\/td>\s*<td.*>(.*)<\/td>/U", $html, $matches)){
-			return array(); //no payments were found - return empty array.
-			//echo $html . "\n\n";
-			throw new exception("Could not parse payments.");
+		if (!preg_match_all("/<tr([^>]+)>\s*([\s\S]+)<\/tr>/U", $html, $matches_tr)){
+			return array();
+		}
+		
+		if (count($matches_tr[2]) == 1 or strlen(trim($matches_tr[2][0])) <= 0){
+			return array();
 		}
 		
 		$payments = array();
-		foreach($matches[0] AS $key => $value){
-			$id = $matches[1][$key];
+		foreach($matches_tr[0] AS $key => $value){
+			if (!preg_match_all("/<td([^>]+)>(.*)<\/td>/U", $value, $matches_td)){
+				throw new exception("Could not match TDs.");
+			}
 			
-			$amount = str_replace(" DKK", "", $matches[6][$key]);
+			if (!preg_match("/id=(\d+)/", $matches_td[2][0], $match_id)){
+				throw new exception("Could not match ID.");
+			}
+			
+			$id = $match_id[1];
+			
+			$amount = str_replace(" DKK", "", $matches_td[2][3]);
 			$amount = strtr($amount, array(
 				"." => "",
 				"," => "."
 			));
 			
-			$card_type = $matches[7][$key];
+			$card_type = $matches_td[2][6];
+			
 			if (strpos($card_type, "dk.png") !== false){
 				$card_type = "dk";
 			}elseif(strpos($card_type, "visa-elec.png") !== false){
@@ -85,7 +96,7 @@ class wfpayment{
 				throw new exception("Unknown card-type image: " . $card_type);
 			}
 			
-			$date = strtr($matches[5][$key], array(
+			$date = strtr($matches_td[2][2], array(
 				"januar" => 1,
 				"februar" => 2,
 				"marts" => 3,
@@ -137,14 +148,14 @@ class wfpayment{
 				throw new exception("Could not parse date: " . $date);
 			}
 			
-			$state = $matches[8][$key];
-			if ($state == "Gennemført"){
+			$state = $matches_td[2][7];
+			if (strpos($state, "Gennemført") !== false){
 				$state = "done";
 			}elseif(strpos($state, "Gennemfør") !== false){
 				$state = "waiting";
-			}elseif($state == "Annulleret"){
+			}elseif(strpos($state, "Annulleret") !== false){
 				$state = "canceled";
-			}elseif($state == "Refunderet"){
+			}elseif(strpos($state, "Refunderet") !== false){
 				$state = "returned";
 			}else{
 				throw new exception("Unknown state: " . $state);
@@ -156,9 +167,9 @@ class wfpayment{
 			}else{
 				$payment = new wfpayment_payment($this, array(
 					"id" => $id,
-					"order_id" => substr($matches[4][$key], 4),
-					"customer_id" => $matches[3][$key],
-					"customer_string" => $matches[4][$key],
+					"order_id" => substr($matches_td[2][1], 4),
+					"customer_id" => $matches_td[2][1],
+					"customer_string" => $matches_td[2][1],
 					"date" => $unixt,
 					"amount" => $amount,
 					"card_type" => $card_type,
