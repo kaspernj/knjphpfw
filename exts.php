@@ -10,6 +10,7 @@
 		}
 		
 		require_once "knj/functions_knj_os.php";
+		$pre = "";
 		$os = knj_os::getOS();
 		
 		if (extension_loaded($extension)){

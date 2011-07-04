@@ -45,7 +45,7 @@ class knjdb_table{
 	
 	/** Count the rows for a table. */
 	function countRows(){
-		$d_c = $this->knjdb->query("SELECT COUNT(*) AS count FROM " . $tabledriver->sep_table . $this->get("name") . $tabledriver->sep_table)->fetch();
+		$d_c = $this->knjdb->query("SELECT COUNT(*) AS count FROM " . $this->knjdb->conn->sep_table . $this->get("name") . $this->knjdb->conn->sep_table)->fetch();
 		return $d_c["count"];
 	}
 	
