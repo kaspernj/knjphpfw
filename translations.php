@@ -1,6 +1,8 @@
 <?
 
 class knj_translations{
+	public $number_info;
+	
 	function __construct($args = array()){
 		$this->args = $args;
 		$this->db = $this->args["db"];
@@ -15,10 +17,34 @@ class knj_translations{
 			"extra_args" => array("db" => $this->db),
 			"get_array" => true
 		));
+		
+		if ($this->args["locale"] == "da_DK"){
+			$dec_point = ",";
+			$thousands_sep = ".";
+		}else{
+			$dec_point = ".";
+			$thousands_sep = ",";
+		}
+		
+		$this->number_info = array(
+			"dec_point" => $dec_point,
+			"thousands_sep" => $thousands_sep
+		);
 	}
 	
 	function set_locale($newlocale){
 		$this->args["locale"] = $newlocale;
+	}
+	
+	function number_out($number, $decimals = 2){
+		return number_format($number, $decimals, $this->number_info["dec_point"], $this->number_info["thousands_sep"]);
+	}
+	
+	function number_in($number){
+		return floatval(strtr($number, array(
+			$this->number_info["thousands_sep"] => "",
+			$this->number_info["dec_point"] => "."
+		)));
 	}
 	
 	function del($obj){
