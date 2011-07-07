@@ -125,7 +125,7 @@ class knjdb_row{
 	}
 	
 	function g_date($key){
-		return $this->dbconn->date_in($this->g($key));
+		return $this->db->date_in($this->g($key));
 	}
 	
 	/** Returns the row as an array. */
