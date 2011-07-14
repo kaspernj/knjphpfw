@@ -304,6 +304,10 @@ function form_drawInput($args){
 		$title_html = $args["title_html"];
 	}
 	
+	if ($args["div"]){
+    $title_html = "<div>" . $title_html . "</div>";
+	}
+	
 	$td_html = "<td class=\"tdc\"";
 	if ($args["td_width"]){
 		$td_html .= " style=\"width: " . $args["td_width"] . ";\"";
@@ -312,6 +316,13 @@ function form_drawInput($args){
 		$td_html .= " colspan=\"" . $colspan_cont . "\"";
 	}
 	$td_html .= ">";
+	
+	if ($args["div"]){
+    $td_end_html = "</div></td>";
+    $td_html .= "<div>";
+  }else{
+    $td_end_html = "</td>";
+	}
 	
 	$js_tags = "";
 	$js_tags_arr = array("onkeyup", "onkeydown", "onchange");
@@ -363,7 +374,7 @@ function form_drawInput($args){
 			</td>
 			<?=$td_html?>
 				<select<?=$etags?><?if ($args["size"]){?> size="<?=htmlspecialchars($args["size"])?>"<?}?> name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=$args["class"]?>"<?=$js_tags?>>
-				<?=select_drawOpts($args["opts"], $args["value"])?>
+				<?=select_drawOpts($args["opts"], $value)?>
 				</select>
 				<?if ($args["moveable"]){?>
 					<div style="padding-top: 3px;">
@@ -371,7 +382,7 @@ function form_drawInput($args){
 						<input type="button" value="<?=_("Down")?>" onclick="select_movedown($('#<?=$id?>'));" />
 					</div>
 				<?}?>
-			</td>
+			<?=$td_end_html?>
 		<?
 	}elseif($args["type"] == "imageupload"){
 		if ($args["filetype"]){
@@ -430,7 +441,7 @@ function form_drawInput($args){
 						</td>
 					</tr>
 				</table>
-			</td>
+			<?=$td_end_html?>
 		<?
 	}elseif($args["type"] == "file"){
 		?>
@@ -439,7 +450,7 @@ function form_drawInput($args){
 			</td>
 			<?=$td_html?>
 				<input type="file" class="input_<?=$args["type"]?>" name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>"<?=$js_tags?> />
-			</td>
+			<?=$td_end_html?>
 		<?
 	}elseif($args["type"] == "textarea"){
 		?>
@@ -448,7 +459,7 @@ function form_drawInput($args){
 			</td>
 			<?=$td_html?>
 				<textarea name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($args["class"])?>"<?if ($args["height"]){?> style="height: <?=$args["height"]?>;"<?}?><?=$js_tags?>><?=htmlspecialchars_textarea($value)?></textarea>
-			</td>
+			<?=$td_end_html?>
 		<?
 	}elseif($args["type"] == "fckeditor"){
 		?>
@@ -468,7 +479,7 @@ function form_drawInput($args){
 					$fck->Value = $value;
 					$fck->Create();
 				?>
-			</td>
+			<?=$td_end_html?>
 		<?
 	}elseif($args["type"] == "radio"){
 		$id = $id . "_" . $value;
@@ -487,7 +498,7 @@ function form_drawInput($args){
 			</td>
 			<?=$td_html?>
 				<?=$value?>
-			</td>
+			<?=$td_end_html?>
 		<?
 	}elseif($args["type"] == "plain"){
 		?>
@@ -496,7 +507,7 @@ function form_drawInput($args){
 			</td>
 			<?=$td_html?>
 				<?=htmlspecialchars($value)?>
-			</td>
+			<?=$td_end_html?>
 		<?
 	}elseif($args["type"] == "headline"){
 		?>
@@ -511,7 +522,7 @@ function form_drawInput($args){
 			</td>
 			<?=$td_html?>
 				<input type="<?=htmlspecialchars($args["type"])?>"<?if ($args["disabled"]){?> disabled<?}?><?if ($args["maxlength"]){?> maxlength="<?=$args["maxlength"]?>"<?}?> class="<?=$args["class"]?>" id="<?=htmlspecialchars($id)?>" name="<?=htmlspecialchars($args["name"])?>" value="<?=htmlspecialchars($value)?>"<?=$js_tags?> />
-			</td>
+			<?=$td_end_html?>
 		<?
 	}
 	
@@ -520,10 +531,16 @@ function form_drawInput($args){
 	}
 	
 	if ($args["descr"]){
+    $descr = $args["descr"];
+    
+    if ($args["div"]){
+      $descr = "<div>" . $descr . "</div>";
+    }
+    
 		?>
 			<tr>
 				<td colspan="2" class="tdd">
-					<?=$args["descr"]?>
+					<?=$descr?>
 				</td>
 			</tr>
 		<?

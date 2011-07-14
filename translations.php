@@ -117,6 +117,10 @@ class knj_translations_translation extends knjdb_row{
 			"data" => $args["data"],
 			"table" => "translations"
 		));
+		$this->ob = $args["ob"];
+		if (!$this->ob){
+      throw new exception("No ob was given.");
+		}
 	}
 	
 	static function getList($args = array(), $eargs = array()){
@@ -172,7 +176,9 @@ class knj_translations_translation extends knjdb_row{
 	}
 	
 	function delete(){
-		$this->db->delete("translation", array("id" => $this->id()));
-		$this->ob->unset_ob($this);
+		$this->db->delete("translations", array("id" => $this->id()));
+		if ($this->ob){
+      $this->ob->unset_ob($this);
+    }
 	}
 }
