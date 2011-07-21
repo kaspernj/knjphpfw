@@ -220,7 +220,7 @@ function select_drawOpts($opts, $selected = null){
 			$html .= " selected=\"selected\"";
 		}
 		
-		$html .= " value=\"" . htmlspecialchars($key) . "\">" . htmlspecialchars($value) . "</option>";
+		$html .= " value=\"" . htmlspecialchars($key) . "\">" . htmlspecialchars($value) . "</option>\n";
 	}
 	
 	return $html;
@@ -308,10 +308,23 @@ function form_drawInput($args){
     $title_html = "<div>" . $title_html . "</div>";
 	}
 	
+	$css = array();
 	$td_html = "<td class=\"tdc\"";
 	if ($args["td_width"]){
-		$td_html .= " style=\"width: " . $args["td_width"] . ";\"";
+    $css["width"] = $args["td_width"];
 	}
+	if ($args["align"]){
+    $css["text-align"] = $args["align"];
+  }
+  
+  if (!empty($css)){
+    $td_html .= " style=\"";
+    foreach($css as $key => $val){
+      $td_html .= $key . ": " . $val . ";";
+    }
+    $td_html .= "\"";
+  }
+  
 	if ($colspan_cont > 1){
 		$td_html .= " colspan=\"" . $colspan_cont . "\"";
 	}
@@ -367,6 +380,10 @@ function form_drawInput($args){
 		if ($args["height"]){
 			$etags .= " height=\"" . htmlspecialchars($args["height"]) . "\"";
 		}
+		
+		if (is_null($value) and is_array($args["value"])){
+      $value = $args["value"];
+    }
 		
 		?>
 			<td class="tdt">
