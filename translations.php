@@ -19,17 +19,20 @@ class knj_translations{
 		));
 		
 		if ($this->args["locale"] == "da_DK"){
-			$dec_point = ",";
-			$thousands_sep = ".";
+			$this->number_info = array(
+        "dec_point" => ",",
+        "thousands_sep" => ".",
+        "csv_delimiter" => ";"
+      );
 		}else{
-			$dec_point = ".";
-			$thousands_sep = ",";
+			$this->number_info = array(
+        "dec_point" => ".",
+        "thousands_sep" => ",",
+        "csv_delimiter" => ","
+      );
 		}
 		
-		$this->number_info = array(
-			"dec_point" => $dec_point,
-			"thousands_sep" => $thousands_sep
-		);
+		
 	}
 	
 	function set_locale($newlocale){
