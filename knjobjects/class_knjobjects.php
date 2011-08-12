@@ -566,8 +566,31 @@ class knjobjects{
 				
 				switch($match[2]){
 					case "date":
-						$sql_where .= " AND DATE(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ")";
-						$sql_where .= " = '" . $db->sql($db->date_format($list_val, array("time" => false))) . "'";
+            if (is_array($list_val)){
+              if (empty($list_val)){
+                throw new exception("Array was empty!");
+              }
+              
+              $sql_where .= " AND (";
+              $first = true;
+              
+              foreach($list_val as $time_s){
+                if ($first){
+                  $first = false;
+                }else{
+                  $sql_where .= " OR ";
+                }
+                
+                $sql_where .= "DATE(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ")";
+                $sql_where .= " = '" . $db->sql($db->date_format($time_s, array("time" => false))) . "'";
+              }
+              
+              $sql_where .= ")";
+            }else{
+              $sql_where .= " AND DATE(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ")";
+              $sql_where .= " = '" . $db->sql($db->date_format($list_val, array("time" => false))) . "'";
+						}
+						
 						break;
 					case "time":
 						$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;

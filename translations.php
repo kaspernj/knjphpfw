@@ -18,25 +18,25 @@ class knj_translations{
 			"get_array" => true
 		));
 		
-		if ($this->args["locale"] == "da_DK"){
-			$this->number_info = array(
-        "dec_point" => ",",
-        "thousands_sep" => ".",
-        "csv_delimiter" => ";"
-      );
-		}else{
-			$this->number_info = array(
-        "dec_point" => ".",
-        "thousands_sep" => ",",
-        "csv_delimiter" => ","
-      );
-		}
-		
-		
+		$this->set_locale($args["locale"]);
 	}
 	
 	function set_locale($newlocale){
 		$this->args["locale"] = $newlocale;
+		
+    if ($this->args["locale"] == "da_DK"){
+      $this->number_info = array(
+        "dec_point" => ",",
+        "thousands_sep" => ".",
+        "csv_delimiter" => ";"
+      );
+    }else{
+      $this->number_info = array(
+        "dec_point" => ".",
+        "thousands_sep" => ",",
+        "csv_delimiter" => ","
+      );
+    }
 	}
 	
 	function number_out($number, $decimals = 2){
