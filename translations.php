@@ -64,16 +64,25 @@ class knj_translations{
 			return "";
 		}
 		
+		if (is_string($args)){
+      $args = array("key" => $args);
+		}
+		
 		if (array_key_exists("locale", $args)){
 			$locale = $args["locale"];
 		}else{
 			$locale = $this->args["locale"];
 		}
 		
-		$trans = $this->ob->list_obs("knj_translations_translation", array(
-			"object" => $obj,
-			"locale" => $locale
-		));
+		$list_args = array(
+      "object" => $obj,
+      "locale" => $locale
+    );
+    if ($args["key"]){
+      $list_args["key"] = $args["key"];
+    }
+		
+		$trans = $this->ob->list_obs("knj_translations_translation", $list_args);
 		if (!$trans){
 			return "";
 		}
