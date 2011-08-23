@@ -1,7 +1,7 @@
 <?
 
 class knj_translations{
-	public $number_info;
+	public $number_info, $args;
 	
 	function __construct($args = array()){
 		$this->args = $args;
