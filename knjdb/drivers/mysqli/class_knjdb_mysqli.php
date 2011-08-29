@@ -67,6 +67,10 @@ class knjdb_mysqli{
 		return $this->conn->error;
 	}
 	
+	function free($res){
+    return $res->free();
+	}
+	
 	function getLastID(){
 		return $this->conn->insert_id;
 	}

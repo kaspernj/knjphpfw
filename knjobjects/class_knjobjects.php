@@ -303,6 +303,7 @@ class knjobjects{
 				$ret[] = $this->get($ob, $d_obs);
 			}
 		}
+		$q_obs->free();
 		
 		return $ret;
 	}
