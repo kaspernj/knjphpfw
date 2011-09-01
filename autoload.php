@@ -17,6 +17,7 @@ class knj_autoload{
 			"objects" => "objects",
 			"knjarray" => "functions_array",
 			"knjdb" => "db",
+			"knjdb_async" => "knjdb/class_knjdb_async",
 			"knjobjects" => "objects",
 			"knj_csv" => "csv",
 			"knj_login" => "web_login",

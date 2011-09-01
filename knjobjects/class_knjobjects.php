@@ -143,7 +143,13 @@ class knjobjects{
 		$this->list_reader_count++;
 		$id = $this->list_reader_count;
 		$this->list_reader[$id]["from"] = 0;
-		$this->list_reader[$id]["add"] = 1000;
+		
+		if ($args["add"]){
+      $this->list_reader[$id]["add"] = $args["add"];
+    }else{
+      $this->list_reader[$id]["add"] = 1000;
+    }
+    
 		$this->list_reader[$id]["args"] = $args;
 		
 		return $id;
