@@ -123,3 +123,4 @@ function knjimap_parse($message, $struc){
 
 	return $message;
 }
+

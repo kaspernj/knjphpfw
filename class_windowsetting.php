@@ -130,4 +130,4 @@
 		global $windowsetting;
 		return $windowsetting["dbconn"];
 	}
-?>
+

@@ -147,3 +147,4 @@ class knj_login{
 		return $this->user;
 	}
 }
+

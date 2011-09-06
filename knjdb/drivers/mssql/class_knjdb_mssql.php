@@ -235,3 +235,4 @@ class knjdb_mssql{
 		return $unixt;
 	}
 }
+

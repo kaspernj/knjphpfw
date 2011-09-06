@@ -110,3 +110,4 @@ class knjdb_table{
 		$this->knjdb->tables()->optimizeTable($this);
 	}
 }
+

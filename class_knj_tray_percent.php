@@ -86,4 +86,4 @@
 			ImageDestroy($img);
 		}
 	}
-?>
+

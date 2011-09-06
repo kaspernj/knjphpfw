@@ -49,4 +49,4 @@
 			return $knj_classadmin["path"];
 		}
 	}
-?>
+

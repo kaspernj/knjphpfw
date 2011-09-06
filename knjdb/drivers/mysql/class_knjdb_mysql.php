@@ -278,3 +278,4 @@ class knjdb_mysql{
 		return date($format, $unixt);
 	}
 }
+

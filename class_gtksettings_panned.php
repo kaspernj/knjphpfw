@@ -2,4 +2,4 @@
 	class gtksettings_panned(){
 
 	}
-?>
+

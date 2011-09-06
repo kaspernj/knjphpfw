@@ -17,4 +17,4 @@
 	}
 
 	killSVN($_SERVER["argv"][1]);
-?>
+

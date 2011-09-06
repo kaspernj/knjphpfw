@@ -238,3 +238,4 @@ function knj_error_shutdown(){
 		}
 	}
 }
+

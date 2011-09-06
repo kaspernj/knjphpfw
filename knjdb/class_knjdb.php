@@ -339,3 +339,4 @@ class knjdb{
 		return $this->conn->date_in($str);
 	}
 }
+

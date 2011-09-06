@@ -171,4 +171,4 @@
 			return $this->getPicture($rpic["id"]);
 		}
 	}
-?>
+

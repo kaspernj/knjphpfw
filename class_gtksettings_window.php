@@ -134,4 +134,4 @@
 			return $gtksettings_window["dbconn"];
 		}
 	}
-?>
+

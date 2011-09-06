@@ -74,3 +74,4 @@ class knjdb_mysqli_tables implements knjdb_driver_tables{
 		$this->knjdb->query("OPTIMIZE TABLE " . $this->knjdb->conn->sep_table . $table->get("name") . $this->knjdb->conn->sep_table); //vacuum the entire database.
 	}
 }
+

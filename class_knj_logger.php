@@ -124,4 +124,4 @@
 			unset($realmsg);
 		}
 	}
-?>
+

@@ -240,3 +240,4 @@ class wfpayment_payment{
 		return $payments[0]->get("state");
 	}
 }
+

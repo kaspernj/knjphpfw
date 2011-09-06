@@ -5,4 +5,4 @@
 		function getIndexes(knjdb_table $table);
 		function removeIndex(knjdb_table $table, knjdb_index $index);
 	}
-?>
+

@@ -183,3 +183,4 @@ class knj_powerset{
 }
 
 class knj_powerset_skipids_exception extends exception{}
+

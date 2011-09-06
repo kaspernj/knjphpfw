@@ -9,4 +9,4 @@
 			$tv->get_buffer()->get_end_iter()
 		);
 	}
-?>
+

@@ -43,4 +43,4 @@
 			$this->knjdb->query("CREATE DATABASE " . $data["name"]);
 		}
 	}
-?>
+

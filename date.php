@@ -278,3 +278,4 @@ function timestr_to_secs($timestr){
 	$total = $match[3] + $secs_hours + $secs_mins;
 	return $total;
 }
+

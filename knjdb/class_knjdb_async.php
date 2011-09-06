@@ -30,3 +30,4 @@ class knjdb_async{
     }
   }
 }
+
