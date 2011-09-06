@@ -169,3 +169,4 @@ class knjdb_mysqli_columns implements knjdb_driver_columns{
 		}
 	}
 }
+

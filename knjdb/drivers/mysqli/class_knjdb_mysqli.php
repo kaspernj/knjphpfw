@@ -267,3 +267,4 @@ class knjdb_mysqli{
 		return date($format, $unixt);
 	}
 }
+

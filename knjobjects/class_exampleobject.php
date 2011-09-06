@@ -43,4 +43,4 @@
 			return htmlspecialchars($title);
 		}
 	}
-?>
+

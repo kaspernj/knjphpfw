@@ -526,4 +526,3 @@ function inttobyte($n)
 return chr($n);
 };
 
-?>

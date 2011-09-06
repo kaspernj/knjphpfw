@@ -38,4 +38,4 @@
 		//Return the array.
 		return $files;
 	}
-?>
+

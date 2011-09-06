@@ -295,3 +295,4 @@ class knj_os{
 		throw new Exception("Could not find the PHP-executable.");
 	}
 }
+

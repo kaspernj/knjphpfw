@@ -194,3 +194,4 @@ class knj_translations_translation extends knjdb_row{
     }
 	}
 }
+

@@ -771,3 +771,4 @@ class knj_browser{
 		return $arr;
 	}
 }
+

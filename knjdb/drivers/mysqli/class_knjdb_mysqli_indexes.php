@@ -89,4 +89,4 @@
 			return $table->indexes;
 		}
 	}
-?>
+

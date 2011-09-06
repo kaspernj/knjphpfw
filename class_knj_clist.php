@@ -293,4 +293,4 @@
 			$this->scrwin->set_size_request($width, $height);
 		}
 	}
-?>
+

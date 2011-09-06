@@ -67,3 +67,4 @@ class knj_autoload{
 		}
 	}
 }
+

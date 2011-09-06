@@ -19,4 +19,4 @@
 			return $this->list_obs[$id];
 		}
 	}
-?>
+

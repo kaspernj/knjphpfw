@@ -338,4 +338,4 @@
 			return $string;
 		}
 	}
-?>
+

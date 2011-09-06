@@ -7,4 +7,4 @@
 		function dropTable(knjdb_table $table);
 		function truncateTable(knjdb_table $table);
 	}
-?>
+

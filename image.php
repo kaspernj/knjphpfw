@@ -384,3 +384,4 @@ function ImageResize($image, $paras){
 	ImageCopyResampled($newimage, $image, 0, 0, 0, 0, $newwidth, $newheight, $xcount, $ycount);
 	return $newimage;
 }
+

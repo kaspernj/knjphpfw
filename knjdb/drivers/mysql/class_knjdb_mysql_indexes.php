@@ -90,3 +90,4 @@ class knjdb_mysql_indexes implements knjdb_driver_indexes{
 		return $table->indexes;
 	}
 }
+
