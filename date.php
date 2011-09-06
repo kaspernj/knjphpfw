@@ -106,9 +106,9 @@ function date_month3($string){
 		return 7;
 	}elseif($string == "aug"){
 		return 8;
-	}elseif($string == "okt"){
-		return 9;
 	}elseif($string == "sep"){
+		return 9;
+	}elseif($string == "okt"){
 		return 10;
 	}elseif($string == "nov"){
 		return 11;
@@ -164,9 +164,9 @@ function date_month_str_to_no($string){
 		return 7;
 	}elseif($string == "aug"){
 		return 8;
-	}elseif($string == "okt"){
-		return 9;
 	}elseif($string == "sep"){
+		return 9;
+	}elseif($string == "okt"){
 		return 10;
 	}elseif($string == "nov"){
 		return 11;
