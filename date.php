@@ -18,7 +18,7 @@ class knj_date{
 				12 => _("Dec")
 			);
 		}
-		
+
 		return array(
 			1 => _("January"),
 			2 => _("February"),
@@ -34,27 +34,27 @@ class knj_date{
 			12 => _("December")
 		);
 	}
-	
+
 	static function days_between($t1, $t2){
 		if ($t2 < $t1){
 			throw new exception("Timestamp 2 should always be bigger than timestamp 1.");
 		}
-		
+
 		$doy1 = date("z", $t1);
 		$doy2 = date("z", $t2);
-		
+
 		$yot1 = date("Y", $t1);
 		$yot2 = date("Y", $t2);
-		
+
 		if ($yot1 == $yot2){
 			//wee - this will be easy.
 			$days_between = $doy2 - $doy1;
 			return $days_between;
 		}
-		
+
 		$upto = 364 - $doy1;
 		$after = $doy2;
-		
+
 		return $upto + $after;
 	}
 }
@@ -85,7 +85,7 @@ function date_MonthNrToStr($in_str){
 	}elseif($in_str == 12){
 		$in_date = "December";
 	}
-	
+
 	return $in_date;
 }
 
@@ -135,7 +135,7 @@ function date_DayNrToStr($in_day){
 	}elseif($in_day == 6){
 		$in_return = "Lørdag";
 	}
-	
+
 	return $in_return;
 }
 
@@ -179,47 +179,47 @@ function date_month_str_to_no($string){
 
 function date_secs_drawout($secs, $paras = array()){
 	$in_online_string = "";
-	
+
 	$days = floor($secs / 60 / 60 / 24);
 	if ($days > 0 && !$paras["not_days"]){
 		$secs = $secs - ($days * 60 * 60 * 24);
 		$in_online_string .= $days . " " . date_multi_draw($days, "dag", "dage");
 	}
-	
+
 	$hours = floor($secs / 60 / 60);
 	if ($hours > 0){
 		$secs = $secs - ($hours * 60 * 60);
-		
+
 		if ($in_online_string){
 			$in_online_string .= ", ";
 		}
-		
+
 		$in_online_string .= $hours . " " . date_multi_draw($hours, "time", "timer");
 	}
-	
+
 	$minutes = floor($secs / 60);
 	if ($minutes > 0){
 		$secs = $secs - ($minutes * 60);
-		
+
 		if ($in_online_string){
 			$in_online_string .= ", ";
 		}
-		
+
 		$in_online_string .= $minutes . " " . date_multi_draw($minutes, "minut", "minutter");
 	}
-	
+
 	if ($secs > 0){
 		if ($in_online_string){
 			$in_online_string .= ", ";
 		}
-		
+
 		$in_online_string .= $secs . " " . date_multi_draw($secs, "sekund", "sekunder");
 	}
-	
+
 	if (!$in_online_string){
 		$in_online_string = "0 sekunder";
 	}
-	
+
 	return $in_online_string;
 }
 
@@ -227,43 +227,43 @@ function date_secs_drawout($secs, $paras = array()){
 function date_secs_drawout($secs){
 	$days = floor($secs / 60 / 60 / 24);
 	$secs = $secs - ($days * 60 * 60 * 24);
-	
+
 	$hours = floor($secs / 60 / 60);
 	$secs = $secs - ($hours * 60 * 60);
-	
+
 	$minutes = floor($secs / 60);
 	$secs = $secs - ($minutes * 60);
-	
+
 	$in_online_string = "";
-	
+
 	if ($days > 0){
 		$in_online_string .= $days . " " . date_multi_draw($days, "dag", "dage");
 	}
-	
+
 	if ($hours > 0){
 		if ($in_online_string){
 			$in_online_string .= ", ";
 		}
-		
+
 		$in_online_string .= $hours . " " . date_multi_draw($hours, "time", "timer");
 	}
-	
+
 	if ($minutes > 0){
 		if ($in_online_string){
 			$in_online_string .= ", ";
 		}
-		
+
 		$in_online_string .= $minutes . " " . date_multi_draw($minutes, "minut", "minutter");
 	}
-	
+
 	if ($secs > 0){
 		if ($in_online_string){
 			$in_online_string .= ", ";
 		}
-		
+
 		$in_online_string .= $secs . " " . date_multi_draw($secs, "sekund", "sekunder");
 	}
-	
+
 	return $in_online_string;
 }
 */
@@ -272,9 +272,10 @@ function timestr_to_secs($timestr){
 	if (!preg_match("/^([0-9]+):([0-9]+):([0-9]+)$/", $timestr, $match)){
 		throw new exception("Could not match time-string.");
 	}
-	
+
 	$secs_hours = $match[1] * 3600;
 	$secs_mins = $match[2] * 60;
 	$total = $match[3] + $secs_hours + $secs_mins;
 	return $total;
 }
+

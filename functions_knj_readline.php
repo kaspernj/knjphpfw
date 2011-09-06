@@ -3,7 +3,7 @@
 	function knj_freadline($fp, $mode = "plain", $end = "\n"){
 		global $temp;
 		$pos = strpos($temp, $end);
-		
+
 		if ($pos !== false){
 			$return = substr($temp, 0, $pos);
 			$temp = substr($temp, $pos + strlen($end));
@@ -23,18 +23,18 @@
 					$temp = "";
 					return $return;
 				}
-				
+
 				$temp = $temp . gzread($fp, 2048);
 			}
-			
+
 			return knj_freadline($fp, $mode, $end);
 		}
 	}
-	
+
 	/** Used to check if the end of the file has been reach when using knj_freadline(). */
 	function knj_freadline_eof($fp, $mode = "plain"){
 		global $temp;
-		
+
 		if ($mode == "plain"){
 			if (!$temp && feof($fp)){
 				return true;
@@ -49,14 +49,14 @@
 			}
 		}
 	}
-	
+
 	function knj_fwrite($fp, $content, $mode){
 		if ($mode == "plain"){
 			return fwrite($fp, $content);
 		}elseif($mode == "gz"){
 			return gzwrite($fp, $content);
 		}
-		
+
 		throw new exception("Unknown mode: " . $mode);
 	}
-?>
+

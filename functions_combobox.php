@@ -9,4 +9,4 @@
 		$cb->pack_start($cellRenderer);
 		$cb->set_attributes($cellRenderer, "text", 0);
 	}
-?>
+

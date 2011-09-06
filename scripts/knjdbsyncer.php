@@ -3,7 +3,7 @@
 
 for($i = 1; $i < $_SERVER[argc]; $i++){
 	$value = $_SERVER[argv][$i];
-	
+
 	if ($value == "--db1"){
 		$db1 = explode(":", $_SERVER[argv][++$i]);
 	}elseif($value == "--db2"){
@@ -57,7 +57,7 @@ foreach($tables1 AS $table1){
 	if ($outputlevel == "notice"){
 		echo("Notice: Checking table \"" . $table1["name"] . "\".\n");
 	}
-	
+
 	//Check if the table exist in db2.
 	$found = false;
 	foreach($tables2 AS $testtable2){
@@ -67,24 +67,24 @@ foreach($tables1 AS $table1){
 			break;
 		}
 	}
-	
+
 	if (!$found){
 		echo("Warning: Table was not found in db2: \"" . $table1["name"] . "\".\n");
 		continue;
 	}
-	
-	
+
+
 	//Go through columns.
 	$columns1 = $dbconn1->getColumns($table1["name"]);
 	$columns2 = $dbconn2->getColumns($table1["name"]);
-	
+
 	foreach($columns1 AS $column1){
 		//Check if all columns exists.
 		$column_text = $table1["name"] . "." . $column1["name"] . " " . $column1["type"] . "";
 		if ($column1["maxlength"]){
 			$column_text .= "(" . $column1["maxlength"] . ")";
 		}
-		
+
 		$column2 = $columns2[$column1["name"]];
 		if (!is_array($column2)){
 			echo("Warning: Column does not exist on DB2: \"" . $column_text . "\".\n");
@@ -94,21 +94,21 @@ foreach($tables1 AS $table1){
 					echo $column_text . ": " . $key . ":\"" . $value . "\" does not match on column2: " . $key . ":\"" . $column2[$key] . "\".\n";
 				}
 			}
-			
+
 			if ($column1["type"] != $column2["type"]){
 				echo("Warning: Column-type doesnt match on \"" . $column_text . "\".\nDB1: \"" . $column1["type"] . "\".\nDB2: \"" . $column2["type"] . "\".\n\n");
 			}
 		}
 	}
-	
+
 	//Go through indexes.
 	$indexes1 = $dbconn1->getIndexes($table1["name"]);
 	$indexes2 = $dbconn2->getIndexes($table2["name"]);
-	
+
 	if (count($indexes1) > 0){
 		foreach($indexes1 AS $index1){
 			$index2 = null;
-			
+
 			if (count($indexes2) > 0){
 				foreach($indexes2 AS $index2_temp){
 					if ($index2_temp["name"] == $index1["name"]){
@@ -117,10 +117,11 @@ foreach($tables1 AS $table1){
 					}
 				}
 			}
-			
+
 			if (!$index2){
 				echo("Warning: Index not found on on db2 \"" . $table1["name"] . "\": \"" . $index1["name"] . "\" with columns: \"" . implode(", ", $index1["columns"]) . "\".\n");
 			}
 		}
 	}
 }
+

@@ -3,4 +3,4 @@
 		function __construct(knjdb $knjdb);
 		function getProcedures();
 	}
-?>
+

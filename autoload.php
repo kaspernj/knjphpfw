@@ -39,24 +39,24 @@ class knj_autoload{
 			"fpdf" => "fpdf/fpdf.php"
 		);
 	}
-	
+
 	function load($classname){
 		$class = strtolower($classname);
-		
+
 		if (array_key_exists($class, $this->classes)){
 			require_once($this->classes[$class]);
 		}
-		
+
 		if (array_key_exists($class, $this->exts)){
 			require_once("knj/exts.php");
 			knj_dl($this->ext[$classname]);
 		}
-		
+
 		if (array_key_exists($class, $this->knj)){
 			require_once("knj/" . $this->knj[$class] . ".php");
 		}
 	}
-	
+
 	function add($class, $file = null){
 		if (is_array($class)){
 			foreach($class AS $key => $value){
@@ -67,3 +67,4 @@ class knj_autoload{
 		}
 	}
 }
+

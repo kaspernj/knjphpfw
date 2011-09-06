@@ -10,15 +10,15 @@
 			if ($this->getType() != "mysql" && $this->getType() != "pgsql"){
 				throw new Exception("Invalid type of database: " . $this->getType());
 			}
-			
+
 			$res = $this->query("CREATE DATABASE " . $name);
 			if (!$res){
 				throw new Exception("SQL-error: " . $this->query_error());
 			}
-			
+
 			return true;
 		}
-		
+
 		/**
 		 * Returns a full list of databases, if the database supports it (only mysql and pgsql).
 		*/
@@ -30,18 +30,18 @@
 						$dbs[] = $d_gdbs[Database];
 					}
 				}
-				
+
 				return $dbs;
 			}elseif($this->type == "pgsql"){
 				$f_gdbs = pg_query($this->conn, "SELECT datname FROM pg_database");
 				while($d_gdbs = pg_fetch_assoc($f_gdbs)){
 					$dbs[] = $d_gdbs[datname];
 				}
-				
+
 				return $dbs;
 			}
 		}
-		
+
 		/**
 		 * Choose another database, if the database supports it (only mysql and pgsql).
 		*/
@@ -52,8 +52,8 @@
 				$this->CloseConn();
 				return $this->OpenConn("pgsql", $this->pg_ip, $this->pg_port, $db, $this->pg_user, $this->pg_pass);
 			}
-			
+
 			return false;
 		}
 	}
-?>
+
