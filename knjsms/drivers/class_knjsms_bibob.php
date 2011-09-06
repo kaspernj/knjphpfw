@@ -3,19 +3,19 @@
 		function __construct($args){
 			require_once("knj/functions_knj_extensions.php");
 			knj_dl(array("soap", "openssl", "xml"));
-			
+
 			$this->opts = $args;
 			$this->soap_client = new SoapClient("https://www.bibob.dk/SmsSender.asmx?WSDL", array(
 				"verify_peer" => false,
 				"allow_self_signed" => true
 			));
 		}
-		
+
 		function sendSMS($number, $text){
 			if (!$this->soap_client){
 				$this->connect();
 			}
-			
+
 			$status_ob = $this->soap_client->__soapCall("SendMessage", array("parameters" => array(
 				"cellphone" => $this->opts["mobilenumber"],
 				"password" => md5($this->opts["password"]),

@@ -4,11 +4,11 @@ class knj_mail{
 	static function get_body($imap, $msg_no){
 		return knjimap_getBody($imap, $msg_no);
 	}
-	
+
 	static function replace($string){
 		return knjimap_replace($string);
 	}
-	
+
 	static function parse($message, $struc){
 		return knjimap_parse($message, $struc);
 	}
@@ -18,16 +18,16 @@ class knj_mail{
 function knjimap_getBody($imap, $msg_no){
 	$struc = imap_fetchstructure($imap, $msg_no) or throwexception("Could not fetch the structure.");
 	$body = knjimap_getBodyRec($imap, $struc, $msg_no);
-	
+
 	if (!$body){
 		throw new Exception("Could not find any body.");
 	}
-	
+
 	if (strpos($body, "Content-Type: ") !== false || strpos($body, "User-Agent: ") !== false){
 		$pos = strpos($body, "\r\n\r\n");
 		$body = substr($body, $pos);
 	}
-	
+
 	return trim(knjimap_replace($body));
 }
 
@@ -36,7 +36,7 @@ function knjimap_getBodyRec($imap, $struc, $msg_no, $part_no = null){
 	if ($struc->type == 0){
 		$body = imap_fetchbody($imap, $msg_no, $part_no);
 		$body = knjimap_parse($body, $struc);
-		
+
 		if ($struc->subtype == "PLAIN"){
 			//do nothing
 		}elseif($struc->subtype == "HTML"){
@@ -44,34 +44,34 @@ function knjimap_getBodyRec($imap, $struc, $msg_no, $part_no = null){
 		}else{
 			echo("Warning: Unknown subtype: " . $struc->subtype . ".\n");
 		}
-		
+
 		if ($body){
 			$body = knjimap_replace(strip_tags($body));
-			
+
 			$paras = array();
 			foreach($struc->parameters AS $para){
 				$paras[$para->attribute] = $para->value;
 			}
-			
+
 			if ($paras["CHARSET"]){
 				$body = iconv($paras["CHARSET"], "utf-8", $body);
 			}
 		}
-		
+
 		return $body;
 	}elseif($struc->type == 1){
 		$count = 0;
 		foreach($struc->parts AS $part){
 			$count++;
-			
+
 			$tha_part_no = null;
 			if (strlen($tha_part_no) >= 1){
 				$tha_part_no .= ".";
 			}
 			$tha_part_no .= $count;
-			
+
 			$body = knjimap_getBodyRec($imap, $part, $msg_no, $tha_part_no);
-			
+
 			if ($body){
 				return $body;
 			}
@@ -106,7 +106,7 @@ function knjimap_replace($string){
 /** This function helps the knjimap_getBody()-family to parse content. */
 function knjimap_parse($message, $struc){
 	$coding = $struc->parts[$part]->encoding;
-	
+
 	if ($coding == 0){
 		//$message = imap_7bit($message); //this function does not exist??
 	}elseif($coding == 1){
@@ -120,6 +120,6 @@ function knjimap_parse($message, $struc){
 	}elseif($coding == 5){
 		//$message = $message;
 	}
-	
+
 	return $message;
 }

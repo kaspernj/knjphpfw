@@ -5,19 +5,19 @@
 		private $log_screen = array();
 		private $backtrace = false;
 		private $loggers = array();
-		
+
 		const debug = 1;		//Log-messages which should be used for debugging.
 		const notice = 2;		//Notices - if something mysterious is going on.
 		const program = 3;	//Program - programlogs. If someone is trying to delete something, that he cant, or he is just doing something with the program.
 		const warning = 4;	//Warnings - systemerrors.
-		
+
 		/** Adds outputs to the logger. */
 		function setOutput($options){
 			foreach($options AS $value){
 				if (!$value["level"]){
 					$value["level"] = knj_logger::warning;
 				}
-				
+
 				if (!$value["show"]){
 					$value["show"] = array(
 						"file" => false,
@@ -25,18 +25,18 @@
 						"function" => false
 					);
 				}
-				
+
 				if ($value["type"] == "file"){
 					if (!file_exists($value["filename"])){
 						file_put_contents($value["filename"], "[" . date("d/m Y H:i") . "] Log created...\n");
 					}
-					
+
 					if (!is_writeable($value["filename"])){
 						throw new Exception("The log-file is not writeable (" . $value["filename"] . ")");
 					}
-					
+
 					$value["fp"] = fopen($value["filename"], "a");
-					
+
 					$this->loggers[] = $value;
 				}elseif($value["type"] == "screen"){
 					$this->loggers[] = $value;
@@ -45,18 +45,18 @@
 				}
 			}
 		}
-		
+
 		/** Sets wherever a backtrace should be generated (can take up a lot of memory, if you log a lot). */
 		function setBackTrace($value){
 			$this->backtrace = $value;
 		}
-		
+
 		/** Logs a message. */
 		function log($msg, $level = knj_logger::warning){
 			if ($this->backtrace){
 				$debug = debug_backtrace();
 			}
-			
+
 			//log to files.
 			foreach($this->loggers AS $logopt){
 				$logthis = false;
@@ -69,7 +69,7 @@
 				}elseif($level >= $logopt["level"]){
 					$logthis = true;
 				}
-				
+
 				if (is_array($logopt["dontshow"])){
 					foreach($logopt["dontshow"] AS $value){
 						if ($value == $level){
@@ -77,7 +77,7 @@
 						}
 					}
 				}
-				
+
 				if ($logthis){
 					$realmsg = "";
 					if ($logopt["show"]["date"]){
@@ -90,7 +90,7 @@
 						if ($logopt["show"]["file"]){
 							$realmsg .= ":";
 						}
-						
+
 						if ($debug){
 							$realmsg .= $debug[0]["line"];
 						}
@@ -99,14 +99,14 @@
 						if ($logopt["show"]["file"] || $logopt["show"]["line"]){
 							$realmsg .= "->";
 						}
-						
+
 						$realmsg .= $debug[1]["function"] . "()";
 					}
 					if ($logopt["show"]["file"] || $logopt["show"]["line"] || $logopt["show"]["function"]){
 						$realmsg .= ": ";
 					}
 					$realmsg .= $msg . "\n";
-					
+
 					if ($logopt["type"] == "file"){
 						fwrite($logopt["fp"], $realmsg);
 					}elseif($logopt["type"] == "screen"){
@@ -116,11 +116,11 @@
 					}
 				}
 			}
-			
+
 			if ($debug){
 				unset($debug);
 			}
-			
+
 			unset($realmsg);
 		}
 	}

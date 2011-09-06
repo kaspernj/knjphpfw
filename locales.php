@@ -10,10 +10,10 @@ $functions_knjlocales = array(
 /** Initilializes the chosen locales-module. */
 function knjlocales_setmodule($domain, $dir, $module = "ext", $language = "auto"){
 	global $functions_knjlocales;
-	
+
 	$functions_knjlocales["dir"] = $dir;
 	$functions_knjlocales["module"] = $module;
-	
+
 	if ($language == "auto"){
 		if (array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER) and $_SERVER["HTTP_ACCEPT_LANGUAGE"]){
 			$accept = $_SERVER["HTTP_ACCEPT_LANGUAGE"];
@@ -28,9 +28,9 @@ function knjlocales_setmodule($domain, $dir, $module = "ext", $language = "auto"
 			}else{
 				//Language could not be matched - default english.
 				$language = "en_GB";
-			}	
+			}
 		}
-		
+
 		if ($language == "da"){
 			$language = "da_DK";
 		}elseif($language == "de"){
@@ -39,24 +39,24 @@ function knjlocales_setmodule($domain, $dir, $module = "ext", $language = "auto"
 			$language = "en_GB";
 		}
 	}
-	
+
 	$language = strtr($language, array(
 		"-" => "_"
 	));
 	if (preg_match("/^([A-z]{2})_([A-z]{2})$/", $language, $match)){
 		$language = strtolower($match[1]) . "_" . strtoupper($match[2]);
 	}
-	
+
 	$functions_knjlocales["language"] = $language;
-	
+
 	if (!file_exists($dir)){
 		throw new exception("Dir does not exist: " . $dir);
 	}
-	
+
 	if ($module == "php-gettext"){
 		require_once "php-gettext/gettext.inc";
 		$functions_knjlocales["module"] = "php-gettext";
-		
+
 		_setlocale(LC_ALL, $language);// or die("Locales error 5\n");
 		_setlocale(LC_MESSAGES, $language);// or die("Locales error 6\n");
 		_bindtextdomain($domain, $dir);
@@ -67,18 +67,18 @@ function knjlocales_setmodule($domain, $dir, $module = "ext", $language = "auto"
 		if (!knj_dl("gettext")){
 			throw new exception("gettext-module could not be loaded.");
 		}
-		
+
 		$functions_knjlocales["module"] = "ext";
-		
-		putenv("LANGUAGE=" . $language); 
+
+		putenv("LANGUAGE=" . $language);
 		putenv("LC_ALL=" . $language);
 		putenv("LC_MESSAGE=" . $language);
-		putenv("LANG=" . $language); 
-		
+		putenv("LANG=" . $language);
+
 		$locales_language_real = $language . ".utf8";
 		setlocale(LC_ALL, $locales_language_real);
 		setlocale(LC_MESSAGES, $locales_language_real);
-		
+
 		bindtextdomain($domain, $dir);
 		bind_textdomain_codeset($domain, "UTF-8");
 		textdomain($domain);
@@ -96,7 +96,7 @@ function knjlocales_getLanguage(){
 /** Sets options. */
 function knjlocales_setOptions($args){
 	global $functions_knjlocales;
-	
+
 	foreach($args AS $key => $value){
 		if ($key == "encodeout"){
 			$functions_knjlocales["encodeout"] = $value;
@@ -104,7 +104,7 @@ function knjlocales_setOptions($args){
 			if (!is_callable($value)){
 				throw new exception("The given value is not callable.");
 			}
-			
+
 			$functions_knjlocales[$key] = $value;
 		}elseif($key == "date_out_format" || $key == "date_out_format_time" || $key == "date_out_short_format"){
 			$functions_knjlocales[$key] = $value;
@@ -117,7 +117,7 @@ function knjlocales_setOptions($args){
 /** Gets the translated string for the chosen locales-module. */
 function knjgettext($msgid){
 	global $functions_knjlocales;
-	
+
 	if ($functions_knjlocales["module"] == "ext"){
 		$return = gettext($msgid);
 	}elseif($functions_knjlocales["module"] == "php-gettext"){
@@ -126,11 +126,11 @@ function knjgettext($msgid){
 		$return = $msgid;
 		#throw new exception("No supported module chosen.");
 	}
-	
+
 	if (array_key_exists("encodeout", $functions_knjlocales) and $functions_knjlocales["encodeout"] == "decode_utf8"){
 		$return = utf8_decode($return);
 	}
-	
+
 	return $return;
 }
 
@@ -141,52 +141,52 @@ function gtext($msgid){
 
 function date_out($unixt = null, $args = null){
 	global $functions_knjlocales;
-	
+
 	if ($functions_knjlocales["date_out_callback"]){
 		return call_user_func($functions_knjlocales["date_out_callback"]);
 	}
-	
+
 	if (!$unixt){
 		$unixt = time();
 	}
-	
+
 	if ($args["short"]){
 		$string = date($functions_knjlocales["date_out_short_format"], $unixt);
 	}else{
 		$string = date($functions_knjlocales["date_out_format"], $unixt);
 	}
-	
+
 	if ($args["time"]){
 		$string .= " " . date($functions_knjlocales["date_out_format_time"], $unixt);
 	}
-	
+
 	return $string;
 }
 
 function date_in($date_string){
 	global $functions_knjlocales;
-	
+
 	if ($functions_knjlocales["date_in_callback"]){
 		return call_user_func($functions_knjlocales["date_in_callback"]);
 	}
-	
+
 	if (preg_match("/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{1,4})(| ([0-9]{1,2}):([0-9]{1,2})(|[0-9]{1,2}))$/", $date_string, $match)){
 		$date = $match[1];
 		$month = $match[2];
 		$year = $match[3];
-		
+
 		$hour = $match[5];
 		$min = $match[6];
-		
+
 		if ($match[7]){
 			$sec = $match[7]; //fix notice if empty.
 		}
 	}
-	
+
 	if (!$date || !$month || !$year){
 		throw new InvalidDate("Could not understand the date.");
 	}
-	
+
 	return mktime($hour, $min, $sec, $month, $date, $year);
 }
 
@@ -194,10 +194,10 @@ function knjlocales_localeconv(){
 	if ($functions_knjlocales["module"] == "ext"){
 		return localeconv();
 	}
-	
+
 	global $functions_knjlocales;
 	$lang = substr($functions_knjlocales["language"], 0, 5);
-	
+
 	if ($lang == "da_DK"){
 		return array(
 			"decimal_point" => ",",
@@ -218,7 +218,7 @@ function number_out($number, $len = 0){
 
 function number_in($number){
 	$moneyformat = knjlocales_localeconv();
-	
+
 	$number = str_replace($moneyformat["thousands_sep"], "", $number);
 	if ($moneyformat["decimal_point"] != "."){
 		$temp = explode($moneyformat["decimal_point"], $number);
@@ -228,7 +228,7 @@ function number_in($number){
 			$number = $temp[0];
 		}
 	}
-	
+
 	return $number;
 }
 

@@ -3,11 +3,11 @@
 		private $knjdb;
 		private $tables_changed = true;
 		public $tables = array();
-		
+
 		function __construct(knjdb $knjdb){
 			$this->knjdb = $knjdb;
 		}
-		
+
 		function getTables(){
 			if ($this->tables_changed){
 				$f_gt = $this->knjdb->select("sqlite_master", array("type" => "table"), array("orderby" => "name"));
@@ -21,17 +21,17 @@
 						);
 					}
 				}
-				
+
 				$this->tables_changed = false;
 			}
-			
+
 			return $this->tables;
 		}
-		
+
 		function createTable($tablename, $columns, $args = null){
 			$sql = "CREATE TABLE " . $this->knjdb->connob->sep_table . $tablename . $this->conn->sep_table . " (";
 			$prim_keys = array();
-			
+
 			$first = true;
 			foreach($columns AS $column){
 				if ($first == true){
@@ -39,32 +39,32 @@
 				}else{
 					$sql .= ", ";
 				}
-				
+
 				$sql .= $this->knjdb->columns()->getColumnSQL($column);
 			}
 			$sql .= ");";
-			
+
 			if ($args["returnsql"]){
 				return $sql;
 			}
-			
+
 			$this->knjdb->query($sql);
 			$this->tables_changed = true;
 		}
-		
+
 		function renameTable(knjdb_table $table, $newname){
 			//Fuck you very much SQLite. This is just pure pain... No "ALTER TABLE" :'(
 			$indexes = $table->getIndexes();
 			$columns = $table->getColumns();
-			
+
 			$newcols = array();
 			foreach($columns AS $column){
 				$newcols[] = $column->data;
 			}
-			
+
 			$this->createTable($newname, $newcols);
 			$newtable = $this->knjdb->getTable($newname);
-			
+
 			//Inserting the old data.
 			$this->knjdb->query("INSERT INTO " . $this->knjdb->connob->sep_table . $newtable->get("name") . $this->knjdb->conn_sep_table . " SELECT * FROM " . $this->knjdb->connob->sep_table . $table->get("name") . $this->knjdb->connob->sep_table);
 			foreach($indexes AS $index){
@@ -75,17 +75,17 @@
 					$cols[] = $newtable->getColumn($col->get("name"));
 				}
 				$index_name .= "_" . round(microtime(true), 0); //prevent it from using the same name.
-				
+
 				$newtable->addIndex($cols, $index_name);
 			}
 			$table->drop();
 		}
-		
+
 		function dropTable(knjdb_table $table){
 			$this->knjdb->query("DROP TABLE " . $this->knjdb->connob->sep_table . $table->get("name") . $this->knjdb->connob->sep_table);
 			unset($this->tables[$table->get("name")]);
 		}
-		
+
 		function truncateTable(knjdb_table $table){
 			$this->knjdb->query("DELETE FROM " . $this->knjdb->conn->sep_table . $table->get("name") . $this->knjdb->conn->sep_table);
 		}

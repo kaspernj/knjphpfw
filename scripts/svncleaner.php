@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 	require_once("knj/functions_knj_filesystem.php");
-	
+
 	function killSVN($dir){
 		$fp = opendir($dir);
 		while(($file = readdir($fp)) !== false){
@@ -15,6 +15,6 @@
 			}
 		}
 	}
-	
+
 	killSVN($_SERVER["argv"][1]);
 ?>

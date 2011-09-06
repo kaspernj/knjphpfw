@@ -13,10 +13,10 @@ class web{
 		foreach($args AS $arg){
 			$html .= web::input($arg);
 		}
-		
+
 		return $html;
 	}
-	
+
 	function input($args){
 		ob_start();
 		form_drawInput($args);
@@ -24,15 +24,15 @@ class web{
 		ob_end_clean();
 		return $html;
 	}
-	
+
 	function drawInput($args){
 		return form_drawInput($args);
 	}
-	
+
 	function drawOpts($opts, $selected = null){
 		return select_drawOpts($opts, $selected);
 	}
-	
+
 	function checkVal($val, $opt1 = "1", $opt2 = "0"){
 		if ($val == "on"){
 			return $opt1;
@@ -40,19 +40,19 @@ class web{
 			return $opt2;
 		}
 	}
-	
+
 	function alert($msg){
 		return alert($msg);
 	}
-	
+
 	function redirect($url){
 		return redirect($url);
 	}
-	
+
 	function back(){
 		return jsback();
 	}
-	
+
 	function rewrite_replaces(){
 		return array(
 			"&" => "",
@@ -77,43 +77,43 @@ class web{
 			"?" => "-"
 		);
 	}
-	
+
 	function rewritesafe($string){
 		$string = strtr($string, Web::rewrite_replaces());
 		$string = preg_replace("/\s+/", "_", $string);
-		
+
 		return $string;
 	}
-	
+
 	function rewritesafe_removeothers($str){
 		$str = Web::rewritesafe($str);
 		preg_match_all("/[\/A-z_-\d]+/", $str, $matches);
 		$newstr = implode("_", $matches[0]);
 		return $newstr;
 	}
-	
+
 	function rewriteback($string){
 		return strtr($string, array(
 			"_" => " "
 		));
 	}
-	
+
 	function htmlspecialchars_textarea($input){
 		return htmlspecialchars_textarea($input);
 	}
-	
+
 	static function current_url(){
 		if ($_SERVER["HTTPS"] == "on"){
 			$url = "https://";
 		}else{
 			$url = "http://";
 		}
-		
+
 		$url .= $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-		
+
 		return $url;
 	}
-	
+
 	static function sxml_esc($str){
 		return strtr($str, array(
 			"&" => "&amp;"
@@ -130,13 +130,13 @@ function secCheckInclude($file){
 /** Function to redirect. You can use this instead of using the header()-function. */
 function redirect($url, $exit = true){
 	global $knj_web;
-	
+
 	if (!headers_sent() and !$knj_web["alert_sent"]){
 		header("Location: " . $url);
 	}else{
 		jsredirect($url);
 	}
-	
+
 	if ($exit == true){
 		exit();
 	}
@@ -145,14 +145,14 @@ function redirect($url, $exit = true){
 /** Function to show a message through the JS-alert-function. */
 function alert($msg){
 	global $knj_web;
-	
+
 	$msg = strtr($msg, array(
 		"\n" => "\\n",
 		"\t" => "\\t",
 		"\r" => "",
 		"\"" => "\\\""
 	));
-	
+
 	$knj_web["alert_sent"] = true;
 	?><script type="text/javascript">alert("<?=$msg?>");</script><?
 }
@@ -182,11 +182,11 @@ function select_drawOpts($opts, $selected = null){
 	}elseif(is_array($selected) and is_object($selected[0])){
 		$selected = call_user_func(array($selected[0], $selected[1]), $selected[2]);
 	}
-	
+
 	$html = "";
 	foreach($opts AS $key => $value){
 		$html .= "<option";
-		
+
 		$is_selected = false;
 		if (is_array($selected) and in_array($key, $selected)){
 			$is_selected = true;
@@ -215,14 +215,14 @@ function select_drawOpts($opts, $selected = null){
 				$is_selected = true;
 			}
 		}
-		
+
 		if ($is_selected){
 			$html .= " selected=\"selected\"";
 		}
-		
+
 		$html .= " value=\"" . htmlspecialchars($key) . "\">" . htmlspecialchars($value) . "</option>\n";
 	}
-	
+
 	return $html;
 }
 
@@ -240,15 +240,15 @@ function form_drawInput($args){
 			$value = $args["value"];
 		}
 	}
-	
+
 	if (is_array($value)){
 		$value = null;
 	}
-	
+
 	if (is_null($value) and array_key_exists("default", $args)){
 		$value = $args["default"];
 	}
-	
+
 	if ($value and $args["value_callback"]){
 		if (array_key_exists(1, $args["value_callback"])){
 			$value = call_user_func($args["value_callback"][0], $value, $args["value_callback"][1]);
@@ -256,7 +256,7 @@ function form_drawInput($args){
 			$value = call_user_func($args["value_callback"][0], $value);
 		}
 	}
-	
+
 	if (!$args["type"]){
 		$f3 = substr($args["name"], 0, 3);
 		if ($f3 == "che"){
@@ -271,43 +271,43 @@ function form_drawInput($args){
 			$args["type"] = "radio";
 		}
 	}
-	
+
 	if (!$args["id"]){
 		$id = $args["name"];
 	}else{
 		$id = $args["id"];
 	}
-	
+
 	if (!$args["type"]){
 		$args["type"] = "text";
 	}
-	
+
 	if ($args["type"] == "password" and !$args["class"]){
 		$args["class"] = "input_text";
 	}
-	
+
 	if (!$args["class"]){
 		$args["class"] = "input_" . $args["type"];
 	}
-	
+
 	if ($args["colspan"]){
 		$colspan_cont = $args["colspan"] - 1;
 	}
-	
+
 	if (!array_key_exists("tr", $args) or $args["tr"]){
 		?><tr><?
 	}
-	
+
 	if ($args["title"]){
 		$title_html = htmlspecialchars($args["title"]);
 	}elseif($args["title_html"]){
 		$title_html = $args["title_html"];
 	}
-	
+
 	if ($args["div"]){
     $title_html = "<div>" . $title_html . "</div>";
 	}
-	
+
 	$css = array();
 	$td_html = "<td class=\"tdc\"";
 	if ($args["td_width"]){
@@ -316,7 +316,7 @@ function form_drawInput($args){
 	if ($args["align"]){
     $css["text-align"] = $args["align"];
   }
-  
+
   if (!empty($css)){
     $td_html .= " style=\"";
     foreach($css as $key => $val){
@@ -324,19 +324,19 @@ function form_drawInput($args){
     }
     $td_html .= "\"";
   }
-  
+
 	if ($colspan_cont > 1){
 		$td_html .= " colspan=\"" . $colspan_cont . "\"";
 	}
 	$td_html .= ">";
-	
+
 	if ($args["div"]){
     $td_end_html = "</div></td>";
     $td_html .= "<div>";
   }else{
     $td_end_html = "</td>";
 	}
-	
+
 	$js_tags = "";
 	$js_tags_arr = array("onkeyup", "onkeydown", "onchange");
 	foreach($js_tags_arr AS $js_tag){
@@ -344,24 +344,24 @@ function form_drawInput($args){
 			$js_tags .= " " . $js_tag . "=\"" . $args[$js_tag] . "\"";
 		}
 	}
-	
+
 	if (array_key_exists("autocomplete", $args) and !$args["autocomplete"]){
 		$js_tags .= " autocomplete=\"off\"";
 	}
-	
+
 	if ($args["type"] == "numeric"){
 		$value = number_out($value, $args["decis"]);
 	}
-	
+
 	if ($args["classes"]){
 		$classes = $args["classes"];
 	}else{
 		$classes = array();
 	}
-	
+
 	$classes[] = $args["class"];
 	$args["class"] = implode(" ", $classes);
-	
+
 	if ($args["type"] == "spacer"){
 		?><td colspan="2">&nbsp;</td><?
 	}elseif($args["type"] == "checkbox"){
@@ -376,15 +376,15 @@ function form_drawInput($args){
 		if ($args["multiple"]){
 			$etags .= " multiple=\"multiple\"";
 		}
-		
+
 		if ($args["height"]){
 			$etags .= " height=\"" . htmlspecialchars($args["height"]) . "\"";
 		}
-		
+
 		if (is_null($value) and is_array($args["value"])){
       $value = $args["value"];
     }
-		
+
 		?>
 			<td class="tdt">
 				<?=$title_html?>
@@ -407,29 +407,29 @@ function form_drawInput($args){
 		}else{
 			$ftype = "jpg";
 		}
-		
+
 		if (!$value){
 			$fn = null;
 		}else{
 			$fn = $args["path"] . "/" . $value . "." . $ftype;
 		}
-		
+
 		if (!$fn or !file_exists($fn)){
 			$found = false;
 			$fn_nopic = "images/nopicture.jpg";
 			$fn = null;
-			
+
 			if (file_exists($fn_nopic)){
 				$fn = $fn_nopic;
 			}
 		}else{
 			$found = true;
 		}
-		
+
 		if ($args["dellink"]){
 			$args["dellink"] = str_replace("%value%", $value, $args["dellink"]);
 		}
-		
+
 		?>
 			<td class="tdt">
 				<?=$title_html?>
@@ -486,13 +486,13 @@ function form_drawInput($args){
 			<?=$td_html?>
 				<?
 					$fck = new fckeditor($args["name"]);
-					
+
 					if ($args["height"]){
 						$fck->Height = $args["height"];
 					}else{
 						$fck->Height = 300;
 					}
-					
+
 					$fck->Value = $value;
 					$fck->Create();
 				?>
@@ -542,18 +542,18 @@ function form_drawInput($args){
 			<?=$td_end_html?>
 		<?
 	}
-	
+
 	if (!array_key_exists("tr", $args) or $args["tr"]){
 		?></tr><?
 	}
-	
+
 	if ($args["descr"]){
     $descr = $args["descr"];
-    
+
     if ($args["div"]){
       $descr = "<div>" . $descr . "</div>";
     }
-    
+
 		?>
 			<tr>
 				<td colspan="2" class="tdd">
@@ -567,21 +567,21 @@ function form_drawInput($args){
 /** A shortcut-function to get data from a database through a ID-column. */
 function GOne($in_id, $in_db, $in_fields){
 	global $knj_web;
-	
+
 	if ($knj_web["dbconn"]){
 		return $knj_web["dbconn"]->query("SELECT " . $in_fields . " FROM " . $in_db . " WHERE " . $knj_web["col_id_name"] . " = '" . $knj_web["dbconn"]->sql($in_id) . "' LIMIT 1")->fetch();
 	}else{
 		$f_gone = mysql_query("SELECT " . $in_fields . " FROM " . $in_db . " WHERE " . $knj_web["col_id_name"] . " = '" . mysql_escape_string($in_id) . "' LIMIT 1") or die("MySQL-error: " . mysql_error());
 		$d_gone = mysql_fetch_array($f_gone);
 	}
-	
+
 	return $d_gone;
 }
 
 /** A shortcut-function to get data from a database through a ID-column. */
 function GID($in_id, $in_db){
 	global $knj_web;
-	
+
 	if ($knj_web["dbconn"]){
 		return $knj_web["dbconn"]->selectsingle($in_db, array($knj_web["col_id_name"] => $in_id));
 	}else{
@@ -589,7 +589,7 @@ function GID($in_id, $in_db){
 		$f_gid = mysql_query($sql) or die("MySQL-error: " . mysql_error() . "\nSQL: " . $sql);
 		$d_gid = mysql_fetch_array($f_gid);
 	}
-	
+
 	return $d_gid;
 }
 
@@ -598,12 +598,12 @@ class knj_browser{
 	/** Returns the browser. */
 	static function getBrowser(){
 		global $knj_web;
-		
+
 		$uagent = "";
 		if (array_key_exists("HTTP_USER_AGENT", $_SERVER)){
 			$uagent = $_SERVER["HTTP_USER_AGENT"];
 		}
-		
+
 		if (strpos($uagent, "MSIE") !== false){
 			return "ie";
 		}elseif(strpos($uagent, "Chrome") !== false){
@@ -622,14 +622,14 @@ class knj_browser{
 			}
 		}
 	}
-	
+
 	/** Returns the major version of the browser. */
 	static function getVersion(){
 		$uagent = "";
 		if (array_key_exists("HTTP_USER_AGENT", $_SERVER)){
 			$uagent = $_SERVER["HTTP_USER_AGENT"];
 		}
-		
+
 		if (knj_browser::getBrowser() == "ie"){
 			if (preg_match("/MSIE (\d+)/", $uagent, $match)){
 				return $match[1];
@@ -659,10 +659,10 @@ class knj_browser{
 				return 4;
 			}
 		}
-		
+
 		return 0;
 	}
-	
+
 	/** Returns the registered operating-system - "windows", "linux", "mac" or "bot". */
 	static function getOS(){
 		require_once("knj/functions_array.php");
@@ -699,13 +699,13 @@ class knj_browser{
 			"wget",
 			"w3c_validator"
 		);
-		
+
 		if (array_key_exists("HTTP_USER_AGENT", $_SERVER)){
 			$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);
 		}else{
 			return "unknown";
 		}
-		
+
 		if (strpos($ua, "windows") !== false){
 			return "windows";
 		}elseif(strpos($ua, "linux") !== false){
@@ -726,10 +726,10 @@ class knj_browser{
 			return "unknown";
 		}
 	}
-	
+
 	static function getOSVersion(){
 		$version = "unknown";
-		
+
 		if (knj_browser::getOS() == "windows"){
 			if (preg_match("/Windows\s+NT\s+([\d\.]+)/", $_SERVER["HTTP_USER_AGENT"], $match)){
 				if ($match[1] == 6.0){
@@ -749,17 +749,17 @@ class knj_browser{
 		}else{
 			throw new exception("Unknown user-agent for OS '" . knj_browser::getOS() . "': " . $_SERVER["HTTP_USER_AGENT"]);
 		}
-		
+
 		return array(
 			"version" => $version
 		);
 	}
-	
+
 	static function locale($servervar = null){
 		if (!$servervar){
 			$servervar = $_SERVER;
 		}
-		
+
 		$arr = array();
 		$locale = explode(",", $servervar["HTTP_ACCEPT_LANGUAGE"]);
 		if (preg_match("/^([a-z]{2})(_|-)[A-Z]{2}/i", $locale[0], $match)){
@@ -767,7 +767,7 @@ class knj_browser{
 		}elseif(preg_match("/^([a-z]{2})$/", $locale[0], $match)){
 			$arr["locale"] = $match[1];
 		}
-		
+
 		return $arr;
 	}
 }

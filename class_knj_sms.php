@@ -4,13 +4,13 @@
 		private $opts = array("connected" => false);
 		private $http;
 		private $soap_client;
-		
+
 		/** Sets options. */
 		function setOpts($arr){
 			if (!$this->opts["mode"] && !$arr["mode"]){
 				$arr["mode"] = "cbb";
 			}
-			
+
 			foreach($arr AS $key => $value){
 				if ($key == "mobilenumber" || $key == "password" || $key == "gnokiiexe" || $key == "gnokiiconf" || $key == "host" || $key == "port" || $key == "username"){
 					//do nothing.
@@ -29,7 +29,7 @@
 						if (!$this->opts["gnokiiexe"]){
 							$this->opts["gnokiiexe"] = "/usr/bin/gnokii";
 						}
-						
+
 						if (!$this->opts["gnokiiconf"]){
 							$this->opts["gnokiiconf"] = "/etc/gnokiirc";
 						}
@@ -41,11 +41,11 @@
 				}else{
 					throw new Exception("Invalid option: " . $key);
 				}
-				
+
 				$this->opts[$key] = $value;
 			}
 		}
-		
+
 		/** Connects to CBB. */
 		function connect(){
 			if ($this->opts["mode"] == "cbb" || $this->opts["mode"] == "bibob"){
@@ -53,7 +53,7 @@
 					throw new Exception("Invalid phonenumber or password.");
 				}
 			}
-			
+
 			if ($this->opts["mode"] == "cbb"){
 				$this->http->connect("cbb.dk");
 				$html = $this->http->post("cbb?cmd=login", array(
@@ -72,7 +72,7 @@
 					"password" => $this->opts["password"]
 				));
 				$html = $this->http->getAddr("login/");
-				
+
 				if (strpos($html, "<div class=\"login_menu_txt\"><a href=\"/login/websms/\">WebSMS</a></div>") === false){
 					throw new Exception("Could not log in.");
 				}
@@ -80,7 +80,7 @@
 				require_once("knj/functions_knj_os.php");
 				$cmd = $this->opts["gnokiiexe"] . " --config " . $this->opts["gnokiiconf"] . " --identify";
 				$res = knj_os::shellCMD($cmd);
-				
+
 				if (strpos($res["result"], "Model") !== false && strpos($res["result"], "Manufacturer") != false){
 					//valid.
 				}else{
@@ -91,10 +91,10 @@
 				if (!$this->fp){
 					throw new Exception("Could not open connection to server.");
 				}
-				
+
 				fwrite($this->fp, "login;" . $this->opts["username"] . ";" . $this->opts["password"] . "\n");
 				$status = fread($this->fp, 4096);
-				
+
 				if ($status == "login;false\n"){
 					throw new Exception("Invalid username and/or password.");
 				}elseif($status != "login;true\n"){
@@ -103,17 +103,17 @@
 			}else{
 				throw new Exception("Invalid mode: " . $this->opts["mode"]);
 			}
-			
+
 			$this->opts["connected"] = true;
 		}
-		
+
 		/** Closes the connection to CBB. */
 		function disconnect(){
 			if ($this->opts["mode"] == "cbb"){
 				if (!$this->http){
 					throw new Exception("Not connected.");
 				}
-				
+
 				$this->http->disconnect();
 				unset($this->http);
 			}elseif($this->opts["mode"] == "bibob"){
@@ -128,13 +128,13 @@
 				throw new Exception("Invalid mode: \"" . $this->opts["mode"] . "\".");
 			}
 		}
-		
+
 		/** Returns the maxlength for a message, based on the type of mode the object is set to. */
 		static function getMaxLength($mode = null){
 			if (!$mode){
 				$mode = $this->opts["mode"];
 			}
-			
+
 			if ($mode == "bibob"){
 				return 320;
 			}elseif($mode == "cbb"){
@@ -147,7 +147,7 @@
 				throw new Exception("Invalid mode: \"" . $mode . "\".");
 			}
 		}
-		
+
 		/** Checks a given number or array if it is valid. */
 		function checkNumber($number, $stripmode = null){
 			if (is_array($number)){
@@ -158,21 +158,21 @@
 				if (!preg_match("/^\+([0-9]{2})([0-9]+)$/", $number, $match_number)){
 					throw new Exception("Invalid number (" . $number . ") - correct format is: \"+4512312312\".");
 				}
-				
+
 				if ($this->opts["mode"] == "bibob"){
 					$number = substr($number, 3);
 				}
 			}
-			
+
 			return $number;
 		}
-		
+
 		/** Sends a SMS. */
 		function sendSMS($number, $msg){
 			if (!$this->opts["connected"]){
 				$this->connect();
 			}
-			
+
 			$number = $this->checkNumber($number);
 			if ($this->opts["mode"] != "bibob" && is_array($number)){
 				foreach($number AS $num){
@@ -180,12 +180,12 @@
 				}
 				return true;
 			}
-			
+
 			if ($this->opts["mode"] == "cbb"){
 				if (!$this->http){
 					$this->connect();
 				}
-				
+
 				$html = $this->http->post("cbb?cmd=websmssend", array(
 					"newentry" => "",
 					"receivers" => $number,
@@ -196,7 +196,7 @@
 					"sendDateHour" => "",
 					"sendDateMinute" => ""
 				));
-				
+
 				if (strpos($html, "<td>" . $number . "</td>") !== false){
 					//do nothing.
 				}else{
@@ -204,12 +204,12 @@
 				}
 			}elseif($this->opts["mode"] == "happii"){
 				$html = $this->http->getAddr("login/websms/");
-				
+
 				if (!preg_match("/<form name=\"WebSMSForm\" method=\"post\" action=\"\/(\S+)\">/", $html, $match)){
 					throw new Exception("Could not match PID.");
 				}
 				$action = $match[1];
-				
+
 				$html = $this->http->post($action, array(
 					"sender" => "",
 					"Recipient" => substr($number, 3),
@@ -224,7 +224,7 @@
 				if (!$this->soap_client){
 					$this->connect();
 				}
-				
+
 				$status_ob = $this->soap_client->__soapCall("SendMessage", array("parameters" => array(
 					"cellphone" => $this->opts["mobilenumber"],
 					"password" => md5($this->opts["password"]),
@@ -240,10 +240,10 @@
 			}elseif($this->opts["mode"] == "gnokii"){
 				$msg = str_replace("\"", "\\\"", $msg);
 				$msg = str_replace("!", "\\!", $msg);
-				
+
 				$cmd = "echo \"" . $msg . "\" | " . $this->opts["gnokiiexe"] . " --config " . $this->opts["gnokiiconf"] . " --sendsms " . $number;
 				$res = knj_os::shellCMD($cmd);
-				
+
 				if (strpos($res["error"], "Send succeeded!") !== false){
 					//success!
 				}else{
@@ -252,14 +252,14 @@
 			}elseif($this->opts["mode"] == "knjsmsgateway"){
 				fwrite($this->fp, "sendsms;" . $number . ";" . $msg . "\n");
 				$status = fread($this->fp, 4096);
-				
+
 				if ($status != "sendsms;true\n"){
 					throw new Exception("Error when sending SMS: \"" . $status . "\".");
 				}
 			}else{
 				throw new Exception("Invalid mode: \"" . $this->opts["mode"] . "\".");
 			}
-			
+
 			return true;
 		}
 	}

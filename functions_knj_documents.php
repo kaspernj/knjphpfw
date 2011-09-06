@@ -8,7 +8,7 @@
 			if (!$catdoc_status){
 				throw new Exception("catdoc could not be found on this system.");
 			}
-			
+
 			if (!$type){
 				if (file_exists($cont)){
 					$type = "file";
@@ -18,7 +18,7 @@
 					throw new Exception("Could not register the type.");
 				}
 			}
-			
+
 			if ($type == "file"){
 				$filename = $cont;
 			}elseif($type = "content"){
@@ -28,7 +28,7 @@
 					throw new Exception("Could not write temp-document to: " . $filename);
 				}
 			}
-			
+
 			$doc = knj_os::shellCMD($catdoc_status[filepath] . " " . $filename);
 			return $doc[result];
 		}

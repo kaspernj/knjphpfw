@@ -4,7 +4,7 @@
 		if (!$args["skip_htmlparse"]){
 			$title = htmlspecialchars($title);
 		}
-		
+
 		?>
 			<table style="width: <?=$width?>; text-align: left;" cellspacing="0" cellpadding="0">
 				<tr>
@@ -14,8 +14,8 @@
 					<td style="padding: 2px; padding-left: 8px; padding-right: 8px; border-bottom: 1px solid #FBECA7; width: 100%;">
 		<?
 	}
-	
-	/** Outputs the HTML for drawing a box with content. */ 
+
+	/** Outputs the HTML for drawing a box with content. */
 	function DrawBoxB(){
 		?>
 					</td>
@@ -23,7 +23,7 @@
 			</table>
 		<?
 	}
-	
+
 	/** Outputs the HTML for drawing the top of a page. */
 	function DrawSiteT($in_title){
 		?>
@@ -31,7 +31,7 @@
 			<div style="padding-top: 6px; padding-left: 2px;">
 		<?
 	}
-	
+
 	/** Outputs the HTML for drawing the bottom of a page. */
 	function DrawSiteB(){
 		?>
