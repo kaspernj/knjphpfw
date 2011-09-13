@@ -18,6 +18,7 @@ class knj_httpbrowser{
 		$this->args = array(
 			"timeout" => ini_get("default_socket_timeout")
 		);
+		$this->cookies = array();
 		
 		foreach($args AS $key => $value){
 			if ($key == "ssl" or $key == "nl" or $key == "debug" or $key == "force_connection"){
@@ -39,6 +40,10 @@ class knj_httpbrowser{
 		$this->host = $host;
 		$this->port = $port;
 		$this->output = false;
+		
+		if (!array_key_exists($host, $this->cookies)){
+      $this->cookies[$host] = array();
+    }
 		
 		if ($port == 443){
 			$this->ssl = true;
@@ -132,6 +137,7 @@ class knj_httpbrowser{
 	function post($addr, $post){
 		$this->countAutoReconnect();
 		
+		$postdata = "";
 		foreach($post AS $key => $value){
 			if ($postdata){
 				$postdata .= "&";
@@ -390,6 +396,10 @@ class knj_httpbrowser{
 		$state = "headers";
 		$readsize = 1024;
 		$first = true;
+		$headers = "";
+		$cont100 = null;
+		$html = "";
+		$location = null;
 		
 		while(true){
 			if ($readsize == 0){
