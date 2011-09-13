@@ -551,12 +551,12 @@ function form_drawInput($args){
     $descr = $args["descr"];
     
     if ($args["div"]){
-      $descr = "<div>" . $descr . "</div>";
+      $descr = "<div class=\"tdd\">" . $descr . "</div>";
     }
     
 		?>
 			<tr>
-				<td colspan="2" class="tdd">
+				<td colspan="2"<?if (!$args["div"]){?> class="tdd"<?}?>>
 					<?=$descr?>
 				</td>
 			</tr>
