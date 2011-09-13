@@ -154,3 +154,4 @@ class knj_table_writer{
     }
   }
 }
+

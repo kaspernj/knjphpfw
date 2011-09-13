@@ -82,4 +82,4 @@
 			$this->knjdb->query("VACUUM"); //vacuum the entire database.
 		}
 	}
-?>
+

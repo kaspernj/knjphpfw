@@ -90,4 +90,4 @@
 			$this->knjdb->query("DELETE FROM " . $this->knjdb->conn->sep_table . $table->get("name") . $this->knjdb->conn->sep_table);
 		}
 	}
-?>
+

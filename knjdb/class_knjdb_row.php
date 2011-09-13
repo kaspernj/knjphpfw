@@ -158,3 +158,4 @@ class knjdb_row{
 }
 
 class knjdb_rownotfound_exception extends exception{}
+

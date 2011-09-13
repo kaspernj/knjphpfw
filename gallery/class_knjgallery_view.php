@@ -262,4 +262,4 @@
 			$this->setData(array("active" => "yes"));
 		}
 	}
-?>
+

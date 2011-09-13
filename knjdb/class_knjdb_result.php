@@ -19,3 +19,4 @@ class knjdb_result{
     return $this->driver->free($this->result);
   }
 }
+

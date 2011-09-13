@@ -240,3 +240,4 @@ function number_in_dk($num){
 }
 
 class InvalidDate extends exception{}
+

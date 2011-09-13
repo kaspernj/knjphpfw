@@ -44,4 +44,4 @@
 			call_user_func($this->connect_info, $key, $this->opt[$key]->get_active());
 		}
 	}
-?>
+

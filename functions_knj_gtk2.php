@@ -5,4 +5,4 @@
 			gtk::main_iteration();
 		}
 	}
-?>
+

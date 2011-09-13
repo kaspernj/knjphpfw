@@ -68,4 +68,4 @@
 			return $gtksettings_paned["dbconn"];
 		}
 	}
-?>
+

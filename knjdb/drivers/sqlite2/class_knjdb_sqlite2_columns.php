@@ -338,4 +338,4 @@
 			$table->data = $table_new->data; //if not it will bug up, if some other code has cached this object.
 		}
 	}
-?>
+

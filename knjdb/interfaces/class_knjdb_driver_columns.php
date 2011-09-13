@@ -6,4 +6,4 @@
 		function addColumns(knjdb_table $table, $columns);
 		function editColumn(knjdb_column $col, $newdata);
 	}
-?>
+

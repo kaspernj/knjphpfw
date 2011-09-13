@@ -99,3 +99,4 @@ class knjdb_sqlite3_indexes implements knjdb_driver_indexes{
 		unset($table->indexes[$index->get("name")]);
 	}
 }
+

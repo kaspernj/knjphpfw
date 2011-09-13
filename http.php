@@ -533,3 +533,4 @@ class knj_httpbrowser{
 		unset($this->fp);
 	}
 }
+

@@ -59,4 +59,4 @@
 		
 		throw new exception("Unknown mode: " . $mode);
 	}
-?>
+

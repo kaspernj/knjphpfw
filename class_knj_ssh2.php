@@ -181,4 +181,4 @@
 			return $string;
 		}
 	}
-?>
+

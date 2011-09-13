@@ -66,6 +66,10 @@ class knjdb_mysql{
 		return mysql_error($this->conn);
 	}
 	
+	function free($res){
+		return mysql_free_result($res);
+	}
+	
 	function getLastID(){
 		return mysql_insert_id($this->conn);
 	}
@@ -274,3 +278,4 @@ class knjdb_mysql{
 		return date($format, $unixt);
 	}
 }
+
