@@ -481,7 +481,7 @@ class knjobjects{
 				}
 				
 				$found = true;
-			}elseif(($str_exists or $num_exists) and preg_match("/^(.+)_(has|not)$/", $list_key, $match) and (in_array($match[1], $args["cols_str"]) or in_array($match[1], $args["cols_num"]))){
+			}elseif(($str_exists or $num_exists) and preg_match("/^(.+)_(has|not)$/", $list_key, $match) and (($str_exists and in_array($match[1], $args["cols_str"])) or ($num_exists and in_array($match[1], $args["cols_num"])))){
 				if ($match[2] == "has"){
 					if ($list_val){
 						$sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep . " != ''";
