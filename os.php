@@ -294,7 +294,7 @@ class knj_os{
 		
 		throw new Exception("Could not find the PHP-executable.");
 	}
-	
+  
 	static function using_ssl(){
     if ($_SERVER["HTTP_SSL_ENABLED"] or $_SERVER["HTTPS"] or $_SERVER["SSL"]){
       return true;
@@ -303,3 +303,4 @@ class knj_os{
     return false;
 	}
 }
+

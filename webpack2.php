@@ -36,3 +36,4 @@ class webpack2{
 		return $status;
 	}
 }
+

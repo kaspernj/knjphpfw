@@ -65,6 +65,10 @@ class knjdb_mssql{
 		throw new Exception("Not supported.");
 	}
 	
+	function free($res){
+		return mssql_free_result($res);
+	}
+	
 	function sql($sql){
 		return strtr($sql, array(
 			"'" => "''"
@@ -231,3 +235,4 @@ class knjdb_mssql{
 		return $unixt;
 	}
 }
+

@@ -216,3 +216,4 @@ class knjdb_pdo{
 		return $sql;
 	}
 }
+

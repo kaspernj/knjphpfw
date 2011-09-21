@@ -254,8 +254,8 @@
 						//henter value
 						$iter = $model->get_iter($path);
 						$value = $model->get_value($iter, $i);
-						
-						//s�ter $return
+
+						//sæter $return
 						$return[$count][$i] = $value;
 						$return[$count][$key] = $value;
 					}
@@ -293,4 +293,4 @@
 			$this->scrwin->set_size_request($width, $height);
 		}
 	}
-?>
+

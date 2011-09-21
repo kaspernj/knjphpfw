@@ -15,4 +15,4 @@
 			$this->ob->sendSMS($number, $text);
 		}
 	}
-?>
+

@@ -72,3 +72,4 @@ class knj_ftp{
 		return true;
 	}
 }
+

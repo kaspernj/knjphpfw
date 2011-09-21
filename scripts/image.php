@@ -142,4 +142,4 @@
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", $mtime) . " GMT");
 		ImageOut($image, $type, $quality, null);
 	}
-?>
+

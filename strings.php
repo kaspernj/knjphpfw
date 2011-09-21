@@ -254,3 +254,4 @@ function knj_string_filename($string, $os = null){
 function knj_string_regex($string){
 	return knj_strings::RegexSafe($string);
 }
+
