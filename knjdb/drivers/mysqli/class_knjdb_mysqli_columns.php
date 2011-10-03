@@ -4,20 +4,20 @@
  *
  * PHP version 5
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 
 /**
  * TODO
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 class knjdb_mysqli_columns implements knjdb_driver_columns
@@ -41,7 +41,7 @@ class knjdb_mysqli_columns implements knjdb_driver_columns
 	 * @param array $column TODO
 	 * @param array $args   TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function getColumnSQL($column, $args = null)
 	{
@@ -127,7 +127,7 @@ class knjdb_mysqli_columns implements knjdb_driver_columns
 	 *
 	 * @param object $table TODO
 	 *
-	 * @return array
+	 * @return array TODO
 	 */
 	function getColumns(knjdb_table $table)
 	{

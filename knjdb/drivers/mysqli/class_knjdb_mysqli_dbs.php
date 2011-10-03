@@ -4,20 +4,20 @@
  *
  * PHP version 5
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 
 /**
  * TODO
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 class knjdb_mysqli_dbs implements knjdb_driver_dbs
@@ -37,7 +37,7 @@ class knjdb_mysqli_dbs implements knjdb_driver_dbs
 	/**
 	 * TODO
 	 *
-	 * @return array
+	 * @return array TODO
 	 */
 	function getDBs()
 	{
@@ -63,7 +63,7 @@ class knjdb_mysqli_dbs implements knjdb_driver_dbs
 	 *
 	 * @param string $name TODO
 	 *
-	 * @return object
+	 * @return object TODO
 	 */
 	function getDB($name)
 	{

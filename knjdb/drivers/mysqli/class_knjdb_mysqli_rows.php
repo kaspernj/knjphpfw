@@ -4,10 +4,10 @@
  *
  * PHP version 5
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 
@@ -16,10 +16,10 @@ require_once "knj/knjdb/interfaces/class_knjdb_driver_rows.php";
 /**
  * TODO
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 class knjdb_mysqli_rows implements knjdb_driver_rows
@@ -41,7 +41,7 @@ class knjdb_mysqli_rows implements knjdb_driver_rows
 	 *
 	 * @param object $row TODO
 	 *
-	 * @return
+	 * @return TODO
 	 */
 	function getObInsertSQL(knjdb_row $row)
 	{
@@ -57,7 +57,7 @@ class knjdb_mysqli_rows implements knjdb_driver_rows
 	 * @param string $tablename TODO
 	 * @param array  $data      TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function getArrInsertSQL($tablename, $data)
 	{

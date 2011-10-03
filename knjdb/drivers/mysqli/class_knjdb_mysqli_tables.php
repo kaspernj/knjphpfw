@@ -4,20 +4,20 @@
  *
  * PHP version 5
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 
 /**
  * TODO
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 class knjdb_mysqli_tables implements knjdb_driver_tables
@@ -39,7 +39,7 @@ class knjdb_mysqli_tables implements knjdb_driver_tables
 	/**
 	 * TODO
 	 *
-	 * @return
+	 * @return TODO
 	 */
 	function getTables()
 	{
@@ -72,7 +72,7 @@ class knjdb_mysqli_tables implements knjdb_driver_tables
 	 * @param object $table   TODO
 	 * @param string $newname TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function renameTable(knjdb_table $table, $newname)
 	{
@@ -94,7 +94,7 @@ class knjdb_mysqli_tables implements knjdb_driver_tables
 	 * @param string $cols      TODO
 	 * @param string $args      TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function createTable($tablename, $cols, $args = null)
 	{

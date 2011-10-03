@@ -4,20 +4,20 @@
  *
  * PHP version 5
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 
 /**
  * TODO
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 class knjdb_mysqli
@@ -47,7 +47,7 @@ class knjdb_mysqli
 	/**
 	 * TODO
 	 *
-	 * @return array
+	 * @return array TODO
 	 */
 	static function getArgs()
 	{
@@ -109,7 +109,7 @@ class knjdb_mysqli
 	 *
 	 * @param string $query The SQL query to be executed
 	 *
-	 * @return object
+	 * @return object TODO
 	 */
 	function query($query)
 	{
@@ -159,7 +159,7 @@ class knjdb_mysqli
 	/**
 	 * TODO
 	 *
-	 * @return int
+	 * @return int TODO
 	 */
 	function getLastID()
 	{
@@ -183,7 +183,7 @@ class knjdb_mysqli
 	 *
 	 * @param string $string TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function escape_table($string)
 	{
@@ -221,7 +221,7 @@ class knjdb_mysqli
 	 * @param string $table TODO
 	 * @param array  $arr   TODO
 	 *
-	 * @return object
+	 * @return object TODO
 	 */
 	function insert($table, $arr)
 	{
@@ -260,7 +260,7 @@ class knjdb_mysqli
 	 * @param string $table TODO
 	 * @param array  $rows  TODO
 	 *
-	 * @return object
+	 * @return object TODO
 	 */
 	function insert_multi($table, $rows)
 	{
@@ -311,7 +311,7 @@ class knjdb_mysqli
 	 * @param array  $where TODO
 	 * @param array  $args  TODO
 	 *
-	 * @return object
+	 * @return object TODO
 	 */
 	function select($table, $where = null, $args = null)
 	{
@@ -340,7 +340,7 @@ class knjdb_mysqli
 	 * @param string $table TODO
 	 * @param array  $where TODO
 	 *
-	 * @return object
+	 * @return object TODO
 	 */
 	function delete($table, $where = null)
 	{
@@ -360,7 +360,7 @@ class knjdb_mysqli
 	 * @param array  $data  TODO
 	 * @param array  $where TODO
 	 *
-	 * @return object
+	 * @return object TODO
 	 */
 	function update($table, $data, $where = null)
 	{
@@ -390,7 +390,7 @@ class knjdb_mysqli
 	 *
 	 * @param array $tables TODO
 	 *
-	 * @return object
+	 * @return object TODO
 	 */
 	function optimize($tables)
 	{
@@ -414,7 +414,7 @@ class knjdb_mysqli
 	 *
 	 * @param array $where TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function makeWhere($where)
 	{
@@ -449,7 +449,7 @@ class knjdb_mysqli
 	 *
 	 * @param string $str See PHP documentation for strtotime()
 	 *
-	 * @return int
+	 * @return int See PHP documentation for strtotime()
 	 */
 	function date_in($str)
 	{
@@ -462,7 +462,7 @@ class knjdb_mysqli
 	 * @param int   $unixt TODO
 	 * @param array $args  TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function date_format($unixt, $args = array())
 	{

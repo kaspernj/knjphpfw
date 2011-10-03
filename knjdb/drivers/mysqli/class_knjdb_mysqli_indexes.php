@@ -4,10 +4,10 @@
  *
  * PHP version 5
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 
@@ -16,10 +16,10 @@ require_once "knj/knjdb/interfaces/class_knjdb_driver_indexes.php";
 /**
  * TODO
  *
- * @category framework
- * @package  knjphpfw
+ * @category Framework
+ * @package  Knjphpfw
  * @author   Kasper Johansen <kaspernj@gmail.com>
- * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
 class knjdb_mysqli_indexes implements knjdb_driver_indexes
@@ -41,7 +41,7 @@ class knjdb_mysqli_indexes implements knjdb_driver_indexes
 	 *
 	 * @param object $index TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function getIndexSQL(knjdb_index $index)
 	{
@@ -73,7 +73,7 @@ class knjdb_mysqli_indexes implements knjdb_driver_indexes
 	 * @param string $name  TODO
 	 * @param array  $args  TODO
 	 *
-	 * @return string
+	 * @return string TODO
 	 */
 	function addIndex(knjdb_table $table, $cols, $name = null, $args = null)
 	{
@@ -133,7 +133,7 @@ class knjdb_mysqli_indexes implements knjdb_driver_indexes
 	 *
 	 * @param object $table TODO
 	 *
-	 * @return array
+	 * @return array TODO
 	 */
 	function getIndexes(knjdb_table $table)
 	{
