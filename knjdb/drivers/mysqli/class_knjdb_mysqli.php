@@ -1,22 +1,56 @@
-<?
+<?php
+/**
+ * TODO
+ *
+ * PHP version 5
+ *
+ * @category framework
+ * @package  knjphpfw
+ * @author   Kasper Johansen <kaspernj@gmail.com>
+ * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @link     https://github.com/kaspernj/knjphpfw
+ */
 
-class knjdb_mysqli{
-	private $args;
-	private $knjdb;
-	public $sep_col = "`";
-	public $sep_val = "'";
+/**
+ * TODO
+ *
+ * @category framework
+ * @package  knjphpfw
+ * @author   Kasper Johansen <kaspernj@gmail.com>
+ * @license  MIT http://www.opensource.org/licenses/mit-license.php
+ * @link     https://github.com/kaspernj/knjphpfw
+ */
+class knjdb_mysqli
+{
+	private $_args;
+	private $_knjdb;
+	public $sep_col   = "`";
+	public $sep_val   = "'";
 	public $sep_table = "`";
 	public $sep_index = "`";
-	
-	function __construct(knjdb $knjdb, &$args){
-		$this->args = $args;
-		$this->knjdb = $knjdb;
-		
-		require_once("knj/functions_knj_extensions.php");
+
+	/**
+	 * TODO
+	 *
+	 * @param object $knjdb TODO
+	 * @param array  &$args TODO
+	 */
+	function __construct(knjdb $knjdb, &$args)
+	{
+		$this->_args  = $args;
+		$this->_knjdb = $knjdb;
+
+		include_once "knj/functions_knj_extensions.php";
 		knj_dl("mysqli");
 	}
-	
-	static function getArgs(){
+
+	/**
+	 * TODO
+	 *
+	 * @return array
+	 */
+	static function getArgs()
+	{
 		return array(
 			"host" => array(
 				"type" => "text",
@@ -36,234 +70,408 @@ class knjdb_mysqli{
 			)
 		);
 	}
-	
-	function connect(){
-		$this->conn = new MySQLi($this->args["host"], $this->args["user"], $this->args["pass"], $this->args["db"]);
-		
-		if (mysqli_connect_error()){ //do not use the OO-way - it was broken until 5.2.9.
-			throw new Exception("Could not connect (" . mysqli_connect_errno() . "): " . mysqli_connect_error());
+
+	/**
+	 * TODO
+	 *
+	 * @return null
+	 */
+	function connect()
+	{
+		$this->conn = new MySQLi(
+			$this->_args["host"],
+			$this->_args["user"],
+			$this->_args["pass"],
+			$this->_args["db"]
+		);
+
+		 //do not use the OO-way - it was broken until 5.2.9.
+		if (mysqli_connect_error()) {
+			$msg = "Could not connect (" .mysqli_connect_errno() ."): "
+			.mysqli_connect_error();
+			throw new Exception($msg);
 		}
 	}
-	
-	function close(){
+
+	/**
+	 * Close the database connection
+	 *
+	 * @return null
+	 */
+	function close()
+	{
 		$this->conn->close();
 		unset($this->conn);
 	}
-	
-	function query($query){
+
+	/**
+	 * TODO
+	 *
+	 * @param string $query The SQL query to be executed
+	 *
+	 * @return object
+	 */
+	function query($query)
+	{
 		$res = $this->conn->query($query);
-		if (!$res){
-			throw new Exception("Query error: " . $this->error() . "\n\nSQL: " . $query);
+		if (!$res) {
+			$msg = "Query error: " .$this->error() ."\n\nSQL: " .$query;
+			throw new Exception($msg);
 		}
-		
-		return new knjdb_result($this->knjdb, $this, $res);
+
+		return new knjdb_result($this->_knjdb, $this, $res);
 	}
-	
-	function fetch($res){
+
+	/**
+	 * TODO
+	 *
+	 * @param TODO $res TODO
+	 *
+	 * @return TODO
+	 */
+	function fetch($res)
+	{
 		return $res->fetch_assoc();
 	}
-	
-	function error(){
+
+	/**
+	 * TODO
+	 *
+	 * @return TODO
+	 */
+	function error()
+	{
 		return $this->conn->error;
 	}
-	
-	function free($res){
-    return $res->free();
+
+	/**
+	 * TODO
+	 *
+	 * @param TODO $res TODO
+	 *
+	 * @return TODO
+	 */
+	function free($res)
+	{
+		return $res->free();
 	}
-	
-	function getLastID(){
+
+	/**
+	 * TODO
+	 *
+	 * @return int
+	 */
+	function getLastID()
+	{
 		return $this->conn->insert_id;
 	}
-	
-	function sql($string){
+
+	/**
+	 * TODO
+	 *
+	 * @param string $string TODO
+	 *
+	 * @return null
+	 */
+	function sql($string)
+	{
 		return $this->conn->real_escape_string($string);
 	}
-	
-	function escape_table($string){
-		if (strpos($string, "`")){
+
+	/**
+	 * TODO
+	 *
+	 * @param string $string TODO
+	 *
+	 * @return string
+	 */
+	function escape_table($string)
+	{
+		if (strpos($string, "`")) {
 			throw new exception("Tablename contains invalid character.");
 		}
-		
+
 		return $string;
 	}
-	
-	function trans_begin(){
+
+	/**
+	 * TODO
+	 *
+	 * @return null
+	 */
+	function trans_begin()
+	{
 		$this->conn->autocommit(false); //turn off autocommit.
 	}
-	
-	function trans_commit(){
+
+	/**
+	 * TODO
+	 *
+	 * @return null
+	 */
+	function trans_commit()
+	{
 		$this->conn->commit();
 		$this->conn->autocommit(true); //turn on autocommit.
 	}
-	
-	function insert($table, $arr){
-		$sql = "INSERT INTO " . $this->sep_table . $table . $this->sep_table . " (";
-		
+
+	/**
+	 * TODO
+	 *
+	 * @param string $table TODO
+	 * @param array  $arr   TODO
+	 *
+	 * @return object
+	 */
+	function insert($table, $arr)
+	{
+		$sql = "INSERT INTO " .$this->sep_table .$table .$this->sep_table ." (";
+
 		$first = true;
-		foreach($arr AS $key => $value){
-			if ($first == true){
+		foreach ($arr as $key => $value) {
+			if ($first == true) {
 				$first = false;
-			}else{
+			} else {
 				$sql .= ", ";
 			}
-			
-			$sql .= $this->sep_col . $key . $this->sep_col;
+
+			$sql .= $this->sep_col .$key .$this->sep_col;
 		}
-		
+
 		$sql .= ") VALUES (";
 		$first = true;
-		foreach($arr AS $key => $value){
-			if ($first == true){
+		foreach ($arr as $key => $value) {
+			if ($first == true) {
 				$first = false;
-			}else{
+			} else {
 				$sql .= ", ";
 			}
-			
-			$sql .= $this->sep_val . $this->sql($value) . $this->sep_val;
+
+			$sql .= $this->sep_val .$this->sql($value) .$this->sep_val;
 		}
 		$sql .= ")";
-		
+
 		$this->query($sql);
 	}
-	
-	function insert_multi($table, $rows){
-		$sql = "INSERT INTO " . $this->sep_table . $table . $this->sep_table . " (";
-		
+
+	/**
+	 * TODO
+	 *
+	 * @param string $table TODO
+	 * @param array  $rows  TODO
+	 *
+	 * @return object
+	 */
+	function insert_multi($table, $rows)
+	{
+		$sql = "INSERT INTO " .$this->sep_table .$table .$this->sep_table ." (";
+
 		$first = true;
-		foreach($rows[0] AS $key => $value){
-			if ($first == true){
+		foreach ($rows[0] as $key => $value) {
+			if ($first == true) {
 				$first = false;
-			}else{
+			} else {
 				$sql .= ", ";
 			}
-			
-			$sql .= $this->sep_col . $key . $this->sep_col;
+
+			$sql .= $this->sep_col .$key .$this->sep_col;
 		}
-		
+
 		$sql .= ") VALUES";
-		
+
 		$first_row = true;
-		foreach($rows AS $arr){
-			if ($first_row){
+		foreach ($rows as $arr) {
+			if ($first_row) {
 				$first_row = false;
-			}else{
+			} else {
 				$sql .= ",";
 			}
-			
+
 			$sql .= " (";
 			$first = true;
-			foreach($arr AS $key => $value){
-				if ($first == true){
+			foreach ($arr as $key => $value) {
+				if ($first == true) {
 					$first = false;
-				}else{
+				} else {
 					$sql .= ", ";
 				}
-				
-				$sql .= $this->sep_val . $this->sql($value) . $this->sep_val;
+
+				$sql .= $this->sep_val .$this->sql($value) .$this->sep_val;
 			}
 			$sql .= ")";
 		}
-		
+
 		$this->query($sql);
 	}
-	
-	function select($table, $where = null, $args = null){
+
+	/**
+	 * TODO
+	 *
+	 * @param string $table TODO
+	 * @param array  $where TODO
+	 * @param array  $args  TODO
+	 *
+	 * @return object
+	 */
+	function select($table, $where = null, $args = null)
+	{
 		$sql = "SELECT";
-		
-		$sql .= " * FROM " . $this->sep_table . $table . $this->sep_table;
-			
-		if ($where){
-			$sql .= " WHERE " . $this->makeWhere($where);
+
+		$sql .= " * FROM " .$this->sep_table .$table .$this->sep_table;
+
+		if ($where) {
+			$sql .= " WHERE " .$this->makeWhere($where);
 		}
-		
-		if ($args["orderby"]){
-			$sql .= " ORDER BY " . $args["orderby"];
+
+		if ($args["orderby"]) {
+			$sql .= " ORDER BY " .$args["orderby"];
 		}
-		
-		if ($args["limit"]){
-			$sql .= " LIMIT " . $args["limit"];
+
+		if ($args["limit"]) {
+			$sql .= " LIMIT " .$args["limit"];
 		}
-		
+
 		return $this->query($sql);
 	}
-	
-	function delete($table, $where = null){
-		$sql = "DELETE FROM " . $this->sep_table . $table . $this->sep_table;
-			
-		if ($where){
-			$sql .= " WHERE " . $this->makeWhere($where);
+
+	/**
+	 * TODO
+	 *
+	 * @param string $table TODO
+	 * @param array  $where TODO
+	 *
+	 * @return object
+	 */
+	function delete($table, $where = null)
+	{
+		$sql = "DELETE FROM " .$this->sep_table .$table .$this->sep_table;
+
+		if ($where) {
+			$sql .= " WHERE " .$this->makeWhere($where);
 		}
-		
+
 		return $this->query($sql);
 	}
-	
-	function update($table, $data, $where = null){
-		$sql .= "UPDATE " . $this->sep_table . $table . $this->sep_table . " SET ";
-		
+
+	/**
+	 * TODO
+	 *
+	 * @param string $table TODO
+	 * @param array  $data  TODO
+	 * @param array  $where TODO
+	 *
+	 * @return object
+	 */
+	function update($table, $data, $where = null)
+	{
+		$sql .= "UPDATE " .$this->sep_table .$table .$this->sep_table ." SET ";
+
 		$first = true;
-		foreach($data AS $key => $value){
-			if ($first == true){
+		foreach ($data as $key => $value) {
+			if ($first == true) {
 				$first = false;
-			}else{
+			} else {
 				$sql .= ", ";
 			}
-			
-			$sql .= $this->sep_col . $key . $this->sep_col . " = " . $this->sep_val . $this->sql($value) . $this->sep_val;
+
+			$sql .= $this->sep_col .$key .$this->sep_col ." = " .$this->sep_val
+			.$this->sql($value) .$this->sep_val;
 		}
-		
-		if ($where){
-			$sql .= " WHERE " . $this->makeWhere($where);
+
+		if ($where) {
+			$sql .= " WHERE " .$this->makeWhere($where);
 		}
-		
+
 		return $this->query($sql);
 	}
-	
-	function optimize($tables){
-		if (!is_array($tables)){
+
+	/**
+	 * TODO
+	 *
+	 * @param array $tables TODO
+	 *
+	 * @return object
+	 */
+	function optimize($tables)
+	{
+		if (!is_array($tables)) {
 			$tables = array($tables);
 		}
-		
-		$sql = "OPTIMIZE TABLE ";
-		$sql .= knjarray::implode(array(
+
+		$data = array(
 			"array" => $tables,
 			"surr" => "`",
 			"impl" => ",",
 			"self_callback" => array($this, "escape_table")
-		));
-		
+		)
+		$sql = "OPTIMIZE TABLE " .knjarray::implode($data);
+
 		return $this->query($sql);
 	}
-	
-	function makeWhere($where){
+
+	/**
+	 * TODO
+	 *
+	 * @param array $where TODO
+	 *
+	 * @return string
+	 */
+	function makeWhere($where)
+	{
 		$first = true;
-		foreach($where AS $key => $value){
-			if ($first == true){
+		foreach ($where as $key => $value) {
+			if ($first == true) {
 				$first = false;
-			}else{
+			} else {
 				$sql .= " AND ";
 			}
-			
-			if (is_array($value)){
-				$sql .= $this->sep_col . $key . $this->sep_col . " IN (" . knjarray::implode(array("array" => $value, "impl" => ",", "surr" => "'", "self_callback" => array($this, "sql"))) . ")";
-			}else{
-				$sql .= $this->sep_col . $key . $this->sep_col . " = " . $this->sep_val . $this->sql($value) . $this->sep_val;
+
+			if (is_array($value)) {
+				$data = array(
+					"array" => $value,
+					"impl" => ",",
+					"surr" => "'",
+					"self_callback" => array($this, "sql")
+				);
+				$sql .= $this->sep_col .$key .$this->sep_col ." IN ("
+				.knjarray::implode($data) .")";
+			} else {
+				$sql .= $this->sep_col .$key .$this->sep_col ." = " .$this->sep_val
+				.$this->sql($value) .$this->sep_val;
 			}
 		}
-		
+
 		return $sql;
 	}
-	
-	function date_in($str){
+
+	/**
+	 * Alias of strtotime()
+	 *
+	 * @param string $str See PHP documentation for strtotime()
+	 *
+	 * @return int
+	 */
+	function date_in($str)
+	{
 		return strtotime($str);
 	}
-	
-	function date_format($unixt, $args = array()){
+
+	/**
+	 * TODO
+	 *
+	 * @param int   $unixt TODO
+	 * @param array $args  TODO
+	 *
+	 * @return string
+	 */
+	function date_format($unixt, $args = array())
+	{
 		$format = "Y-m-d";
-		
-		if (!array_key_exists("time", $args) or $args["time"]){
+
+		if (!array_key_exists("time", $args) || $args["time"]) {
 			$format .= " H:i:s";
 		}
-		
+
 		return date($format, $unixt);
 	}
 }
