@@ -403,7 +403,7 @@ class knjdb_mysqli
 			"surr" => "`",
 			"impl" => ",",
 			"self_callback" => array($this, "escape_table")
-		)
+		);
 		$sql = "OPTIMIZE TABLE " .knjarray::implode($data);
 
 		return $this->query($sql);
