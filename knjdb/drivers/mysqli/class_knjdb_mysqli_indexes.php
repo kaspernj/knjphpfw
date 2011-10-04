@@ -33,7 +33,13 @@
 				}
 			}
 			
-			$sql = "CREATE INDEX " . $this->knjdb->connob->sep_table . $name . $this->knjdb->connob->sep_table . " ON " . $this->knjdb->connob->sep_table . $table->get("name") . $this->knjdb->connob->sep_table . " (";
+			$sql = "CREATE";
+			
+			if ($args["unique"]){
+        $sql .= " UNIQUE";
+      }
+			
+			$sql .= " INDEX " . $this->knjdb->connob->sep_table . $name . $this->knjdb->connob->sep_table . " ON " . $this->knjdb->connob->sep_table . $table->get("name") . $this->knjdb->connob->sep_table . " (";
 			
 			$first = true;
 			foreach($cols AS $column){

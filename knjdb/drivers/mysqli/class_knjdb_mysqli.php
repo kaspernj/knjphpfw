@@ -59,6 +59,14 @@ class knjdb_mysqli{
 		return new knjdb_result($this->knjdb, $this, $res);
 	}
 	
+	function query_ubuf($query){
+    if (!$this->conn->real_query($query)){
+      throw new exception("Query error: " . $this->error() . "\n\nSQL: " . $query);
+    }
+    
+    return new knjdb_result($this->knjdb, $this, $this->conn->use_result());
+	}
+	
 	function fetch($res){
 		return $res->fetch_assoc();
 	}

@@ -38,7 +38,13 @@ class knjdb_mysqli_tables implements knjdb_driver_tables{
 	}
 	
 	function createTable($tablename, $cols, $args = null){
-		$sql = "CREATE TABLE " . $this->knjdb->conn->sep_table . $tablename . $this->knjdb->conn->sep_table . " (";
+		$sql = "CREATE";
+		
+		if ($args["temp"]){
+      $sql .= " TEMPORARY";
+		}
+		
+		$sql .= " TABLE " . $this->knjdb->conn->sep_table . $tablename . $this->knjdb->conn->sep_table . " (";
 		$prim_keys = array();
 		
 		$first = true;
