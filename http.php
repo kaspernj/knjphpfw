@@ -34,9 +34,16 @@ class knj_httpbrowser
 		}
 	}
 
+	/**
+	 * Print debugging messages if _debug is set.
+	 *
+	 * @param string $msg The message that should be printed.
+	 *
+	 * @return null
+	 */
 	function debug($msg)
 	{
-		if ($this->_debug == "kasper") {
+		if ($this->_debug) {
 			echo $msg;
 		}
 	}
@@ -113,6 +120,13 @@ class knj_httpbrowser
 		}
 	}
 
+	/**
+	 * Set debugging state.
+	 *
+	 * @param mixed $value The value to set.
+	 *
+	 * @return null
+	 */
 	function setDebug($value)
 	{
 		$this->_debug = $value;
@@ -126,6 +140,13 @@ class knj_httpbrowser
 		);
 	}
 
+	/**
+	 * Set the User agent string.
+	 *
+	 * @param mixed $value The value to set.
+	 *
+	 * @return null
+	 */
 	function setUserAgent($useragent)
 	{
 		$this->_useragent = $useragent;
@@ -172,7 +193,7 @@ class knj_httpbrowser
 
 	/** Posts a message to a page.
 	 *
-	 * @param string $addr TODO
+	 * @param string $addr Absolute URI to the desired page
 	 * @param array  $post TODO
 	 *
 	 * @return TODO
@@ -190,8 +211,13 @@ class knj_httpbrowser
 			$postdata .= urlencode($key) ."=" .urlencode($value);
 		}
 
+		//URI must be absolute
+		if (substr($addr, 0, 1) != "/") {
+			$addr = "/".$addr;
+		}
+
 		$headers
-			= "POST /" .$addr ." HTTP/1.1" .$this->_nl
+			= "POST " .$addr ." HTTP/1.1" .$this->_nl
 			."Content-Type: application/x-www-form-urlencoded" .$this->_nl
 			."User-Agent: " .$this->_useragent .$this->_nl
 			."Host: " .$this->_host .$this->_nl
@@ -212,15 +238,28 @@ class knj_httpbrowser
 			throw new exception("Could not write to socket.");
 		}
 
-		$this->last_url = "http://" .$this->_host ."/" .$addr;
+		$this->last_url = "http://" .$this->_host .$addr;
 		return $this->readhtml();
 	}
 
+	/**
+	 *  TODO
+	 *
+	 * @param string $addr     Absolute URI to the desired page
+	 * @param string $postdata TODO
+	 *
+	 * @return TODO
+	 */
 	function post_raw($addr, $postdata)
 	{
 		$this->countAutoReconnect();
 
-		$headers = "POST /" .$addr ." HTTP/1.1" .$this->_nl;
+		//URI must be absolute
+		if (substr($addr, 0, 1) != "/") {
+			$addr = "/".$addr;
+		}
+
+		$headers = "POST " .$addr ." HTTP/1.1" .$this->_nl;
 		$headers .= "Authorization: Basic "
 			.base64_encode("306761540:XXnz*2ms") .$this->_nl;
 		$headers .= "Host: " .$host .$this->_nl;
@@ -234,10 +273,18 @@ class knj_httpbrowser
 			throw new exception("Could not write to socket.");
 		}
 
-		$this->last_url = "http://" .$this->_host ."/" .$addr;
+		$this->last_url = "http://" .$this->_host .$addr;
 		return $this->readhtml();
 	}
 
+	/**
+	 *  TODO
+	 *
+	 * @param string $addr Absolute URI to the desired page
+	 * @param array  $post TODO
+	 *
+	 * @return TODO
+	 */
 	function postFormData($addr, $post)
 	{
 		$this->countAutoReconnect();
@@ -259,8 +306,13 @@ class knj_httpbrowser
 
 		$postdata .= $this->_nl ."--" .$boundary ."--";
 
+		//URI must be absolute
+		if (substr($addr, 0, 1) != "/") {
+			$addr = "/".$addr;
+		}
+
 		$headers
-			= "POST /" .$addr ." HTTP/1.1" .$this->_nl
+			= "POST " .$addr ." HTTP/1.1" .$this->_nl
 			."Host: " .$this->_host .$this->_nl . $this->_nl
 			."User-Agent: " .$this->_useragent .$this->_nl
 			."Keep-Alive: 300" . $this->_nl
@@ -287,14 +339,14 @@ class knj_httpbrowser
 			$count += 2048;
 		}
 
-		$this->last_url = "http://" .$this->_host ."/" .$addr;
+		$this->last_url = "http://" .$this->_host .$addr;
 		return $this->readhtml();
 	}
 
 	/**
 	 *  Posts a file to the server.
 	 *
-	 * @param string $addr TODO
+	 * @param string $addr Absolute URI to the desired page
 	 * @param array  $post TODO
 	 * @param array  $file TODO
 	 *
@@ -347,7 +399,12 @@ class knj_httpbrowser
 			}
 		}
 
-		$headers .= "POST /" .$addr ." HTTP/1.1" .$this->_nl;
+		//URI must be absolute
+		if (substr($addr, 0, 1) != "/") {
+			$addr = "/".$addr;
+		}
+
+		$headers .= "POST " .$addr ." HTTP/1.1" .$this->_nl;
 		$headers .= "Host: " .$this->_host .$this->_nl;
 		$headers .= "Content-Type: multipart/form-data; boundary="
 			.$boundary .$this->_nl;
@@ -404,6 +461,14 @@ class knj_httpbrowser
 		return $this->cookies;
 	}
 
+
+	/**
+	 * Get a html page from an URI
+	 *
+	 * @param string $addr Absolute URI to the desired page
+	 *
+	 * @return TODO
+	 */
 	function get($addr)
 	{
 		return $this->getAddr($addr);
@@ -412,8 +477,8 @@ class knj_httpbrowser
 	/**
 	 *  Reads a page via get.
 	 *
-	 * @param string $addr TODO
-	 * @param array  $args TODO
+	 * @param string $addr Absolute URI to the desired page
+	 * @param mixed  $args TODO
 	 *
 	 * @return TODO
 	 */
@@ -429,12 +494,13 @@ class knj_httpbrowser
 			$host = $this->_host;
 		}
 
-		if (substr($addr, 0, 1) == "/") {
-			$addr = substr($addr, 1);
+		//URI must be absolute
+		if (substr($addr, 0, 1) != "/") {
+			$addr = "/".$addr;
 		}
 
 		$headers
-			= "GET /" .$addr ." HTTP/1.1" .$this->_nl
+			= "GET " .$addr ." HTTP/1.1" .$this->_nl
 			."Host: " .$host .$this->_nl
 			."User-Agent: " .$this->_useragent .$this->_nl
 			."Connection: Keep-Alive" .$this->_nl;
@@ -455,7 +521,7 @@ class knj_httpbrowser
 		$headers .= $this->getRestHeaders();
 		$headers .= $this->_nl;
 
-		$this->_debug("getAddr()-headers:\n" .$headers);
+		$this->debug("getAddr()-headers:\n" .$headers);
 
 		//Sometimes trying more times than one fixes the problem.
 		$tries = 0;
@@ -470,7 +536,7 @@ class knj_httpbrowser
 			}
 		}
 
-		$this->last_url = "http://" .$this->_host ."/" .$addr;
+		$this->last_url = "http://" .$this->_host .$addr;
 		return $this->readHTML();
 	}
 
@@ -598,11 +664,11 @@ class knj_httpbrowser
 			$first = false;
 		}
 
-		$this->_debug("Received headers:\n" .$headers ."\n\n\n");
-		$this->_debug("Received HTML:\n" .$html ."\n\n\n");
+		$this->debug("Received headers:\n" .$headers ."\n\n\n");
+		$this->debug("Received HTML:\n" .$html ."\n\n\n");
 
 		if ($location) {
-			$this->_debug(
+			$this->debug(
 				'Received location-header - trying to follow "'
 				.$match[1] ."\".\n"
 			);
@@ -610,7 +676,7 @@ class knj_httpbrowser
 		}
 
 		if (preg_match("/<h2>Object moved to <a href=\"(.*)\">here<\/a>.<\/h2>/", $html, $match)) {
-			$this->_debug("\"Object moved to\" found in HTML - trying to follow.\n");
+			$this->debug("\"Object moved to\" found in HTML - trying to follow.\n");
 			return $this->getAddr(urldecode($match[1]));
 		}
 
