@@ -1,5 +1,25 @@
 <?php
+/**
+ * TODO
+ *
+ * PHP version 5
+ *
+ * @category Framework
+ * @package  Knjphpfw
+ * @author   Kasper Johansen <kaspernj@gmail.com>
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
+ * @link     https://github.com/kaspernj/knjphpfw
+ */
 
+/**
+ * TODO
+ *
+ * @category Framework
+ * @package  Knjphpfw
+ * @author   Kasper Johansen <kaspernj@gmail.com>
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
+ * @link     https://github.com/kaspernj/knjphpfw
+ */
 class knj_httpbrowser
 {
 	private $_host;
@@ -14,6 +34,12 @@ class knj_httpbrowser
 	public $headers_last;
 	private $_useragent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)";
 
+
+	/**
+	 * TODO
+	 *
+	 * @param array $args TODO
+	 */
 	function __construct($args = array())
 	{
 		$this->args = array(
@@ -152,6 +178,13 @@ class knj_httpbrowser
 		$this->_useragent = $useragent;
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param int $max_requests TODO
+	 *
+	 * @return null
+	 */
 	function setAutoReconnect($max_requests)
 	{
 		if (!is_numeric($max_requests) || $max_requests <= 0) {
@@ -162,6 +195,11 @@ class knj_httpbrowser
 		$this->_reconnect_count = 0;
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @return null
+	 */
 	function countAutoReconnect()
 	{
 		if ($this->_reconnect_max >= 1
@@ -175,6 +213,11 @@ class knj_httpbrowser
 		$this->_reconnect_count++;
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @return null
+	 */
 	function checkConnected()
 	{
 		while (true) {
@@ -191,7 +234,8 @@ class knj_httpbrowser
 		}
 	}
 
-	/** Posts a message to a page.
+	/**
+	 * Posts a message to a page.
 	 *
 	 * @param string $addr Absolute URI to the desired page
 	 * @param array  $post TODO
@@ -243,7 +287,7 @@ class knj_httpbrowser
 	}
 
 	/**
-	 *  TODO
+	 * TODO
 	 *
 	 * @param string $addr     Absolute URI to the desired page
 	 * @param string $postdata TODO
@@ -278,7 +322,7 @@ class knj_httpbrowser
 	}
 
 	/**
-	 *  TODO
+	 * TODO
 	 *
 	 * @param string $addr Absolute URI to the desired page
 	 * @param array  $post TODO
@@ -344,7 +388,7 @@ class knj_httpbrowser
 	}
 
 	/**
-	 *  Posts a file to the server.
+	 * Posts a file to the server.
 	 *
 	 * @param string $addr Absolute URI to the desired page
 	 * @param array  $post TODO
@@ -437,6 +481,11 @@ class knj_httpbrowser
 		return $this->readHTML();
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @return TODO
+	 */
 	function getRestHeaders()
 	{
 		$headers = "";
@@ -452,7 +501,7 @@ class knj_httpbrowser
 	}
 
 	/**
-	 *  Returns the current cookies.
+	 * Returns the current cookies.
 	 *
 	 * @return TODO
 	 */
@@ -475,7 +524,7 @@ class knj_httpbrowser
 	}
 
 	/**
-	 *  Reads a page via get.
+	 * Reads a page via get.
 	 *
 	 * @param string $addr Absolute URI to the desired page
 	 * @param mixed  $args TODO
@@ -685,6 +734,11 @@ class knj_httpbrowser
 		return $html;
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @return mixed TODO
+	 */
 	function aspxGetViewstate()
 	{
 		if (preg_match('/<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="([\S\s]+)" \/>/U', $this->html_last, $match)) {
