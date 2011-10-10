@@ -282,6 +282,21 @@ class knjdb{
 		}
 	}
 	
+	/** A quick way to insert a new row into the database. */
+	function replace($table, $arr){
+		$this->conn->replace($table, $arr);
+		
+		if ($this->insert_autocommit){ //check wherever autocommit is on.
+			$this->insert_countcommit++;
+			
+			if ($this->insert_countcommit >= $this->insert_autocommit){
+				$this->trans_commit();
+				$this->trans_begin();
+				$this->insert_countcommit = 0;
+			}
+		}
+	}
+
 	function insert_multi($table, $rows){
 		if (method_exists($this->conn, "insert_multi")){
 			$this->conn->insert_multi($table, $rows);

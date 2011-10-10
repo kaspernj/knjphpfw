@@ -258,6 +258,45 @@ class knjdb_mysqli
 	 * TODO
 	 *
 	 * @param string $table TODO
+	 * @param array  $arr   TODO
+	 *
+	 * @return object TODO
+	 */
+	function replace($table, $arr)
+	{
+		$sql = "REPLACE INTO " .$this->sep_table .$table .$this->sep_table ." (";
+
+		$first = true;
+		foreach ($arr as $key => $value) {
+			if ($first == true) {
+				$first = false;
+			} else {
+				$sql .= ", ";
+			}
+
+			$sql .= $this->sep_col .$key .$this->sep_col;
+		}
+
+		$sql .= ") VALUES (";
+		$first = true;
+		foreach ($arr as $key => $value) {
+			if ($first == true) {
+				$first = false;
+			} else {
+				$sql .= ", ";
+			}
+
+			$sql .= $this->sep_val .$this->sql($value) .$this->sep_val;
+		}
+		$sql .= ")";
+
+		$this->query($sql);
+	}
+
+	/**
+	 * TODO
+	 *
+	 * @param string $table TODO
 	 * @param array  $rows  TODO
 	 *
 	 * @return object TODO

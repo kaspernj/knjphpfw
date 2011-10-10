@@ -128,6 +128,36 @@ class knjdb_mysql{
 		$this->query($sql);
 	}
 	
+	function replace($table, $arr){
+		$sql = "REPLACE INTO " . $this->sep_table . $table . $this->sep_table . " (";
+		
+		$first = true;
+		foreach($arr AS $key => $value){
+			if ($first == true){
+				$first = false;
+			}else{
+				$sql .= ", ";
+			}
+			
+			$sql .= $this->sep_col . $key . $this->sep_col;
+		}
+		
+		$sql .= ") VALUES (";
+		$first = true;
+		foreach($arr AS $key => $value){
+			if ($first){
+				$first = false;
+			}else{
+				$sql .= ", ";
+			}
+			
+			$sql .= $this->sep_val . $this->sql($value) . $this->sep_val;
+		}
+		$sql .= ")";
+		
+		$this->query($sql);
+	}
+
 	function insert_multi($table, $rows){
 		$sql = "INSERT INTO " . $this->sep_table . $table . $this->sep_table . " (";
 		
