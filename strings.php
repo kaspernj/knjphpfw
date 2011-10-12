@@ -210,6 +210,9 @@ function knj_string_filename($string, $os = null){
 	}elseif($os == "linux"){
 		$search  = '#/#u';
 		$replace = '';
+	} elseif ($os == "posix") {
+		$search  = '/[^A-z0-9._-]+/u';
+		$replace = '';
 	}else{
 		throw new Exception("Unsupported OS.");
 	}
