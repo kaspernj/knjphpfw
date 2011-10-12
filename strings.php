@@ -205,8 +205,8 @@ function knj_string_filename($string, $os = null){
 	}
 
 	if ($os == "windows"){
-		//parse windows-filename here.
-		throw new Exception("Unsupported OS.");
+		$search  = '/["*:<>?\|]+/u';
+		$replace = '';
 	}elseif($os == "linux"){
 		$search  = '#/#u';
 		$replace = '';
