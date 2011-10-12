@@ -1,4 +1,4 @@
-<?
+<?php
 
 class knj_strings{
 	static function substr($string, $len1, $len2){
@@ -11,27 +11,7 @@ class knj_strings{
 	static function utf8wrapper($func, $arg1){
 		return utf8_encode(call_user_func($func, utf8_decode($arg1)));
 	}
-	
-	static function utf8force($string){
-		if (is_array($string)){
-			foreach($string as $key => $value){
-				$string[$key] = knj_strings::utf8force($value);
-			}
-			
-			return $string;
-		}else{
-			$values = array();
-			$special = array("ø", "æ", "å", "Ø", "Æ", "Å");
-			foreach($special AS $value){
-				$values[utf8_decode($value)] = $value;
-			}
-			
-			$string = str_replace("Ã¦", "æ", $string);
-			
-			return strtr($string, $values);
-		}
-	}
-	
+
 	/** Parses a string into an array of strings, which should all be searched for. */
 	static function searchstring($string){
 		$array = array();
