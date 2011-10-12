@@ -177,10 +177,10 @@ class knj_strings{
 }
 
 /**
-	* Parses the quotes of a string.
-	* 
-	* FIXME: DONT USE THIS FUNCTION! It will be removed soon... Look in the SQL-functions instead.
-*/
+ * Parses the quotes of a string.
+ * 
+ * FIXME: DONT USE THIS FUNCTION! It will be removed soon... Look in the SQL-functions instead.
+ */
 function parse_quotes($string){
 	$string = str_replace("'", "\\'", $string);
 	
@@ -206,18 +206,10 @@ function knj_string_filename($string, $os = null){
 	
 	if ($os == "windows"){
 		//parse windows-filename here.
+		throw new Exception("Unsupported OS.");
 	}elseif($os == "linux"){
 		$string = strtr($string, array(
-			"å" => "aa",
-			"ø" => "oe",
-			"æ" => "ae",
-			utf8_decode("å") => "aa",
-			utf8_decode("æ") => "ae",
-			utf8_decode("ø") => "oe",
-			"|" => "",
-			"&" => "",
-			"/" => "",
-			"\\" => ""
+			"/" => ""
 		));
 	}else{
 		throw new Exception("Unsupported OS.");
