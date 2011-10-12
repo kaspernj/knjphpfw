@@ -191,6 +191,11 @@ class knj_strings{
 
 		return false;
 	}
+
+	static function filename_safe($filename)
+	{
+		return knj_string_filename($filename, "posix");
+	}
 }
 
 /**

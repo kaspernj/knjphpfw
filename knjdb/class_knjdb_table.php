@@ -53,7 +53,7 @@ class knjdb_table{
 		$this->knjdb->columns()->addColumns($this, $columns);
 	}
 	
-	function addIndex($cols, $name = null){
+	function addIndex($cols, $name = null, $args = array()){
 		if (!$name){
 			$name = "table_" . $this->get("name") . "_cols";
 			
@@ -62,7 +62,7 @@ class knjdb_table{
 			}
 		}
 		
-		$this->knjdb->indexes()->addIndex($this, $cols, $name);
+		$this->knjdb->indexes()->addIndex($this, $cols, $name, $args);
 	}
 	
 	function removeIndex(knjdb_index $index){

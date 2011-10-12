@@ -77,13 +77,16 @@ class knjdb_mysqli_indexes implements knjdb_driver_indexes
 	 */
 	function addIndex(knjdb_table $table, $cols, $name = null, $args = null)
 	{
-		$sql = "";
-
 		if (!$name) {
 			$name = "index";
 			foreach ($cols as $col) {
 				$name .= "_" .$col->get("name");
 			}
+		}
+		$sql = "CREATE";
+
+		if ($args["unique"]) {
+			$sql .= " UNIQUE";
 		}
 
 		$columns = array();
@@ -92,13 +95,7 @@ class knjdb_mysqli_indexes implements knjdb_driver_indexes
 			.$this->knjdb->connob->sep_column;
 		}
 
-		if (!$columns && $args["returnsql"]) {
-			return $sql;
-		} elseif (!$columns) {
-			return;
-		}
-
-		$sql = "CREATE INDEX " .$this->knjdb->connob->sep_table .$name
+		$sql .= " INDEX " .$this->knjdb->connob->sep_table .$name
 		.$this->knjdb->connob->sep_table ." ON " .$this->knjdb->connob->sep_table
 		.$table->get("name") .$this->knjdb->connob->sep_table ." ("
 		.implode(", ", $columns) .")";
