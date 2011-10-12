@@ -203,19 +203,18 @@ function knj_string_filename($string, $os = null){
 		$os = knj_os::getOS();
 		$os = $os["os"];
 	}
-	
+
 	if ($os == "windows"){
 		//parse windows-filename here.
 		throw new Exception("Unsupported OS.");
 	}elseif($os == "linux"){
-		$string = strtr($string, array(
-			"/" => ""
-		));
+		$search  = '#/#u';
+		$replace = '';
 	}else{
 		throw new Exception("Unsupported OS.");
 	}
-	
-	return $string;
+
+	return preg_replace($search, $replace, $string);
 }
 
 /** Parse a string to it is safe in a regex-command. */
