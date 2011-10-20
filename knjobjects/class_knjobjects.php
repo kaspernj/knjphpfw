@@ -25,6 +25,21 @@ class knjobjects{
 		if (!array_key_exists("require", $this->config)){
 			$this->config["require"] = true;
 		}
+		
+		/** NOTE: The PECL extension for weak references is not 100% stable yet. */
+		/*
+		if (class_exists("weakref")){
+      $this->weakref = false;
+      $this->weakmap = false;
+		}else{
+      $this->weakref = false;
+      $this->weakmap = false;
+    }
+    
+    if ($this->weakmap){
+      $this->weakmap_refs = new weakmap;
+    }
+    */
 	}
 	
 	static function array_data($objects, $args = array()){
@@ -65,17 +80,29 @@ class knjobjects{
 	}
 	
 	function clean_memory(){
+    if ($this->weakref or $this->weakmap){
+      return false;
+    }
+    
 		$usage = (memory_get_usage() / 1024) / 1024;
-		if ($usage > 54){
-			$this->unset_all();
+		if ($usage >= 52){
+      $this->unset_all();
 		}
 	}
 	
 	function unset_all(){
+    if ($this->weakref or $this->weakmap){
+      return false;
+    }
+    
 		$this->objects = array();
 	}
 	
 	function unset_class($classname){
+    if ($this->weakref or $this->weakmap){
+      return false;
+    }
+    
 		unset($this->objects[$classname]);
 	}
 	
@@ -88,32 +115,34 @@ class knjobjects{
 			
 			require_once($fn);
 		}
+		
+		if (!array_key_exists($obname, $this->objects)){
+      $this->objects[$obname] = array();
+    }
 	}
 	
-	function listObs($ob, $args = array()){
-		if (!$this->objects[$ob]){
-			$this->requirefile($ob);
-		}
-		
-		$call_args = array(
-			$args
-		);
-		
-		if ($this->args and array_key_exists("extra_args", $this->args) and $this->args["extra_args"]){
-			$eargs = $this->args["extra_args"];
-			
-			if ($this->args["extra_args_self"]){
-				$eargs["ob"] = $this;
-			}
-			
-			$call_args[] = $eargs;
-		}
-		
-		return call_user_func_array(array($ob, "getList"), $call_args);
+	function listObs($ob, $args = array(), $list_args = array()){
+		return $this->list_obs($ob, $args, $list_args);
 	}
 	
 	function list_obs($ob, $args = array(), $list_args = array()){
-		$return = $this->listObs($ob, $args);
+    if (!array_key_exists($ob, $this->objects)){
+      $this->requirefile($ob);
+    }
+    
+    $call_args = array($args);
+    
+    if ($this->args and array_key_exists("extra_args", $this->args) and $this->args["extra_args"]){
+      $eargs = $this->args["extra_args"];
+      
+      if ($this->args["extra_args_self"]){
+        $eargs["ob"] = $this;
+      }
+      
+      $call_args[] = $eargs;
+    }
+    
+		$return = call_user_func_array(array($ob, "getList"), $call_args);
 		
 		if ($list_args and array_key_exists("key", $list_args)){
 			$newreturn = array();
@@ -161,7 +190,7 @@ class knjobjects{
 			return false;
 		}
 		
-		if ($data["obs"]){
+		if (!$this->weakref and !$this->weakmap and $data["obs"]){
 			foreach($data["obs"] AS $ob){
 				$this->unset_ob($ob);
 			}
@@ -209,7 +238,7 @@ class knjobjects{
 			}
 		}
 		
-		$list = $this->listObs($ob, $args);
+		$list = $this->list_obs($ob, $args);
 		foreach($list AS $listitem){
 			$opts[$listitem->get($this->config["col_id"])] = $listitem->getTitle();
 		}
@@ -252,51 +281,51 @@ class knjobjects{
 	}
 	
 	function listOpts($ob, $getkey, $args = array()){
-		$opts = array();
-		
-		if ($args["addnew"]){
-			unset($args["addnew"]);
-			$opts[0] = $this->gtext("Add new");
-		}
-		
-		if ($args["none"]){
-			unset($args["none"]);
-			$opts[0] = $this->gtext("None");
-		}
-		
-		if ($args["choose"]){
-			unset($args["choose"]);
-			$opts[0] = $this->gtext("Choose") . ":";
-		}
-		
-		if ($args["all"]){
-			unset($args["all"]);
-			$opts[0] = $this->gtext("All");
-		}
-		
-		if (!$args["col_id"]){
-			$args["col_id"] = "id";
-		}
-		
-		if (!$args["list_args"]){
-			$args["list_args"] = array();
-		}
-		
-		foreach($this->list_obs($ob, $args["list_args"]) AS $object){
-			if (is_array($getkey) and $getkey["funccall"]){
-				$value = call_user_func(array($object, $getkey["funccall"]));
-			}else{
-				$value = $object->get($getkey);
-			}
-			
-			$opts[$object->get($args["col_id"])] = $value;
-		}
-		
-		return $opts;
+    return $this->list_opts($ob, $getkey, $args);
 	}
 	
 	function list_opts($ob, $getkey, $args = null){
-		return $this->listOpts($ob, $getkey, $args);
+		$opts = array();
+    
+    if ($args["addnew"]){
+      unset($args["addnew"]);
+      $opts[0] = $this->gtext("Add new");
+    }
+    
+    if ($args["none"]){
+      unset($args["none"]);
+      $opts[0] = $this->gtext("None");
+    }
+    
+    if ($args["choose"]){
+      unset($args["choose"]);
+      $opts[0] = $this->gtext("Choose") . ":";
+    }
+    
+    if ($args["all"]){
+      unset($args["all"]);
+      $opts[0] = $this->gtext("All");
+    }
+    
+    if (!$args["col_id"]){
+      $args["col_id"] = "id";
+    }
+    
+    if (!$args["list_args"]){
+      $args["list_args"] = array();
+    }
+    
+    foreach($this->list_obs($ob, $args["list_args"]) AS $object){
+      if (is_array($getkey) and $getkey["funccall"]){
+        $value = call_user_func(array($object, $getkey["funccall"]));
+      }else{
+        $value = $object->get($getkey);
+      }
+      
+      $opts[$object->get($args["col_id"])] = $value;
+    }
+    
+    return $opts;
 	}
 	
 	function list_bysql($ob, $sql, $args = array()){
@@ -315,13 +344,11 @@ class knjobjects{
 	}
 	
 	function add($ob, $arr){
-		if (!$this->objects[$ob]){
+		if (!array_key_exists($ob, $this->objects)){
 			$this->requirefile($ob);
 		}
 		
-		$call_args = array(
-			$arr
-		);
+		$call_args = array($arr);
 		
 		if ($this->args["extra_args"]){
 			$eargs = $this->args["extra_args"];
@@ -337,21 +364,25 @@ class knjobjects{
 	}
 	
 	function unsetOb($ob, $id = null){
-		if (is_object($ob) and is_null($id)){
-			$id = $ob->id();
-			
-			if ($this->objects[get_class($ob)][$id]){
-				unset($this->objects[get_class($ob)][$id]);
-			}
-		}else{
-			if ($this->objects[$ob][$id]){
-				unset($this->objects[$ob][$id]);
-			}
-		}
+    return $this->unset_ob($ob, $id);
 	}
 	
 	function unset_ob($ob, $id = null){
-		return $this->unsetOb($ob, $id);
+		if ($this->weakref or $this->weakmap){
+      return false;
+    }
+    
+    if (is_object($ob) and is_null($id)){
+      $id = $ob->id();
+      
+      if ($this->objects[get_class($ob)][$id]){
+        unset($this->objects[get_class($ob)][$id]);
+      }
+    }else{
+      if ($this->objects[$ob][$id]){
+        unset($this->objects[$ob][$id]);
+      }
+    }
 	}
 	
 	function unset_obs($obs){
@@ -381,34 +412,62 @@ class knjobjects{
 		
 		if (!is_string($ob)){
 			throw new exception("Invalid object: " . gettype($ob));
-		}
-		
-		if (is_object($id)){
+		}elseif(is_object($id)){
 			throw new exception("Invalid object: " . get_class($id));
 		}
 		
-		if (!$this->objects[$ob][$id]){
-			if (!$this->objects[$ob]){
-				$this->requirefile($ob);
-			}
-			
-			if ($this->args["get_array"]){
-				$this->objects[$ob][$id] = new $ob(array(
-					"data" => $rdata,
-					"db" => $this->args["db"],
-					"ob" => $this
-				));
-			}elseif($this->args["version"] == 2){
-				$this->objects[$ob][$id] = new $ob(array(
-					"ob" => $this,
-					"data" => $rdata
-				));
-			}else{
-				$this->objects[$ob][$id] = new $ob($id, $data);
-			}
+		$id_exists = array_key_exists($id, $this->objects[$ob]);
+		
+		if ($id_exists){
+      if ($this->weakmap){
+        $ref = $this->objects[$ob][$id];
+        
+        if ($this->weakmap_refs[$ref]){
+          print "Reusing! " . $ob . "-" . $id . "\n";
+          return $this->weakmap_refs[$ref];
+        }
+      }elseif($this->weakref){
+        if ($this->objects[$ob][$id]->acquire()){
+          print "Reusing! " . $ob . "-" . $id . "\n";
+          $obj = $this->objects[$ob][$id]->get();
+          $this->objects[$ob][$id]->release();
+          return $obj;
+        }
+      }else{
+        return $this->objects[$ob][$id];
+      }
 		}
 		
-		return $this->objects[$ob][$id];
+    if (!array_key_exists($ob, $this->objects[$ob])){
+      $this->requirefile($ob);
+    }
+    
+    if ($this->args["get_array"]){
+      $obj = new $ob(array(
+        "data" => $rdata,
+        "db" => $this->args["db"],
+        "ob" => $this
+      ));
+    }elseif($this->args["version"] == 2){
+      $obj = new $ob(array(
+        "ob" => $this,
+        "data" => $rdata
+      ));
+    }else{
+      $obj = new $ob($id, $data);
+    }
+    
+    if ($this->weakref){
+      $this->objects[$ob][$id] = new weakref($obj);
+    }elseif($this->weakmap){
+      $ref = new stdclass;
+      $this->weakmap_refs[$ref] = $obj;
+      $this->objects[$ob][$id] = $ref;
+    }else{
+      $this->objects[$ob][$id] = $obj;
+    }
+    
+    return $obj;
 	}
 	
 	function get_try($ob, $key, $obname = null){

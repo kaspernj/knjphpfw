@@ -3,6 +3,16 @@
 class knj_translations{
 	public $number_info, $args;
 	
+	static function timezone_opts(){
+    $timezones = DateTimeZone::listIdentifiers();
+    $ret = array();
+    foreach($timezones as $key => $tz){
+      $ret[$tz] = $tz;
+    }
+    
+    return $ret;
+	}
+	
 	function __construct($args = array()){
 		$this->args = $args;
 		$this->db = $this->args["db"];
@@ -194,4 +204,3 @@ class knj_translations_translation extends knjdb_row{
     }
 	}
 }
-
