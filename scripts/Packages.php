@@ -33,7 +33,7 @@ function ipkg_parse($file){
 	
 	$cmd = "cd " . knj_string_unix_safe($tmpdir) . ";";
 	if ($format == "tar.gz"){
-		$cmd .= "tar -zxvf ../" . knj_string_unix_safe($fino["basename"]);
+		$cmd .= "tar -zxmvf ../" . knj_string_unix_safe($fino["basename"]);
 	}else{
 		$cmd .= "ar -x ../" . knj_string_unix_safe($finfo["basename"]) . " control.tar.gz";
 	}
