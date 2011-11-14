@@ -53,7 +53,7 @@ class knjdb_mysqli{
 	function query($query){
 		$res = $this->conn->query($query);
 		if (!$res){
-			throw new Exception("Query error: " . $this->error() . "\n\nSQL: " . $query);
+			throw new exception("Query error: " . $this->error() . "\n\nSQL: " . $query);
 		}
 		
 		return new knjdb_result($this->knjdb, $this, $res);
