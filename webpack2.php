@@ -8,9 +8,9 @@ class webpack2{
 		$this->paras = $paras;
 		
 		if ($this->paras["test"]){
-			$this->soap_url = "http://www.postdanmark.dk/webpack2demo/ParcelLabelWsService?wsdl";
+			$this->soap_url = "http://www2.postdanmark.dk/webpack2demo/ParcelLabelWsService?wsdl";
 		}else{
-			$this->soap_url = "http://www.postdanmark.dk/webpack2/ParcelLabelWsService?wsdl";
+			$this->soap_url = "http://www2.postdanmark.dk/webpack2/ParcelLabelWsService?wsdl";
 		}
 		
 		$this->soap = new SoapClient($this->soap_url);
