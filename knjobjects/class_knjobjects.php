@@ -30,7 +30,7 @@ class knjobjects{
 	static function array_data($objects, $args = array()){
 		$return = array();
 		
-		foreach($objects AS $object){
+		foreach($objects as $object){
 			if (!$args or $args["ids"]){
 				$return[] = $object->id();
 			}elseif($args["data"]){
@@ -60,18 +60,14 @@ class knjobjects{
 		return $data[1];
 	}
 	
-	function cleanMemory(){
-		$this->clean_memory();
-	}
-	
-	function clean_memory(){
+	function cleanMemory() {
 		$usage = (memory_get_usage() / 1024) / 1024;
 		if ($usage > 54){
 			$this->unset_all();
 		}
 	}
 	
-	function unset_all(){
+	function unset_all() {
 		$this->objects = array();
 	}
 	
@@ -336,6 +332,10 @@ class knjobjects{
 		return call_user_func_array(array($ob, "addNew"), $call_args);
 	}
 	
+	function unset_ob($ob, $id = null){
+		return $this->unsetOb($ob, $id);
+	}
+	
 	function unsetOb($ob, $id = null){
 		if (is_object($ob) and is_null($id)){
 			$id = $ob->id();
@@ -343,19 +343,15 @@ class knjobjects{
 			if ($this->objects[get_class($ob)][$id]){
 				unset($this->objects[get_class($ob)][$id]);
 			}
-		}else{
+		} else {
 			if ($this->objects[$ob][$id]){
 				unset($this->objects[$ob][$id]);
 			}
 		}
 	}
 	
-	function unset_ob($ob, $id = null){
-		return $this->unsetOb($ob, $id);
-	}
-	
 	function unset_obs($obs){
-		foreach($obs AS $ob){
+		foreach($obs as $ob){
 			$this->unset_ob($ob);
 		}
 	}
