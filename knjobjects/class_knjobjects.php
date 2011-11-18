@@ -396,8 +396,11 @@ class knjobjects{
 		}elseif(is_object($id)){
 			throw new exception("Invalid object: " . get_class($id));
 		}
-		
-		$id_exists = array_key_exists($id, $this->objects[$ob]);
+
+		$id_exists = false;
+		if (isset($this->objects[$ob])) {
+			$id_exists = array_key_exists($id, $this->objects[$ob]);
+		}
 		
 		if ($id_exists){
       if ($this->weakmap){
@@ -419,7 +422,7 @@ class knjobjects{
       }
 		}
 		
-    if (!array_key_exists($ob, $this->objects[$ob])){
+    if (isset($this->objects[$ob]) && !array_key_exists($ob, $this->objects[$ob])){
       $this->requirefile($ob);
     }
     
