@@ -107,7 +107,7 @@ class knjobjects{
 	}
 	
 	function list_obs($ob, $args = array(), $list_args = array()){
-    if (!array_key_exists($ob, $this->objects)){
+    if ($this->objects && !array_key_exists($ob, $this->objects)){
       $this->requirefile($ob);
     }
     
