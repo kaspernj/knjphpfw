@@ -97,7 +97,7 @@ class knjobjects{
 			require_once($fn);
 		}
 		
-		if (!array_key_exists($obname, $this->objects)){
+		if ($this->objects && !array_key_exists($obname, $this->objects)){
       $this->objects[$obname] = array();
     }
 	}
