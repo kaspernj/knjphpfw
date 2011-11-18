@@ -116,7 +116,7 @@ class knjdb_mysqli
 		$res = $this->conn->query($query);
 		if (!$res) {
 			$msg = "Query error: " .$this->error() ."\n\nSQL: " .$query;
-			throw new Exception($msg);
+			throw new exception($msg);
 		}
 
 		return new knjdb_result($this->_knjdb, $this, $res);

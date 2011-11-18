@@ -7,7 +7,9 @@ class knj_translations{
     $timezones = DateTimeZone::listIdentifiers();
     $ret = array();
     foreach($timezones as $key => $tz){
-      $ret[$tz] = $tz;
+      $ret[$tz] = strtr($tz, array(
+        "_" => " "
+      ));
     }
     
     return $ret;

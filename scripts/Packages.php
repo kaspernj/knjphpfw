@@ -43,7 +43,7 @@ function ipkg_parse($file){
 		throw new exception(trim($res["error"]));
 	}
 	
-	$res = knj_os::shellCMD("cd " . knj_string_unix_safe($tmpdir) . "; tar -zxvf control.tar.gz");
+	$res = knj_os::shellCMD("cd " . knj_string_unix_safe($tmpdir) . "; tar -zxmvf control.tar.gz");
 	if (strlen($res["error"]) > 0){
 		throw new exception(trim($res["error"]));
 	}
