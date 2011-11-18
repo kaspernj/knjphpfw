@@ -325,7 +325,7 @@ class knjobjects{
 	}
 	
 	function add($ob, $arr){
-		if (!array_key_exists($ob, $this->objects)){
+		if ($this->objects && !array_key_exists($ob, $this->objects)){
 			$this->requirefile($ob);
 		}
 		
