@@ -49,6 +49,11 @@ class knjdb{
 		$this->conn->connect();
 	}
 	
+	/** Reconnects to the database. */
+	function reconnect(){
+    $this->connect();
+	}
+	
 	function module($module){
 		if ($module == "indexes"){
 			$short = "index";
