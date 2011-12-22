@@ -36,7 +36,7 @@
 			if ($paras["maxlength"]){
 				if (strlen($title) > $paras["maxlength"]){
 					require_once("knj/functions_knj_strings.php");
-					$title = trim(knj_strings::substr($title, 0, $paras["maxlength"] - 2)) . "...";
+					$title = trim(mb_substr($title, 0, $paras["maxlength"] - 1)) ."…";
 				}
 			}
 			

@@ -1,13 +1,6 @@
 <?php
 
 class knj_strings{
-	static function substr($string, $len1, $len2) {
-		$string = utf8_decode($string);
-		$string = substr($string, $len1, $len2);
-		$string = utf8_encode($string);
-		return $string;
-	}
-
 	static function utf8wrapper($func, $arg1)
 	{
 		return utf8_encode(call_user_func($func, utf8_decode($arg1)));
