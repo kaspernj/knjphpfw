@@ -266,15 +266,3 @@ class knj_strings
 	}
 }
 
-/**
- * Alias of knj_strings::RegexSafe()
- *
- * @param string $string TODO
- *
- * @return string TODO
- */
-function knj_string_regex($string)
-{
-	return knj_strings::RegexSafe($string);
-}
-
