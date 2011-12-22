@@ -122,25 +122,6 @@ class knj_strings{
 		return strtr($string, $replace);
 	}
 
-	static function csvsafe($string)
-	{
-		$string = htmlspecialchars($string);
-		$string = str_replace("\"", "", $string);
-		$string = str_replace("&quot;", "", $string);
-		$string = str_replace("&amp;", "&", $string);
-		$string = str_replace("\r", "", $string);
-		$string = str_replace("\n", "", $string);
-		$string = str_replace("&lt;", "<", $string);
-		$string = str_replace("&gt;", ">", $string);
-
-		return $string;
-	}
-
-	static function htmlspecialchars_textarea($text)
-	{
-		return preg_replace("/<\/textarea>/i", "&lt;/textarea>", $text);
-	}
-
 	static function jsparse($string, $paras = array())
 	{
 		$replace = array(
