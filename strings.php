@@ -122,13 +122,13 @@ class knj_strings{
 		return $nostr;
 	}
 
-	static function shorten($text, $maxlength = nil)
+	static function shorten($text, $maxlength = 0)
 	{
 		if (!$maxlength or mb_strlen($text) <= $maxlength) {
 			return $text;
 		}
 
-		return trim(mb_substr($text, 0, $maxlength)) ."...";
+		return trim(mb_substr($text, 0, $maxlength-1)) ."…";
 	}
 
 	static function is_email($str)
