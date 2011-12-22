@@ -20,9 +20,9 @@ class knj_strings{
 			}
 		}
 
-		if (strlen($string) > 0) {
+		if (mb_strlen($string) > 0) {
 			foreach(preg_split("/\s/", $string) as $value) {
-				if (strlen(trim($value)) > 0) {
+				if (mb_strlen(trim($value)) > 0) {
 					$array[] = $value;
 				}
 			}
@@ -39,8 +39,8 @@ class knj_strings{
 
 				if (preg_match("/src=\"([\s\S]+)\"/U", $img_html, $match_src)) {
 					$src = $match_src[1];
-					if (substr($src, 0, 1) == "/") {
-						$src = substr($src, 1);
+					if (mb_substr($src, 0, 1) == "/") {
+						$src = mb_substr($src, 1);
 					}
 
 					$replace_with = "image.php?picture=" .$src;
@@ -150,11 +150,11 @@ class knj_strings{
 
 	static function shorten($text, $maxlength = nil)
 	{
-		if (!$maxlength or strlen($text) <= $maxlength) {
+		if (!$maxlength or mb_strlen($text) <= $maxlength) {
 			return $text;
 		}
 
-		return trim(substr($text, 0, $maxlength)) ."...";
+		return trim(mb_substr($text, 0, $maxlength)) ."...";
 	}
 
 	static function is_email($str)
