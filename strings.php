@@ -1,6 +1,35 @@
 <?php
+/**
+ * TODO
+ *
+ * PHP version 5
+ *
+ * @category Framework
+ * @package  Knjphpfw
+ * @author   Kasper Johansen <kaspernj@gmail.com>
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
+ * @link     https://github.com/kaspernj/knjphpfw
+ */
 
-class knj_strings{
+/**
+ * TODO
+ *
+ * @category Framework
+ * @package  Knjphpfw
+ * @author   Kasper Johansen <kaspernj@gmail.com>
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
+ * @link     https://github.com/kaspernj/knjphpfw
+ */
+class knj_strings
+{
+	/**
+	 * TODO
+	 *
+	 * @param string $func name of function to use
+	 * @param string $arg1 TODO
+	 *
+	 * @return string TODO
+	 */
 	static function utf8wrapper($func, $arg1)
 	{
 		return utf8_encode(call_user_func($func, utf8_decode($arg1)));
@@ -8,20 +37,24 @@ class knj_strings{
 
 	/**
 	 * Parses a string into an array of strings, which should all be searched for.
+	 *
+	 * @param string $string TODO
+	 *
+	 * @return array TODO
 	 */
 	static function searchstring($string)
 	{
 		$array = array();
 
 		if (preg_match_all("/\"(.*)\"/U", $string, $matches)) {
-			foreach($matches[1] as $key => $value) {
+			foreach ($matches[1] as $key => $value) {
 				$array[] = $value;
 				$string = str_replace($matches[0][$key], "", $string);
 			}
 		}
 
 		if (mb_strlen($string) > 0) {
-			foreach(preg_split("/\s/", $string) as $value) {
+			foreach (preg_split("/\s/", $string) as $value) {
 				if (mb_strlen(trim($value)) > 0) {
 					$array[] = $value;
 				}
@@ -31,6 +64,13 @@ class knj_strings{
 		return $array;
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param string $content TODO
+	 *
+	 * @return string TODO
+	 */
 	static function parseImageHTML($content)
 	{
 		if (preg_match_all("/<img [\s\S]+ \/>/U", $content, $matches)) {
@@ -57,8 +97,8 @@ class knj_strings{
 
 					if (preg_match_all("/(width|height)=\"([0-9]+)(px|)\"/", $img_html, $match_sizes)) {
 						$size = array();
-						foreach($match_sizes[1] as $key => $sizetype) {
-							if (!$size[$sizetype]){
+						foreach ($match_sizes[1] as $key => $sizetype) {
+							if (!$size[$sizetype]) {
 								$size[$sizetype] = $match_sizes[2][$key];
 								$replace_with .= "&" .$sizetype ."=" .$match_sizes[2][$key];
 							}
@@ -76,16 +116,38 @@ class knj_strings{
 		return $content;
 	}
 
+
+	/**
+	 * Parse a string so it fits into the command-line of Linux.
+	 *
+	 * @param string $string string to process
+	 *
+	 * @return string
+	 */
 	static function UnixSafe($string)
 	{
 		return addcslashes($string, "\\ \$();,'><\"&");
 	}
 
+	/**
+	 * Escape alle chars with special meaning in a regulare expression
+	 *
+	 * @param string $string string to process
+	 *
+	 * @return string
+	 */
 	static function RegexSafe($string)
 	{
 		return addcslashes($string, '\\/.()[]^\$+');
 	}
 
+	/**
+	 * Strip all new lines from string
+	 *
+	 * @param string $string string to process
+	 *
+	 * @return string
+	 */
 	static function HeaderSafe($string)
 	{
 		$replace = array(
@@ -96,6 +158,14 @@ class knj_strings{
 		return strtr($string, $replace);
 	}
 
+	/**
+	 * escape chars that can break a string in JavaScript
+	 *
+	 * @param string $string String to process
+	 * @param bool   $quotes Weather to also escape douple quotes
+	 *
+	 * @return string TODO
+	 */
 	static function jsparse($string, $quotes = false)
 	{
 		$replace = array(
@@ -113,6 +183,15 @@ class knj_strings{
 		return $string;
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param string $value  TODO
+	 * @param string $yesstr TODO
+	 * @param string $nostr  TODO
+	 *
+	 * @return string TODO
+	 */
 	static function tf_str($value, $yesstr, $nostr)
 	{
 		if ($value) {
@@ -122,15 +201,30 @@ class knj_strings{
 		return $nostr;
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param string $text      TODO
+	 * @param string $maxlength TODO
+	 *
+	 * @return string TODO
+	 */
 	static function shorten($text, $maxlength = 0)
 	{
-		if (!$maxlength or mb_strlen($text) <= $maxlength) {
+		if (!$maxlength || mb_strlen($text) <= $maxlength) {
 			return $text;
 		}
 
 		return trim(mb_substr($text, 0, $maxlength-1)) ."…";
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param string $str TODO
+	 *
+	 * @return bool TODO
+	 */
 	static function is_email($str)
 	{
 		if (preg_match("/^(.+)@(.+)\.(.+)/", $str)) {
@@ -140,6 +234,13 @@ class knj_strings{
 		return false;
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param string $filename TODO
+	 *
+	 * @return string TODO
+	 */
 	static function filename_safe($filename)
 	{
 		return knj_string_filename($filename, "posix");
@@ -147,7 +248,11 @@ class knj_strings{
 }
 
 /**
- * Parse a string so it fits into the command-line of Linux.
+ * Alias of knj_strings::UnixSafe()
+ *
+ * @param string $string TODO
+ *
+ * @return string TODO
  */
 function knj_string_unix_safe($string)
 {
@@ -156,11 +261,16 @@ function knj_string_unix_safe($string)
 
 /**
  * Parse a string so it will be a valid filename.
+ *
+ * @param string $string TODO
+ * @param string $os     TODO
+ *
+ * @return string TODO
  */
 function knj_string_filename($string, $os = null)
 {
-	if (!$os){
-		require_once("knj/os.php");
+	if (!$os) { 
+		include_once "knj/os.php";
 		$os = knj_os::getOS();
 		$os = $os["os"];
 	}
@@ -182,10 +292,15 @@ function knj_string_filename($string, $os = null)
 }
 
 /**
- * Parse a string to it is safe in a regex-command.
+ * Alias of knj_strings::RegexSafe()
+ *
+ * @param string $string TODO
+ *
+ * @return string TODO
  */
 function knj_string_regex($string)
 {
 	return knj_strings::RegexSafe($string);
 }
-
+Remove depricatted and broaken functions.
+Move closer to PEAR coding style.
