@@ -199,22 +199,6 @@ class knj_strings{
 }
 
 /**
- * Parses the quotes of a string.
- *
- * FIXME Depricated, look in the SQL-functions for a repalcemen.
- */
-function parse_quotes($string)
-{
-	$string = str_replace("'", "\\'", $string);
-
-	if (substr($string, -1, 1) == "\\" && substr($string, -2, 2) !== "\\\\") {
-		$string = substr($string, 0, -1) ."\\\\";
-	}
-
-	return $string;
-}
-
-/**
  * Parse a string so it fits into the command-line of Linux.
  */
 function knj_string_unix_safe($string)

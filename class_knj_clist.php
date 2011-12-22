@@ -278,7 +278,7 @@
 					$eval .= ', ';
 				}
 				
-				$eval .= "'" . parse_quotes($value) . "'";
+				$eval .= "'" .addcslashes($value, "\\'") ."'";
 			}
 			
 			$eval .= "));";
