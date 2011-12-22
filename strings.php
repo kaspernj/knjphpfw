@@ -89,24 +89,25 @@ class knj_strings{
 	static function HeaderSafe($string)
 	{
 		$replace = array(
-			"\r" => "",
-			"\n" => " "
+			"\r\n" => " ",
+			"\n" => " ",
+			"\r" => " "
 		);
 		return strtr($string, $replace);
 	}
 
-	static function jsparse($string, $paras = array())
+	static function jsparse($string, $quotes = false)
 	{
 		$replace = array(
 			"'" => "\\'",
-			"\"" => "&quot;",
-			"\r" => "",
-			"\n" => "\\n"
+			"\r\n" => "\\n",
+			"\n" => "\\n",
+			"\r" => "\\n"
 		);
 		$string = strtr($string, $replace);
 
-		if ($paras["parse_quotes"]){
-			$string = str_replace("\"", "\\\"", $string);
+		if ($quotes) {
+			$string = str_replace('"', '\\"', $string);
 		}
 
 		return $string;
