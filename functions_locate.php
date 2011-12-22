@@ -16,10 +16,10 @@
 		$cmd = "locate";
 		if (is_array($string)){
 			foreach($string AS $str){
-				$cmd .= " " . knj_string_unix_safe($str);
+				$cmd .= " " .knj_strings::UnixSafe($str);
 			}
 		}else{
-			$cmd .= " " . knj_string_unix_safe($string);
+			$cmd .= " " .knj_strings::UnixSafe($string);
 		}
 		
 		

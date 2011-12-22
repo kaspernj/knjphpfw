@@ -116,9 +116,9 @@
 			foreach($lines AS $line){
 				if ($first){
 					$first = false;
-					$this->shellCMD("echo " . knj_string_unix_safe($line) . " > " . $path) . "\n";
+					$this->shellCMD("echo " .knj_strings::UnixSafe($line) . " > " . $path) . "\n";
 				}else{
-					$this->shellCMD("echo " . knj_string_unix_safe($line) . " >> " . $path) . "\n";
+					$this->shellCMD("echo " .knj_strings::UnixSafe($line) . " >> " . $path) . "\n";
 				}
 			}
 		}

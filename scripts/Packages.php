@@ -31,11 +31,11 @@ function ipkg_parse($file){
 	
 	$finfo = pathinfo($file);
 	
-	$cmd = "cd " . knj_string_unix_safe($tmpdir) . ";";
+	$cmd = "cd " .knj_strings::UnixSafe($tmpdir) . ";";
 	if ($format == "tar.gz"){
-		$cmd .= "tar -zxmvf ../" . knj_string_unix_safe($fino["basename"]);
+		$cmd .= "tar -zxmvf ../" .knj_strings::UnixSafe($fino["basename"]);
 	}else{
-		$cmd .= "ar -x ../" . knj_string_unix_safe($finfo["basename"]) . " control.tar.gz";
+		$cmd .= "ar -x ../" .knj_strings::UnixSafe($finfo["basename"]) . " control.tar.gz";
 	}
 	
 	$res = knj_os::shellCMD($cmd);
@@ -43,12 +43,12 @@ function ipkg_parse($file){
 		throw new exception(trim($res["error"]));
 	}
 	
-	$res = knj_os::shellCMD("cd " . knj_string_unix_safe($tmpdir) . "; tar -zxmvf control.tar.gz");
+	$res = knj_os::shellCMD("cd " .knj_strings::UnixSafe($tmpdir) . "; tar -zxmvf control.tar.gz");
 	if (strlen($res["error"]) > 0){
 		throw new exception(trim($res["error"]));
 	}
 	
-	$res = knj_os::shellCMD("cd " . knj_string_unix_safe($tmpdir) . "; cat control");
+	$res = knj_os::shellCMD("cd " .knj_strings::UnixSafe($tmpdir) . "; cat control");
 	if (strlen($res["error"]) > 0){
 		throw new exception(trim($res["error"]));
 	}
@@ -63,7 +63,7 @@ function ipkg_parse($file){
 		}
 	}
 	
-	knj_os::shellCMD("cd " . knj_string_unix_safe($old_dir));
+	knj_os::shellCMD("cd " .knj_strings::UnixSafe($old_dir));
 	fs_cleanDir($tmpdir, true);
 	if (file_exists($tmpdir)){
 		if (!rmdir($tmpdir)){
@@ -89,7 +89,7 @@ function fileinfo($file){
 	require_once "knj/os.php";
 	require_once "knj/strings.php";
 	
-	$res = knj_os::shellCMD("file " . knj_string_unix_safe($file));
+	$res = knj_os::shellCMD("file " .knj_strings::UnixSafe($file));
 	if (strlen($res["error"]) > 0){
 		throw new Exception(trim($res["error"]));
 	}

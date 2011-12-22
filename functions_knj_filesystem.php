@@ -92,7 +92,7 @@
 		
 		require_once "knj/strings.php";
 		require_once "knj/os.php";
-		$stat = knj_os::systemCMD("ls -l " . knj_string_unix_safe($file));
+		$stat = knj_os::systemCMD("ls -l " .knj_strings::UnixSafe($file));
 		
 		$return["mods"]["user"]["mod"] = substr($stat, 1, 3);
 		$return["mods"]["group"]["mod"] = substr($stat, 4, 3);
@@ -296,7 +296,7 @@
 			require_once("knj/os.php");
 			require_once("knj/strings.php");
 			
-			$result = knj_os::shellCMD("file " . knj_string_unix_safe($file));
+			$result = knj_os::shellCMD("file " .knj_strings::UnixSafe($file));
 			$result = substr($result["result"], strlen($file) + 2, -1);
 			
 			return $result;

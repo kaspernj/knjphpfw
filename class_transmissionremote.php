@@ -17,7 +17,7 @@
 		/** Returns the auth-string which should be used with transmission-remote. */
 		function getLoginString(){
 			if ($this->args["user"] && $this->args["pass"]){
-				return " --auth " . knj_string_unix_safe($this->args["user"]) . ":" . knj_string_unix_safe($this->args["pass"]);
+				return " --auth " .knj_strings::UnixSafe($this->args["user"]) . ":" .knj_strings::UnixSafe($this->args["pass"]);
 			}
 			
 			return "";
@@ -94,7 +94,7 @@
 			$cmd = "transmission-remote" . $this->getLoginString();
 			
 			if ($mode == "down" || $mode == "up"){
-				$cmd .= " --" . $mode . "limit " . knj_string_unix_safe($limit);
+				$cmd .= " --" . $mode . "limit " .knj_strings::UnixSafe($limit);
 			}elseif($mode == "nodown"){
 				$cmd .= " --no-downlimit";
 			}elseif($mode == "noup"){

@@ -248,18 +248,6 @@ class knj_strings
 }
 
 /**
- * Alias of knj_strings::UnixSafe()
- *
- * @param string $string TODO
- *
- * @return string TODO
- */
-function knj_string_unix_safe($string)
-{
-	return knj_strings::UnixSafe($string);
-}
-
-/**
  * Parse a string so it will be a valid filename.
  *
  * @param string $string TODO

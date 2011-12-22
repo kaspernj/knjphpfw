@@ -37,7 +37,7 @@ class knj_os{
 			$command = "ps aux | " . $grep;
 		}elseif(is_string($args) && strlen($args) > 0){
 			require_once "knj/functions_knj_strings.php";
-			$grep = "grep " . knj_string_unix_safe($args);
+			$grep = "grep " .knj_strings::UnixSafe($args);
 			$command = "ps aux | " . $grep;
 		}else{
 			$command = "ps aux";
