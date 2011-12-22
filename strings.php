@@ -235,48 +235,35 @@ class knj_strings
 	}
 
 	/**
-	 * TODO
+	 * Parse a string so it will be a valid filename.
 	 *
 	 * @param string $filename TODO
 	 *
 	 * @return string TODO
 	 */
-	static function filename_safe($filename)
+	static function filename_safe($filename, $os = null)
 	{
-		return knj_string_filename($filename, "posix");
-	}
-}
+		if (!$os) { 
+			include_once "knj/os.php";
+			$os = knj_os::getOS();
+			$os = $os["os"];
+		}
 
-/**
- * Parse a string so it will be a valid filename.
- *
- * @param string $string TODO
- * @param string $os     TODO
- *
- * @return string TODO
- */
-function knj_string_filename($string, $os = null)
-{
-	if (!$os) { 
-		include_once "knj/os.php";
-		$os = knj_os::getOS();
-		$os = $os["os"];
-	}
+		if ($os == "windows") {
+			$search  = '/["*:<>?\|]+/u';
+			$replace = '';
+		} elseif ($os == "linux") {
+			$search  = '#/#u';
+			$replace = '';
+		} elseif ($os == "posix") {
+			$search  = '/[^A-z0-9._-]+/u';
+			$replace = '';
+		} else {
+			throw new Exception("Unsupported OS.");
+		}
 
-	if ($os == "windows") {
-		$search  = '/["*:<>?\|]+/u';
-		$replace = '';
-	} elseif ($os == "linux") {
-		$search  = '#/#u';
-		$replace = '';
-	} elseif ($os == "posix") {
-		$search  = '/[^A-z0-9._-]+/u';
-		$replace = '';
-	} else {
-		throw new Exception("Unsupported OS.");
+		return preg_replace($search, $replace, $string);
 	}
-
-	return preg_replace($search, $replace, $string);
 }
 
 /**
