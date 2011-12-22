@@ -583,9 +583,9 @@ function GID($in_id, $in_db){
 	global $knj_web;
 	
 	if ($knj_web["dbconn"]){
-		return $knj_web["dbconn"]->selectsingle($in_db, array($knj_web["col_id_name"] => $in_id));
+		return $knj_web["dbconn"]->selectsingle($in_db, array($knj_web["col_id_name"] => (int) $in_id));
 	}else{
-		$sql = "SELECT * FROM " . $in_db . " WHERE " . $knj_web["col_id_name"] . " = '" . sql($in_id) . "' LIMIT 1";
+		$sql = "SELECT * FROM " . sql($in_db) . " WHERE " . $knj_web["col_id_name"] . " = '" . sql($in_id) . "' LIMIT 1";
 		$f_gid = mysql_query($sql) or die("MySQL-error: " . mysql_error() . "\nSQL: " . $sql);
 		$d_gid = mysql_fetch_array($f_gid);
 	}
