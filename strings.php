@@ -78,39 +78,12 @@ class knj_strings{
 
 	static function UnixSafe($string)
 	{
-		$string = str_replace("\\", "\\\\", $string);
-		$string = str_replace(" ", "\\ ", $string);
-		$string = str_replace("\$", "\\\$", $string);
-		$string = str_replace("(", "\\(", $string);
-		$string = str_replace(")", "\\)", $string);
-		$string = str_replace(";", "\\;", $string);
-		$string = str_replace(",", "\\,", $string);
-		$string = str_replace("'", "\\'", $string);
-		$string = str_replace(">", "\\>", $string);
-		$string = str_replace("<", "\\<", $string);
-		$string = str_replace("\"", "\\\"", $string);
-		$string = str_replace("&", "\\&", $string);
-
-		//Replace the end & - if any.
-		//$string = preg_replace("/&\s*$/", "\\&", $string);
-
-		return $string;
+		return addcslashes($string, "\\ \$();,'><\"&");
 	}
 
 	static function RegexSafe($string)
 	{
-		$replace = array(
-			"/" => "\\/",
-			"." => "\\.",
-			"(" => "\\(",
-			")" => "\\)",
-			"[" => "\\[",
-			"]" => "\\]",
-			"^" => "\\^",
-			"\$" => "\\\$",
-			"+" => "\\+"
-		);
-		return strtr($string, $replace);
+		return addcslashes($string, '\\/.()[]^\$+');
 	}
 
 	static function HeaderSafe($string)
