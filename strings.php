@@ -302,5 +302,4 @@ function knj_string_regex($string)
 {
 	return knj_strings::RegexSafe($string);
 }
-Remove depricatted and broaken functions.
-Move closer to PEAR coding style.
+
