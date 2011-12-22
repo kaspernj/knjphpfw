@@ -11,7 +11,7 @@
 		foreach($matches[1] AS $key => $name){
 			$hash = "[unknown]";
 			
-			if (preg_match("/\n(\S+) " . knj_string_regex($name) . "\n/", $cont, $match)){
+			if (preg_match("/\n(\S+) " . knj_strings::RegexSafe($name) . "\n/", $cont, $match)){
 				$hash = $match[1];
 			}
 			
