@@ -98,10 +98,6 @@ class web{
 		));
 	}
 	
-	function htmlspecialchars_textarea($input){
-		return htmlspecialchars_textarea($input);
-	}
-	
 	static function current_url(){
 		if ($_SERVER["HTTPS"] == "on"){
 			$url = "https://";
@@ -169,11 +165,6 @@ function jsback(){
 function jsredirect($url){
 	?><script type="text/javascript">location.href="<?=$url?>";</script><?
 	exit();
-}
-
-function htmlspecialchars_textarea($input){
-	$input = preg_replace("/<\/textarea>/", "&lt;/textarea>", $input);
-	return $input;
 }
 
 function select_drawOpts($opts, $selected = null){
@@ -475,7 +466,7 @@ function form_drawInput($args){
 				<?=$title_html?>
 			</td>
 			<?=$td_html?>
-				<textarea name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($args["class"])?>"<?if ($args["height"]){?> style="height: <?=$args["height"]?>;"<?}?><?=$js_tags?>><?=htmlspecialchars_textarea($value)?></textarea>
+				<textarea name="<?=htmlspecialchars($args["name"])?>" id="<?=htmlspecialchars($id)?>" class="<?=htmlspecialchars($args["class"])?>"<?if ($args["height"]){?> style="height: <?=$args["height"]?>;"<?}?><?=$js_tags?>><?=htmlspecialchars($value, NULL, 'UTF-8')?></textarea>
 			<?=$td_end_html?>
 		<?
 	}elseif($args["type"] == "fckeditor"){
