@@ -85,7 +85,7 @@ class knj_login{
 		$this->setDBInfo($args);
 	}
 	
-	function tryLogin($nick, $pass = nil, $remember = false){
+	function tryLogin($nick, $pass = null, $remember = false){
 		if (is_array($nick)){
 			$args = $nick;
 			$nick = $args["nick"];
