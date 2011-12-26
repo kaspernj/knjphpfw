@@ -158,6 +158,14 @@ class knj_httpbrowser
 		$this->_debug = $value;
 	}
 
+	/**
+	 * Set connection login info
+	 *
+	 * @param mixed $user   Username to use.
+	 * @param mixed $passwd Password to use.
+	 *
+	 * @return null
+	 */
 	function setHTTPAuth($user, $passwd)
 	{
 		$this->_httpauth = array(
@@ -169,7 +177,7 @@ class knj_httpbrowser
 	/**
 	 * Set the User agent string.
 	 *
-	 * @param mixed $value The value to set.
+	 * @param mixed $useragent The string of the useragent.
 	 *
 	 * @return null
 	 */
