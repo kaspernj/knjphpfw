@@ -159,15 +159,10 @@ function alert($msg)
 {
 	global $knj_web;
 	
-	$msg = strtr($msg, array(
-		"\n" => "\\n",
-		"\t" => "\\t",
-		"\r" => "",
-		"\"" => "\\\""
-	));
+	$msg = knj_strings::jsparse($msg);
 	
-	$knj_web["alert_sent"] = true;
 	echo '<script type="text/javascript">alert("' .$msg .'");</script>';
+	$knj_web["alert_sent"] = true;
 }
 
 function jsback()
