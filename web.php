@@ -530,7 +530,7 @@ function form_drawInput($args)
 	$args["class"] = implode(" ", $classes);
 
 	if ($args["type"] == "spacer") {
-		echo '<td colspan="2">&nbsp;</td>'
+		echo '<td colspan="2">&nbsp;</td>';
 	} elseif ($args["type"] == "checkbox") {
 		echo '<td colspan="2" class="tdcheck"><input';
 		if ($args["disabled"]) {
