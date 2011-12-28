@@ -597,7 +597,7 @@ function form_drawInput($args)
 			echo '<img src="image.php?picture=' .urlencode($fn) .'&amp;smartsize=80&amp;edgesize=20&amp;equaldim=true" alt="Preview" />';
 		}
 		if ($found && $args["dellink"]) {
-			echo '<div style="text-align: center;">(<a onclick="return confirm(\'' ._("Do you want to delete the picture?") .'\')" href="' .htmlspecialchars($args["dellink"]) '">' ._("delete") .'</a>)';
+			echo '<div style="text-align: center;">(<a onclick="return confirm(\'' ._("Do you want to delete the picture?") .'\')" href="' .htmlspecialchars($args["dellink"]) .'">' ._("delete") .'</a>)';
 		}
 		echo '</div>';
 		echo '</td></tr></table>' .$td_end_html;
