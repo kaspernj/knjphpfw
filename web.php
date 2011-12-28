@@ -636,7 +636,7 @@ function form_drawInput($args)
 	} elseif ($args["type"] == "plain") {
 		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .htmlspecialchars($value) .$td_end_html;
 	} elseif ($args["type"] == "headline") {
-		echo '<td class="tdheadline" colspan="2">' .$title_html '</td>';
+		echo '<td class="tdheadline" colspan="2">' .$title_html .'</td>';
 	} else {
 		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .'<input type="' .htmlspecialchars($args["type"]) .'"';
 		if ($args["disabled"]) {
