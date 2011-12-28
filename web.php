@@ -298,7 +298,7 @@ function redirect($url, $exit = true)
  */
 function alert($msg)
 {
-	Web::alert()
+	Web::alert();
 }
 
 /**
@@ -308,7 +308,7 @@ function alert($msg)
  */
 function jsback()
 {
-	Web::rewrite_replaces()
+	Web::rewrite_replaces();
 }
 
 /**
