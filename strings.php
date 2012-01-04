@@ -184,7 +184,7 @@ class knj_strings{
 			return $text;
 		}
 		
-		return trim(substr($text, 0, $maxlength)) . "...";
+		return utf8_encode(trim(substr(utf8_decode($text), 0, $maxlength))) . "...";
 	}
 	
 	static function is_email($str){
