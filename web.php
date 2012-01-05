@@ -294,9 +294,18 @@ function form_drawInput($args){
 		$colspan_cont = $args["colspan"] - 1;
 	}
 	
-	if (!array_key_exists("tr", $args) or $args["tr"]){
-		?><tr><?
-	}
+	$classes_tr = array();
+  if ($args["classes_tr"]){
+    $classes_tr = array_merge($classes_tr, $args["classes_tr"]);
+  }
+  
+  if (!array_key_exists("tr", $args) or $args["tr"]){
+    if (!empty($classes_tr)){
+      ?><tr class="<?=implode(" ", $classes_tr)?>"><?
+    }else{
+      ?><tr><?
+    }
+  }
 	
 	if ($args["title"]){
 		$title_html = htmlspecialchars($args["title"]);
