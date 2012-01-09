@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO
+ * This file contains the knj_strings class
  *
  * PHP version 5
  *
@@ -12,7 +12,7 @@
  */
 
 /**
- * TODO
+ * Class for handeling several common string processesing tasks
  *
  * @category Framework
  * @package  Knjphpfw
@@ -25,7 +25,7 @@ class knj_strings
 	/**
 	 * Parses a string into an array of strings, which should all be searched for.
 	 *
-	 * @param string $string TODO
+	 * @param string $string String to process
 	 *
 	 * @return array TODO
 	 */
@@ -146,12 +146,12 @@ class knj_strings
 	}
 
 	/**
-	 * escape chars that can break a string in JavaScript
+	 * Escape chars that can break a string in JavaScript
 	 *
 	 * @param string $string String to process
 	 * @param bool   $quotes Weather to also escape douple quotes
 	 *
-	 * @return string TODO
+	 * @return string
 	 */
 	static function jsparse($string, $quotes = false)
 	{
@@ -189,12 +189,12 @@ class knj_strings
 	}
 
 	/**
-	 * TODO
+	 * Crope a string to a specific length
 	 *
-	 * @param string $text      TODO
-	 * @param string $maxlength TODO
+	 * @param string $text      Input string
+	 * @param string $maxlength The decired length
 	 *
-	 * @return string TODO
+	 * @return string
 	 */
 	static function shorten($text, $maxlength = 0)
 	{
@@ -206,11 +206,11 @@ class knj_strings
 	}
 
 	/**
-	 * TODO
+	 * Test if a string is a valid email
 	 *
-	 * @param string $str TODO
+	 * @param string $str String to test
 	 *
-	 * @return bool TODO
+	 * @return bool Returns true if it is a valid email, false if not
 	 */
 	static function is_email($str)
 	{
@@ -224,10 +224,10 @@ class knj_strings
 	/**
 	 * Parse a string so it will be a valid filename.
 	 *
-	 * @param string $filename TODO
+	 * @param string $filename String to process
 	 * @param string $so       OS to comply with.
 	 *
-	 * @return string TODO
+	 * @return string
 	 */
 	static function filename_safe($filename, $os = null)
 	{
