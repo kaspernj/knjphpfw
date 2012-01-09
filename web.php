@@ -461,8 +461,17 @@ function form_drawInput($args)
 		$colspan_cont = $args["colspan"] - 1;
 	}
 
+	$classes_tr = array();
+	if ($args["classes_tr"]) {
+		$classes_tr = array_merge($classes_tr, $args["classes_tr"]);
+	}
+
 	if (!array_key_exists("tr", $args) || $args["tr"]) {
-		echo '<tr>';
+		if (!empty($classes_tr)) {
+			echo '<tr class="' .implode(' ', $classes_tr) ,'">';
+		} else {
+			echo '<tr>';
+		}
 	}
 
 	if ($args["title"]) {
