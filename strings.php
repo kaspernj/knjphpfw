@@ -23,19 +23,6 @@
 class knj_strings
 {
 	/**
-	 * TODO
-	 *
-	 * @param string $func name of function to use
-	 * @param string $arg1 TODO
-	 *
-	 * @return string TODO
-	 */
-	static function utf8wrapper($func, $arg1)
-	{
-		return utf8_encode(call_user_func($func, utf8_decode($arg1)));
-	}
-
-	/**
 	 * Parses a string into an array of strings, which should all be searched for.
 	 *
 	 * @param string $string TODO
