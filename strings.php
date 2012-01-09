@@ -225,6 +225,7 @@ class knj_strings
 	 * Parse a string so it will be a valid filename.
 	 *
 	 * @param string $filename TODO
+	 * @param string $so       OS to comply with.
 	 *
 	 * @return string TODO
 	 */
