@@ -2,10 +2,7 @@
 
 class knj_strings{
 	static function substr($string, $len1, $len2){
-		$string = utf8_decode($string);
-		$string = substr($string, $len1, $len2);
-		$string = utf8_encode($string);
-		return $string;
+		return mb_substr($string, $len1, $len2, mb_detect_encoding($string));
 	}
 	
 	static function utf8wrapper($func, $arg1){
@@ -184,7 +181,7 @@ class knj_strings{
 			return $text;
 		}
 		
-		return utf8_encode(trim(substr(utf8_decode($text), 0, $maxlength))) . "...";
+		return trim(mb_substr($text, 0, $maxlength, mb_detect_encoding($text))) . "...";
 	}
 	
 	static function is_email($str){
