@@ -23,6 +23,26 @@
 class knj_strings
 {
 	/**
+	 * Convert any string to UTF8
+	 *
+	 * @param string $string String to process
+	 *
+	 * @return string
+	 */
+	static function utf8force($string)
+	{
+		$encoding = mb_detect_encoding($string);
+		if ($encoding != 'UTF-8') {
+			if (!$encoding || $encoding == 'ISO-8859-1') {
+				$encoding = 'windows-1252';
+			}
+			return mb_convert_encoding($string, 'UTF-8', $encoding);
+		}
+
+		return $string;
+	}
+
+	/**
 	 * Parses a string into an array of strings, which should all be searched for.
 	 *
 	 * @param string $string String to process
