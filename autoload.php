@@ -1,4 +1,4 @@
-<?
+<?php
 
 class knj_autoload{
 	function __construct(){
