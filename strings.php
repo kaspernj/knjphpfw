@@ -242,6 +242,32 @@ class knj_strings
 	}
 
 	/**
+	 * Convert chars with accents to nearest equvilant
+	 *
+	 * @param string $string String to process
+	 *
+	 * @return string
+	 */
+	static function unaccent($string)
+	{
+		$charmap = array(
+			"ø" => "oe",
+			"å" => "aa",
+		);
+		$string = strtr($string, $charmap);
+
+		$string = htmlentities($string, ENT_QUOTES, 'UTF-8');
+		$string = preg_replace(
+			'/&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);/i',
+			'$1',
+			$string
+		);
+		$string = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
+
+		return $string;
+	}
+
+	/**
 	 * Parse a string so it will be a valid filename.
 	 *
 	 * @param string $filename String to process
@@ -264,6 +290,7 @@ class knj_strings
 			$search  = '#/#u';
 			$replace = '';
 		} elseif ($os == "posix") {
+			$string = unaccent($string);
 			$search  = '/[^A-z0-9._-]+/u';
 			$replace = '';
 		} else {
