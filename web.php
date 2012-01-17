@@ -87,15 +87,15 @@ class web
 	}
 
 	/**
-	 * TODO
+	 * Preform bool operation based on checkbox on/off values
 	 *
-	 * @param string $val  TODO
-	 * @param mixed  $opt1 TODO
-	 * @param mixed  $opt2 TODO
+	 * @param string $val  "on"/"off" value
+	 * @param mixed  $opt1 Return value if $val is on, default is 1
+	 * @param mixed  $opt2 Return value if $val is off, default is 0
 	 *
-	 * @return mixed TODO
+	 * @return mixed Return $opt1 if on is given, or $opt2 if off i given
 	 */
-	function checkVal($val, $opt1 = "1", $opt2 = "0")
+	function checkVal($val, $opt1 = 1, $opt2 = 0)
 	{
 		if ($val == "on") {
 			return $opt1;
@@ -649,7 +649,7 @@ function form_drawInput($args)
 	} else {
 		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .'<input type="' .htmlspecialchars($args["type"]) .'"';
 		if ($args["disabled"]) {
-			echo ' disabled';
+			echo ' disabled="disabled"';
 		}
 		if ($args["maxlength"]) {
 			echo ' maxlength="' .$args["maxlength"] .'"';
