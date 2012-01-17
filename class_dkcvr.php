@@ -61,7 +61,7 @@ class dkcvr
 		);
 
 		$result = preg_match_all(
-			'<td class="fieldname" valign="top">\s*([\S ]*):\s*<\/td>\s*<td class="fieldvalue" valign="top">\s*(.*)(<\/td>|\n)/u',
+			'/<td class="fieldname" valign="top">\s*([\S ]*):\s*<\/td>\s*<td class="fieldvalue" valign="top">\s*(.*)(<\/td>|\n)/u',
 			$html,
 			$matches
 		);
