@@ -57,11 +57,11 @@ class dkcvr
 	function getByCVR($cvr)
 	{
 		$html = $this->_http->getAddr(
-			"Site/Forms/PublicService/DisplayCompany.aspx?cvrnr=" .$cvr
+			"/Site/Forms/PublicService/DisplayCompany.aspx?cvrnr=" .$cvr
 		);
 
 		$result = preg_match_all(
-			'/<td class="fieldname" valign="top">\s*([\S ]*):\s*<\/td>\s*<td class="fieldvalue" valign="top">\s*(.*)(<\/td>|\n)/u',
+			'/fieldname.*?>\s*(.*):\s*<\/td>\s*?<.*fieldvalue.*?>\s*(.*)\n/ui',
 			$html,
 			$matches
 		);
@@ -93,7 +93,7 @@ class dkcvr
 			throw new dkcvr_cvrnotfound("The CVR-number was not found.");
 		}
 
-		foreach ($matches[1] AS $key => $title) {
+		foreach ($matches[1] as $key => $title) {
 			$write = true;
 			$value = trim(strtr($matches[2][$key], $arr_replace));
 
