@@ -75,7 +75,7 @@ class dkcvr
 		);
 
 		$result = preg_match(
-			'<div class="titletext">\s*([\s\S]+)<\/div>/U',
+			'/titletext.*?>\s*(.+)<\/div>/ui',
 			$html,
 			$match
 		);
