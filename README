@@ -1,3 +1,7 @@
+#About this branch:
+The focus of this branch is to make the code easyer to maintain, document it and make it work properly with UTF-8 encoding.
+This will mainly be done by making the code style comply with PEAR style. The framework will expect UTF-8 as the internal encoding. Depricated code and non OOP code will be removed and be replaced with OOP code.
+
 #HOW TO INSTALL
 
 * Make sure you have the PHP5 CLI installed (on Ubuntu install the "php5-cli"-package).
@@ -18,3 +22,4 @@ You can then use the functions of the part like this:
    	die("Could not load the PHP5-GTK2-module.\n");
    }
 ?>
+

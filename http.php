@@ -585,7 +585,10 @@ class knj_httpbrowser
 		$tries_max = 5;
 		while (!fwrite($this->fp, $headers)) {
 			sleep(1);
-			$this->reconnect();
+			try {
+				$this->reconnect();
+			} catch (exception $e) {
+			}
 
 			$tries++;
 			if ($tries >= $tries_max) {

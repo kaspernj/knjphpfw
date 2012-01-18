@@ -1,7 +1,30 @@
 <?php
+/**
+ * TODO
+ *
+ * PHP version 5
+ *
+ * @category Framework
+ * @package  Knjphpfw
+ * @author   Kasper Johansen <kaspernj@gmail.com>
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
+ * @link     https://github.com/kaspernj/knjphpfw
+ */
 
+/**
+ * TODO
+ *
+ * @category Framework
+ * @package  Knjphpfw
+ * @author   Kasper Johansen <kaspernj@gmail.com>
+ * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
+ * @link     https://github.com/kaspernj/knjphpfw
+ */
 class knj_autoload
 {
+	/**
+	 * TODO
+	 */
 	function __construct()
 	{
 		$this->exts = array(
@@ -42,6 +65,13 @@ class knj_autoload
 		);
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param string $classname TODO
+	 *
+	 * @return null
+	 */
 	function load($classname)
 	{
 		$class = mb_strtolower($classname);
@@ -60,6 +90,14 @@ class knj_autoload
 		}
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param mixed  $class TODO
+	 * @param string $file  TODO
+	 *
+	 * @return null
+	 */
 	function add($class, $file = null)
 	{
 		if (is_array($class)) {
