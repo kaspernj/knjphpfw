@@ -1,7 +1,9 @@
 <?php
 
-class knj_autoload{
-	function __construct(){
+class knj_autoload
+{
+	function __construct()
+	{
 		$this->exts = array(
 			"gtk" => "gtk2",
 			"mysql" => "mysql",
@@ -39,31 +41,33 @@ class knj_autoload{
 			"fpdf" => "fpdf/fpdf.php"
 		);
 	}
-	
-	function load($classname){
-		$class = strtolower($classname);
-		
-		if (array_key_exists($class, $this->classes)){
-			require_once($this->classes[$class]);
+
+	function load($classname)
+	{
+		$class = mb_strtolower($classname);
+
+		if (array_key_exists($class, $this->classes)) {
+			include_once $this->classes[$class];
 		}
-		
-		if (array_key_exists($class, $this->exts)){
-			require_once("knj/exts.php");
+
+		if (array_key_exists($class, $this->exts)) {
+			include_once "knj/exts.php";
 			knj_dl($this->ext[$classname]);
 		}
-		
-		if (array_key_exists($class, $this->knj)){
-			require_once("knj/" . $this->knj[$class] . ".php");
+
+		if (array_key_exists($class, $this->knj)) {
+			include_once "knj/" .$this->knj[$class] .".php";
 		}
 	}
-	
-	function add($class, $file = null){
-		if (is_array($class)){
-			foreach($class AS $key => $value){
+
+	function add($class, $file = null)
+	{
+		if (is_array($class)) {
+			foreach ($class as $key => $value) {
 				$this->add($key, $value);
 			}
-		}else{
-			$this->classes[strtolower($class)] = $file;
+		} else {
+			$this->classes[mb_strtolower($class)] = $file;
 		}
 	}
 }
