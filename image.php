@@ -57,10 +57,10 @@ function picture_color_allocate($image, $hexcolor){
 }
 
 function picture_openrandomformat($image, $mime = false){
-	if ($mime == false && strtolower(substr($image, 0, 7)) == "http://"){
-		$last4 = strtolower(substr($image, -4));
-		$last5 = strtolower(substr($image, -5));
-		
+	if ($mime == false && mb_strtolower(mb_substr($image, 0, 7)) == "http://") {
+		$last4 = mb_strtolower(mb_substr($image, -4));
+		$last5 = mb_strtolower(mb_substr($image, -5));
+
 		if ($last4 == ".jpg" || $last5 == ".jpeg"){
 			$mime = "image/jpeg";
 		}elseif($last4 == ".gif"){
@@ -71,7 +71,7 @@ function picture_openrandomformat($image, $mime = false){
 			$mime = "image/png";
 		}
 	}
-	
+
 	if ($mime == false){
 		$mime = GetImageSize($image);
 		$mime = $mime["mime"];
@@ -80,19 +80,17 @@ function picture_openrandomformat($image, $mime = false){
 	if ($mime == "image/jpeg"){
 		return ImageCreateFromJPEG($image);
 	}elseif($mime == "image/gif"){
-		$img = ImageCreateFromGIF($image);
+		return ImageCreateFromGIF($image);
 	}elseif($mime == "image/bmp"){
 		require_once("knj/functions_knj_picture_bmp.php");
 		return ImageCreateFromBMP($image);
 	}elseif($mime == "image/vnd.wbmp"){
 		return ImageCreateFromWBMP($image);
 	}elseif($mime == "image/png"){
-		$img = ImageCreateFromPNG($image);
-	}else{
-		return false;
+		return ImageCreateFromPNG($image);
 	}
-	
-	return $img;
+
+	return false;
 }
 
 function ImageOpen($img_location){
