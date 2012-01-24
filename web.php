@@ -504,6 +504,13 @@ function form_drawInput($args)
 	if ($colspan_cont > 1) {
 		$td_html .= " colspan=\"" . $colspan_cont . "\"";
 	}
+
+	$rowspan = '';
+	if ($args["rowspan"] > 1) {
+		$rowspan = ' rowspan="' .$args["rowspan"] .'"';
+		$td_html .= $rowspan;
+	}
+
 	$td_html .= ">";
 
 	if ($args["div"]) {
@@ -539,9 +546,9 @@ function form_drawInput($args)
 	$args["class"] = implode(" ", $classes);
 
 	if ($args["type"] == "spacer") {
-		echo '<td colspan="2">&nbsp;</td>';
+		echo '<td' .$rowspan .' colspan="2">&nbsp;</td>';
 	} elseif ($args["type"] == "checkbox") {
-		echo '<td colspan="2" class="tdcheck"><input';
+		echo '<td' .$rowspan .' colspan="2" class="tdcheck"><input';
 		if ($args["disabled"]) {
 			echo ' disabled="disabled"';
 		}
@@ -563,7 +570,7 @@ function form_drawInput($args)
 		if (is_null($value) && is_array($args["value"])) {
 			$value = $args["value"];
 		}
-		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .'<select' .$etags;
+		echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html .'<select' .$etags;
 		if ($args["size"]) {
 			echo ' size="' .htmlspecialchars($args["size"]) .'"';
 		}
@@ -601,7 +608,7 @@ function form_drawInput($args)
 			$args["dellink"] = str_replace("%value%", $value, $args["dellink"]);
 		}
 
-		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .'<table class="designtable"><tr><td style="width: 100%;"><input type="file" name="' .htmlspecialchars($args["name"]) .'" id="' .htmlspecialchars($id) .'" class="' .htmlspecialchars($args["class"]) .'" /></td><td>';
+		echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html .'<table class="designtable"><tr><td style="width: 100%;"><input type="file" name="' .htmlspecialchars($args["name"]) .'" id="' .htmlspecialchars($id) .'" class="' .htmlspecialchars($args["class"]) .'" /></td><td>';
 		if ($fn) {
 			echo '<img src="image.php?picture=' .urlencode($fn) .'&amp;smartsize=80&amp;edgesize=20&amp;equaldim=true" alt="Preview" />';
 		}
@@ -611,15 +618,15 @@ function form_drawInput($args)
 		echo '</div>';
 		echo '</td></tr></table>' .$td_end_html;
 	} elseif ($args["type"] == "file") {
-		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .'<input type="file" class="input_' .$args["type"] .'" name="' .htmlspecialchars($args["name"]) .'" id="' .htmlspecialchars($id) .'"' .$js_tags .' />' .$td_end_html;
+		echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html .'<input type="file" class="input_' .$args["type"] .'" name="' .htmlspecialchars($args["name"]) .'" id="' .htmlspecialchars($id) .'"' .$js_tags .' />' .$td_end_html;
 	} elseif ($args["type"] == "textarea") {
-		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .'<textarea name="' .htmlspecialchars($args["name"]) .'" id="' .htmlspecialchars($id) .'" class="' .htmlspecialchars($args["class"]) .'"';
+		echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html .'<textarea name="' .htmlspecialchars($args["name"]) .'" id="' .htmlspecialchars($id) .'" class="' .htmlspecialchars($args["class"]) .'"';
 		if ($args["height"]) {
 			echo ' style="height: ' .$args["height"] .';"';
 		}
 		echo $js_tags .'>' .htmlspecialchars($value, null, 'UTF-8') .'</textarea>' .$td_end_html;
 	} elseif ($args["type"] == "fckeditor") {
-		echo '<td class="tdt">' .$title_html .'</td>' .$td_html;
+		echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html;
 
 		$fck = new fckeditor($args["name"]);
 
@@ -634,20 +641,20 @@ function form_drawInput($args)
 		echo $td_end_html;
 	} elseif ($args["type"] == "radio") {
 		$id = $id ."_" .$value;
-		echo '<td class="tdt" colspan="2">
+		echo '<td' .$rowspan .' class="tdt" colspan="2">
 		<input type="radio" id="' .htmlspecialchars($id) .'" name="' .htmlspecialchars($args["name"]) .'" value="' .htmlspecialchars($args["value"]) .'"';
 		if ($args["checked"]) {
 			echo ' checked="checked"';
 		}
 		echo $js_tags. ' /><label for="' .htmlspecialchars($id) .'">' .$title_html .'</label></td>';
 	} elseif ($args["type"] == "info") {
-		echo '<td class="tdt">' .$title_html. '</td>' .$td_html .$value .$td_end_html;
+		echo '<td' .$rowspan .' class="tdt">' .$title_html. '</td>' .$td_html .$value .$td_end_html;
 	} elseif ($args["type"] == "plain") {
-		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .htmlspecialchars($value) .$td_end_html;
+		echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html .htmlspecialchars($value) .$td_end_html;
 	} elseif ($args["type"] == "headline") {
-		echo '<td class="tdheadline" colspan="2">' .$title_html .'</td>';
+		echo '<td' .$rowspan .' class="tdheadline" colspan="2">' .$title_html .'</td>';
 	} else {
-		echo '<td class="tdt">' .$title_html .'</td>' .$td_html .'<input type="' .htmlspecialchars($args["type"]) .'"';
+		echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html .'<input type="' .htmlspecialchars($args["type"]) .'"';
 		if ($args["disabled"]) {
 			echo ' disabled="disabled"';
 		}
@@ -668,7 +675,7 @@ function form_drawInput($args)
 			$descr = '<div class="td">' .$descr .'</div>';
 		}
 
-		echo '<tr><td colspan="2"';
+		echo '<tr><td' .$rowspan .' colspan="2"';
 		if (!$args["div"]) {
 			echo ' class="tdd"';
 		}
