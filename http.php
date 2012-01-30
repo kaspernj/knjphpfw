@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO
+ * This file contains the knj_httpbrowser class
  *
  * PHP version 5
  *
@@ -12,7 +12,8 @@
  */
 
 /**
- * TODO
+ * This class provides an object capable of doing post and get request
+ * over a persistent http(s) connection.
  *
  * @category Framework
  * @package  Knjphpfw
@@ -27,8 +28,8 @@ class knj_httpbrowser
 	private $_httpauth;
 	private $_ssl = false;
 	private $_debug = false;
-	private $_reconnect_max;
-	private $_reconnect_count;
+	private $_max_requests = 0;
+	private $_request_count = 0;
 	private $_nl = "\r\n";
 	public $fp;
 	public $headers_last;
@@ -67,23 +68,23 @@ class knj_httpbrowser
 	 *
 	 * @return null
 	 */
-	function debug($msg)
+	private function debug($msg)
 	{
 		if ($this->_debug) {
-			echo $msg;
+			echo $msg ."\n";
 		}
 	}
 
 	/**
 	 * Connects to a server.
 	 *
-	 * @param string $host TODO
-	 * @param int    $port TODO
+	 * @param string $host Server to connect to
+	 * @param int    $port Default is 80, if 443 SSL is assumed.
 	 * @param array  $args TODO
 	 *
-	 * @return bool TODO
+	 * @return bool Return true if connection was established.
 	 */
-	function connect($host, $port = 80, $args = array())
+	public function connect($host, $port = 80, $args = array())
 	{
 		$this->_host = $host;
 		$this->_port = $port;
@@ -122,7 +123,7 @@ class knj_httpbrowser
 	 *
 	 * @return null
 	 */
-	function reconnect()
+	private function reconnect()
 	{
 		if ($this->fp) {
 			$this->disconnect();
@@ -144,6 +145,7 @@ class knj_httpbrowser
 		if (!$this->fp) {
 			throw new exception("Could not connect.");
 		}
+		$this->_request_count = 0;
 	}
 
 	/**
@@ -153,7 +155,7 @@ class knj_httpbrowser
 	 *
 	 * @return null
 	 */
-	function setDebug($value)
+	public function setDebug($value)
 	{
 		$this->_debug = $value;
 	}
@@ -166,7 +168,7 @@ class knj_httpbrowser
 	 *
 	 * @return null
 	 */
-	function setHTTPAuth($user, $passwd)
+	public function setHTTPAuth($user, $passwd)
 	{
 		$this->_httpauth = array(
 			"user" => $user,
@@ -181,52 +183,51 @@ class knj_httpbrowser
 	 *
 	 * @return null
 	 */
-	function setUserAgent($useragent)
+	public function setUserAgent($useragent)
 	{
 		$this->_useragent = $useragent;
 	}
 
 	/**
-	 * TODO
+	 * Set the max number of request allowed per connection.
 	 *
-	 * @param int $max_requests TODO
+	 * @param int $max_requests The maximum number of request per connection.
 	 *
 	 * @return null
 	 */
-	function setAutoReconnect($max_requests)
+	public function setAutoReconnect($max_requests)
 	{
 		if (!is_numeric($max_requests) || $max_requests <= 0) {
 			throw new exception("Invalid value given: " .$max_requests);
 		}
 
-		$this->_reconnect_max = $max_requests;
-		$this->_reconnect_count = 0;
+		$this->_max_requests = $max_requests;
 	}
 
 	/**
-	 * TODO
+	 * Reconnect if the max requsts have been made with the current connetion,
+	 * and check if the current connection is still active.
 	 *
 	 * @return null
 	 */
-	function countAutoReconnect()
+	private function countRequests()
 	{
-		if ($this->_reconnect_max >= 1
-			&& $this->_reconnect_count >= $this->_reconnect_max
+		if ($this->_max_requests
+			&& $this->_request_count >= $this->_max_requests
 		) {
 			$this->reconnect();
-			$this->_reconnect_count = 0;
 		}
 
 		$this->checkConnected();
-		$this->_reconnect_count++;
+		$this->_request_count++;
 	}
 
 	/**
-	 * TODO
+	 * Check if the connection is still active.
 	 *
 	 * @return null
 	 */
-	function checkConnected()
+	private function checkConnected()
 	{
 		while (true) {
 			if (!$this->_host || !$this->fp) {
@@ -248,11 +249,11 @@ class knj_httpbrowser
 	 * @param string $addr Absolute URI to the desired page
 	 * @param array  $post TODO
 	 *
-	 * @return TODO
+	 * @return string Response as a string.
 	 */
-	function post($addr, $post)
+	public function post($addr, $post)
 	{
-		$this->countAutoReconnect();
+		$this->countRequests();
 
 		$postdata = "";
 		foreach ($post as $key => $value) {
@@ -276,7 +277,7 @@ class knj_httpbrowser
 			."Content-Length: " .strlen($postdata) .$this->_nl
 			."Connection: Keep-Alive" .$this->_nl;
 
-		$headers .= $this->getRestHeaders();
+		$headers .= $this->getAuthHeader();
 
 		if ($this->cookies[$this->_host]) {
 			foreach ($this->cookies[$this->_host] as $key => $value) {
@@ -291,7 +292,7 @@ class knj_httpbrowser
 		}
 
 		$this->last_url = "http://" .$this->_host .$addr;
-		return $this->readhtml();
+		return $this->readHTML();
 	}
 
 	/**
@@ -300,11 +301,11 @@ class knj_httpbrowser
 	 * @param string $addr     Absolute URI to the desired page
 	 * @param string $postdata TODO
 	 *
-	 * @return TODO
+	 * @return string Response as a string.
 	 */
-	function post_raw($addr, $postdata)
+	public function post_raw($addr, $postdata)
 	{
-		$this->countAutoReconnect();
+		$this->countRequests();
 
 		//URI must be absolute
 		if (substr($addr, 0, 1) != "/") {
@@ -326,7 +327,7 @@ class knj_httpbrowser
 		}
 
 		$this->last_url = "http://" .$this->_host .$addr;
-		return $this->readhtml();
+		return $this->readHTML();
 	}
 
 	/**
@@ -335,11 +336,11 @@ class knj_httpbrowser
 	 * @param string $addr Absolute URI to the desired page
 	 * @param array  $post TODO
 	 *
-	 * @return TODO
+	 * @return string Response as a string.
 	 */
-	function postFormData($addr, $post)
+	public function postFormData($addr, $post)
 	{
-		$this->countAutoReconnect();
+		$this->countRequests();
 
 		$boundary = "---------------------------" .round(mktime(true));
 
@@ -372,7 +373,7 @@ class knj_httpbrowser
 			."Content-Length: " .strlen($postdata) .$this->_nl
 			."Content-Type: multipart/form-data; boundary=" .$boundary .$this->_nl;
 
-		$headers .= $this->getRestHeaders();
+		$headers .= $this->getAuthHeader();
 
 		if ($this->cookies[$this->_host]) {
 			foreach ($this->cookies[$this->_host] as $key => $value) {
@@ -392,7 +393,7 @@ class knj_httpbrowser
 		}
 
 		$this->last_url = "http://" .$this->_host .$addr;
-		return $this->readhtml();
+		return $this->readHTML();
 	}
 
 	/**
@@ -402,11 +403,11 @@ class knj_httpbrowser
 	 * @param array  $post TODO
 	 * @param array  $file TODO
 	 *
-	 * @return TODO
+	 * @return string Response as a string.
 	 */
-	function postFile($addr, $post, $file)
+	public function postFile($addr, $post, $file)
 	{
-		$this->countAutoReconnect();
+		$this->countRequests();
 
 		if (is_array($file)
 			&& $file["content"]
@@ -463,7 +464,7 @@ class knj_httpbrowser
 		$headers .= "Content-Length: " .strlen($postdata) .$this->_nl;
 		$headers .= "Connection: Keep-Alive" .$this->_nl;
 		$headers .= "User-Agent: " .$this->_useragent .$this->_nl;
-		$headers .= $this->getRestHeaders();
+		$headers .= $this->getAuthHeader();
 
 		if ($this->cookies[$this->_host]) {
 			foreach ($this->cookies[$this->_host] as $key => $value) {
@@ -490,11 +491,11 @@ class knj_httpbrowser
 	}
 
 	/**
-	 * TODO
+	 * Generate the auth header if needed.
 	 *
-	 * @return TODO
+	 * @return string Header line.
 	 */
-	function getRestHeaders()
+	private function getAuthHeader()
 	{
 		$headers = "";
 
@@ -511,37 +512,36 @@ class knj_httpbrowser
 	/**
 	 * Returns the current cookies.
 	 *
-	 * @return TODO
+	 * @return array Array of hosts each with an array of set cookies.
 	 */
-	function getCookies()
+	public function getCookies()
 	{
 		return $this->cookies;
 	}
 
-
 	/**
-	 * Get a html page from an URI
+	 * Alias of getAddr()
 	 *
-	 * @param string $addr Absolute URI to the desired page
+	 * @param string $addr See getAddr()
 	 *
-	 * @return TODO
+	 * @return string See getAddr()
 	 */
-	function get($addr)
+	public function get($addr, $args = null)
 	{
 		return $this->getAddr($addr);
 	}
 
 	/**
-	 * Reads a page via get.
+	 * Fetch a page via get.
 	 *
 	 * @param string $addr Absolute URI to the desired page
 	 * @param mixed  $args TODO
 	 *
-	 * @return TODO
+	 * @return string Response as a string.
 	 */
-	function getAddr($addr, $args = null)
+	public function getAddr($addr, $args = null)
 	{
-		$this->countAutoReconnect();
+		$this->countRequests();
 
 		if (is_string($args)) {
 			$host = $args;
@@ -575,10 +575,10 @@ class knj_httpbrowser
 			}
 		}
 
-		$headers .= $this->getRestHeaders();
+		$headers .= $this->getAuthHeader();
 		$headers .= $this->_nl;
 
-		$this->debug("getAddr()-headers:\n" .$headers);
+		$this->debug("getAddr()-headers:\n" .$headers ."\n");
 
 		//Sometimes trying more times than one fixes the problem.
 		$tries = 0;
@@ -601,12 +601,13 @@ class knj_httpbrowser
 	}
 
 	/**
-	 *  Read the HTML after sending a request.
+	 * Read the HTML after sending a request and handle any HTTP commands.
 	 *
-	 * @return TODO
+	 * @return string The body of the responce.
 	 */
-	function readHTML()
+	private function readHTML()
 	{
+		//TODO handle content encoding
 		$chunk = 0;
 		$chunked = false;
 		$state = "headers";
@@ -724,19 +725,18 @@ class knj_httpbrowser
 			$first = false;
 		}
 
-		$this->debug("Received headers:\n" .$headers ."\n\n\n");
-		$this->debug("Received HTML:\n" .$html ."\n\n\n");
+		$this->debug("Received headers:\n" .$headers ."\n");
+		$this->debug("Received HTML:\n" .$html ."\n");
 
 		if ($location) {
 			$this->debug(
-				'Received location-header - trying to follow "'
-				.$match[1] ."\".\n"
+				'Received location-header - trying to follow "' .$match[1] .'".'
 			);
 			return $this->getAddr($location);
 		}
 
-		if (preg_match("/<h2>Object moved to <a href=\"(.*)\">here<\/a>.<\/h2>/", $html, $match)) {
-			$this->debug("\"Object moved to\" found in HTML - trying to follow.\n");
+		if (preg_match('/<h2>Object moved to <a href="([^"]*)">here<\/a>.<\/h2>/', $html, $match)) {
+			$this->debug('"Object moved to" found in HTML - trying to follow.');
 			return $this->getAddr(urldecode($match[1]));
 		}
 
@@ -746,17 +746,17 @@ class knj_httpbrowser
 	}
 
 	/**
-	 * TODO
+	 * Get ASP.NET form viewstate value.
 	 *
-	 * @return mixed TODO
+	 * @return string Viewstate value
 	 */
-	function aspxGetViewstate()
+	public function aspxGetViewstate()
 	{
-		if (preg_match('/<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="([\S\s]+)" \/>/U', $this->html_last, $match)) {
+		if (preg_match('/<input[^>]*? name="__VIEWSTATE"[^>]*? value="([^"]*)"[^>]*? \/>/', $this->html_last, $match)) {
 			return urldecode($match[1]);
 		}
 
-		return false;
+		return '';
 	}
 
 	/**
@@ -764,7 +764,7 @@ class knj_httpbrowser
 	 *
 	 * @return null
 	 */
-	function disconnect()
+	public function disconnect()
 	{
 		fclose($this->fp);
 		unset($this->fp);
