@@ -122,6 +122,13 @@ class knjdb_mysqli
 		return new knjdb_result($this->_knjdb, $this, $res);
 	}
 
+	/**
+	 * TODO
+	 *
+	 * @param string $query TODO
+	 *
+	 * @return object TODO
+	 */
 	function query_ubuf($query)
 	{
 		if (!$this->conn->real_query($query)) {
