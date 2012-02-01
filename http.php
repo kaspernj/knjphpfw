@@ -28,13 +28,13 @@ class knj_httpbrowser
 	private $_httpauth;
 	private $_ssl = false;
 	private $_debug = false;
+	private $_force_connection = false;
 	private $_max_requests = 0;
 	private $_request_count = 0;
 	private $_nl = "\r\n";
 	public $fp;
 	public $headers_last;
 	private $_useragent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)";
-
 
 	/**
 	 * TODO
@@ -49,15 +49,20 @@ class knj_httpbrowser
 		$this->cookies = array();
 
 		foreach ($args as $key => $value) {
-			if ($key == "ssl"
-				|| $key == "nl"
-				|| $key == "debug"
-				|| $key == "force_connection"
-			) {
-				$this->$key = $value;
+			switch ($key) {
+				case "ssl":
+					$this->_ssl = (bool) $value;
+					break;
+				case "nl":
+					$this->_nl = (string) $value;
+					break;
+				case "debug":
+					$this->_debug = (bool) $value;
+					break;
+				case "ssl":
+					$this->_force_connection = (bool) $value;
+					break;
 			}
-
-			$this->args[$key] = $value;
 		}
 	}
 
@@ -231,7 +236,7 @@ class knj_httpbrowser
 	{
 		while (true) {
 			if (!$this->_host || !$this->fp) {
-				if ($this->force_connection) {
+				if ($this->_force_connection) {
 					usleep(100000);
 					$this->reconnect();
 				} else {
@@ -730,14 +735,15 @@ class knj_httpbrowser
 
 		if ($location) {
 			$this->debug(
-				'Received location-header - trying to follow "' .$match[1] .'".'
+				'Received location-header - trying to follow "' .$location .'".'
 			);
-			return $this->getAddr($location);
+			return $this->getAddr(urlencode($location));
 		}
 
 		if (preg_match('/<h2>Object moved to <a href="([^"]*)">here<\/a>.<\/h2>/', $html, $match)) {
-			$this->debug('"Object moved to" found in HTML - trying to follow.');
-			return $this->getAddr(urldecode($match[1]));
+			$location = urldecode($match[1]);
+			$this->debug('"Object moved to" found in HTML - trying to follow "' .$location .'".');
+			return $this->getAddr(urlencode($location));
 		}
 
 		$this->headers_last = $headers;
