@@ -28,6 +28,7 @@ class Knj_Httpbrowser
 	public $cookies = array();
 	public $timeout = 0;
 	public $useragent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)";
+	public $lastError = '';
 
 	private static $_redirects = 0;
 	private $_host;
@@ -560,7 +561,7 @@ class Knj_Httpbrowser
 	/**
 	 * Read the HTML after sending a request and handle any HTTP commands.
 	 *
-	 * @return string The body of the responce.
+	 * @return bool Return true on sucess.
 	 */
 	private function _handleResponce()
 	{
@@ -699,6 +700,9 @@ class Knj_Httpbrowser
 				$msg = _('Redirect attempts %s.');
 				$this->_debug(sprintf($msg, self::$_redirects));
 				return $this->get($location);
+			} else {
+				$this->lastError = _('Too many redirects occured.');
+				return false;
 			}
 		}
 
