@@ -104,6 +104,7 @@ class Knj_Httpbrowser
 
 			$attempts++;
 
+			$this->_debug(_('Connecting to server.'));
 			$this->_socket = fsockopen(
 				$host,
 				$this->_port,
@@ -679,7 +680,7 @@ class Knj_Httpbrowser
 		}
 
 		$this->_debug(_("Response headers:") ."\n" .$headers);
-		$this->_debug(_("Received HTML:") ."\n" .$html ."\n");
+		$this->_debug(_("Received content:") ."\n" .$html ."\n");
 
 		if (preg_match('/<h2>Object moved to <a href="([^"]*)">here<\/a>.<\/h2>/', $html, $match)) {
 			$msg = _('Found "Object moved to" in HTML.');
