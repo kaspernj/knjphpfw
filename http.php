@@ -542,7 +542,7 @@ class Knj_Httpbrowser
 		$url['path'] = implode('/', $url['path']);
 
 		$url['query'] = explode('=', $url['query']);
-		foreach ($url['query'] as $key = $var) {
+		foreach ($url['query'] as $key => $var) {
 			$var = explode('&', $var);
 			$var = array_map('urldecode', $var);
 			$var = array_map('rawurlencode', $var);
