@@ -204,7 +204,7 @@ class Knj_Httpbrowser
 		$headers .= "\r\n";
 
 		if (!fwrite($this->_socket, $headers .$postdata)) {
-			throw new exception("Could not write to socket.");
+			throw new exception(_("Could not write to socket."));
 		}
 
 		$this->last_url = "http://" .$this->_host .$addr;
@@ -242,7 +242,7 @@ class Knj_Httpbrowser
 		$headers .= "\r\n";
 
 		if (!fwrite($this->_socket, $headers .$postdata)) {
-			throw new exception("Could not write to socket.");
+			throw new exception(_("Could not write to socket."));
 		}
 
 		$this->last_url = "http://" .$this->_host .$addr;
@@ -405,7 +405,7 @@ class Knj_Httpbrowser
 
 		while ($sendd && $count < ($length + 2048)) {
 			if (fwrite($this->_socket, substr($sendd, $count, 2048)) === false) {
-				$msg = "Could not write to socket. Is the connection closed?";
+				$msg = _("Could not write to socket. Is the connection closed?");
 				throw new exception($msg);
 			}
 
@@ -496,7 +496,7 @@ class Knj_Httpbrowser
 
 			$tries++;
 			if ($tries >= $tries_max) {
-				throw new exception("Could not write to socket.");
+				throw new exception(_("Could not write to socket."));
 			}
 		}
 
@@ -585,7 +585,7 @@ class Knj_Httpbrowser
 			if (strlen($line) == 0) {
 				break;
 			} elseif ($line === false) {
-				throw new exception("Could not read from socket.");
+				throw new exception(_("Could not read from socket."));
 			} elseif ($first && $line == "\r\n") {
 				/**
 				 * Fixes an error when some servers sometimes sends \r\n in the end,
