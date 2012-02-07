@@ -191,24 +191,6 @@ class knj_strings
 	}
 
 	/**
-	 * TODO
-	 *
-	 * @param string $value  TODO
-	 * @param string $yesstr TODO
-	 * @param string $nostr  TODO
-	 *
-	 * @return string TODO
-	 */
-	static function tf_str($value, $yesstr, $nostr)
-	{
-		if ($value) {
-			return $yesstr;
-		}
-
-		return $nostr;
-	}
-
-	/**
 	 * Crope a string to a specific length
 	 *
 	 * @param string $text      Input string
