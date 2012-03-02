@@ -16,9 +16,11 @@ class knjdb_mssql{
 	}
 	
 	function connect(){
+		ob_start();
 		$this->conn = mssql_connect($this->args["host"], $this->args["user"], $this->args["pass"]);
+		$error = ob_get_clean();
 		if (!$this->conn){
-			throw new Exception("Could not connect to the database.");
+			throw new Exception("Could not connect to the database." .$error);
 		}
 		
 		if ($this->args["db"]){
