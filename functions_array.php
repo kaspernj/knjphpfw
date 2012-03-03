@@ -146,5 +146,17 @@ class knjarray{
 		
 		return $arr;
 	}
+	
+	function force_no_cols($arr, $no){
+    while(count($arr) > $no){
+      array_pop($arr);
+    }
+    
+    while(count($arr) < $no){
+      $arr[] = "";
+    }
+    
+    return $arr;
+	}
 }
 
