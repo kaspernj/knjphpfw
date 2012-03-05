@@ -18,7 +18,7 @@ class wfpayment{
 		$this->http = new knj_httpbrowser();
 		$this->http->connect("betaling.wannafind.dk", 443);
 		
-		$html = $this->http->getaddr("index.php");
+		$html = $this->http->get("index.php");
 		
 		$html = $this->http->post("pg.loginauth.php", array(
 			"username" => $this->args["username"],
@@ -36,7 +36,7 @@ class wfpayment{
 	
 	function listPayments($args = array()){
 		if ($args["awaiting"]){
-			$html = $this->http->getaddr("pg.frontend/pg.transactions.php");
+			$html = $this->http->get("pg.frontend/pg.transactions.php");
 		}else{
 			$sargs = array(
 				"searchtype" => "",
@@ -212,7 +212,7 @@ class wfpayment_payment{
 			throw new exception("This payment is already accepted.");
 		}
 		
-		$html = $this->http->getaddr("pg.frontend/pg.transactions.php?capture=singlecapture&transid=" . $this->get("id") . "&page=1&orderby=&direction=");
+		$html = $this->http->get("pg.frontend/pg.transactions.php?capture=singlecapture&transid=" . $this->get("id") . "&page=1&orderby=&direction=");
 		
 		if ($this->state() != "done"){
 			throw new exception("Could not accept the payment. State: " . $this->state());
@@ -224,7 +224,7 @@ class wfpayment_payment{
 			throw new exception("This is not waiting and cannot be canceled.");
 		}
 		
-		$html = $this->http->getaddr("pg.frontend/pg.transactionview.php?action=cancel&id=" . $this->get("id") . "&page=1");
+		$html = $this->http->get("pg.frontend/pg.transactionview.php?action=cancel&id=" . $this->get("id") . "&page=1");
 		
 		if ($this->state() != "canceled"){
 			throw new exception("Could not cancel the payment.");

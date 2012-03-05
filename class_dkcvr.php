@@ -56,7 +56,7 @@ class dkcvr
 	 */
 	function getByCVR($cvr)
 	{
-		$html = $this->_http->getAddr(
+		$html = $this->_http->get(
 			"/Site/Forms/PublicService/DisplayCompany.aspx?cvrnr=" .$cvr
 		);
 

@@ -71,7 +71,7 @@
 					"username" => $this->opts["mobilenumber"],
 					"password" => $this->opts["password"]
 				));
-				$html = $this->http->getAddr("login/");
+				$html = $this->http->get("login/");
 				
 				if (strpos($html, "<div class=\"login_menu_txt\"><a href=\"/login/websms/\">WebSMS</a></div>") === false){
 					throw new Exception("Could not log in.");
@@ -203,7 +203,7 @@
 					throw new Exception("Could not send SMS.");
 				}
 			}elseif($this->opts["mode"] == "happii"){
-				$html = $this->http->getAddr("login/websms/");
+				$html = $this->http->get("login/websms/");
 				
 				if (!preg_match("/<form name=\"WebSMSForm\" method=\"post\" action=\"\/(\S+)\">/", $html, $match)){
 					throw new Exception("Could not match PID.");
