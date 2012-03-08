@@ -35,106 +35,106 @@ class dkcvr_cvrnotfound extends exception
  */
 class dkcvr
 {
-	private $_http;
+    private $_http;
 
-	/**
-	 * TODO
-	 */
-	function __construct()
-	{
-		include_once "knj/class_knj_httpbrowser.php";
-		$this->_http = new knj_httpbrowser();
-		$this->_http->connect("cvr.dk");
-	}
+    /**
+     * TODO
+     */
+    function __construct()
+    {
+        include_once "knj/class_knj_httpbrowser.php";
+        $this->_http = new knj_httpbrowser();
+        $this->_http->connect("cvr.dk");
+    }
 
-	/**
-	 * TODO
-	 *
-	 * @param string $cvr TODO
-	 *
-	 * @return TODO
-	 */
-	function getByCVR($cvr)
-	{
-		$html = $this->_http->get(
-			"/Site/Forms/PublicService/DisplayCompany.aspx?cvrnr=" .$cvr
-		);
+    /**
+     * TODO
+     *
+     * @param string $cvr TODO
+     *
+     * @return TODO
+     */
+    function getByCVR($cvr)
+    {
+        $html = $this->_http->get(
+            "/Site/Forms/PublicService/DisplayCompany.aspx?cvrnr=" .$cvr
+        );
 
-		$result = preg_match_all(
-			'/fieldname.*?>\s*(.*):\s*<\/td>\s*?<.*fieldvalue.*?>\s*(.*)\n/ui',
-			$html,
-			$matches
-		);
-		if (!$result) {
-			throw new Exception("Could not match any information.");
-		}
+        $result = preg_match_all(
+            '/fieldname.*?>\s*(.*):\s*<\/td>\s*?<.*fieldvalue.*?>\s*(.*)\n/ui',
+            $html,
+            $matches
+        );
+        if (!$result) {
+            throw new Exception("Could not match any information.");
+        }
 
-		$arr_replace = array(
-			"<br/>" => "\n",
-			"</td>" => ""
-		);
+        $arr_replace = array(
+            "<br/>" => "\n",
+            "</td>" => ""
+        );
 
-		$result = preg_match(
-			'/titletext.*?>\s*(.+)<\/div>/ui',
-			$html,
-			$match
-		);
-		if (!$result) {
-			throw new Exception("Could not match title.");
-		}
+        $result = preg_match(
+            '/titletext.*?>\s*(.+)<\/div>/ui',
+            $html,
+            $match
+        );
+        if (!$result) {
+            throw new Exception("Could not match title.");
+        }
 
-		$title = trim($match[1]);
-		$title = preg_replace("/[ ][ ]+/", " ", $title);
-		$info = array(
-			"Name" => $title
-		);
+        $title = trim($match[1]);
+        $title = preg_replace("/[ ][ ]+/", " ", $title);
+        $info = array(
+            "Name" => $title
+        );
 
-		if (!$title) {
-			throw new dkcvr_cvrnotfound("The CVR-number was not found.");
-		}
+        if (!$title) {
+            throw new dkcvr_cvrnotfound("The CVR-number was not found.");
+        }
 
-		foreach ($matches[1] as $key => $title) {
-			$write = true;
-			$value = trim(strtr($matches[2][$key], $arr_replace));
+        foreach ($matches[1] as $key => $title) {
+            $write = true;
+            $value = trim(strtr($matches[2][$key], $arr_replace));
 
-			if ($title == "Statstidende meddelelser") {
-				$write = false;
-			}
+            if ($title == "Statstidende meddelelser") {
+                $write = false;
+            }
 
-			if ($title == "Adresse") {
-				if (preg_match("/([0-9]{4}) (.*)/", $value, $match)) {
-					$info["AddressZIP"] = trim($match[1]);
-					$info["AddressCity"] = trim($match[2]);
-				}
+            if ($title == "Adresse") {
+                if (preg_match("/([0-9]{4}) (.*)/", $value, $match)) {
+                    $info["AddressZIP"] = trim($match[1]);
+                    $info["AddressCity"] = trim($match[2]);
+                }
 
-				if (preg_match("/^(.+) ([0-9]+[\s\S]+)\n/U", $value, $match)) {
-					$match[2] = preg_replace("/\s*<br \/>True\s*/", "", $match[2]);
+                if (preg_match("/^(.+) ([0-9]+[\s\S]+)\n/U", $value, $match)) {
+                    $match[2] = preg_replace("/\s*<br \/>True\s*/", "", $match[2]);
 
-					$info["Address"] = $match[1];
+                    $info["Address"] = $match[1];
 
-					$no = htmlspecialchars_decode($match[2]);
-					$data = array(
-						"<br />" => ""
-					);
-					$no = strtr($no, $data);
-					$no = preg_replace("/\s+/", " ", $no);
+                    $no = htmlspecialchars_decode($match[2]);
+                    $data = array(
+                        "<br />" => ""
+                    );
+                    $no = strtr($no, $data);
+                    $no = preg_replace("/\s+/", " ", $no);
 
-					$info["AddressNo"] = $no;
-				}
+                    $info["AddressNo"] = $no;
+                }
 
-				$title = "AddressFull";
-			}
+                $title = "AddressFull";
+            }
 
-			if ($title == "Telefon") {
-				$title = "PhoneNo";
-			}
+            if ($title == "Telefon") {
+                $title = "PhoneNo";
+            }
 
-			if ($write == true) {
-				$info[$title] = $value;
-			}
-		}
+            if ($write == true) {
+                $info[$title] = $value;
+            }
+        }
 
-		return $info;
-	}
+        return $info;
+    }
 }
 

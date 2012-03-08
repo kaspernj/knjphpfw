@@ -1,3 +1,3 @@
 <?php
-	throw new Exception("This is not written yet.");
+    throw new Exception("This is not written yet.");
 

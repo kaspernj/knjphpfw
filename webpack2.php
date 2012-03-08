@@ -22,56 +22,56 @@
  */
 class webpack2
 {
-	private $_customerNo;
-	private $_password;
-	private $_soap;
+    private $_customerNo;
+    private $_password;
+    private $_soap;
 
-	/**
-	 * TODO
-	 *
-	 * @param array $paras TODO
-	 */
-	function __construct($paras)
-	{
-		$this->_customerNo = $paras["customer_no"];
-		$this->_password = $paras["password"];
+    /**
+     * TODO
+     *
+     * @param array $paras TODO
+     */
+    function __construct($paras)
+    {
+        $this->_customerNo = $paras["customer_no"];
+        $this->_password = $paras["password"];
 
-		$soapUrl = "http://www2.postdanmark.dk/webpack2/ParcelLabelWsService?wsdl";
-		if ($paras["test"]) {
-			$soapUrl = "http://www2.postdanmark.dk/webpack2demo/ParcelLabelWsService?wsdl";
-		}
+        $soapUrl = "http://www2.postdanmark.dk/webpack2/ParcelLabelWsService?wsdl";
+        if ($paras["test"]) {
+            $soapUrl = "http://www2.postdanmark.dk/webpack2demo/ParcelLabelWsService?wsdl";
+        }
 
-		$this->_soap = new SoapClient($soapUrl);
-	}
+        $this->_soap = new SoapClient($soapUrl);
+    }
 
-	/**
-	 * TODO
-	 *
-	 * @param array $data TODO
-	 *
-	 * @return TODO
-	 */
-	function generateParcelLabel($data)
-	{
-		$authentication = array(
-			"customerNo" => $this->_customerNo,
-			"password" => $this->_password
-		);
-		$args = array(
-			"authentication" => $authentication,
-			"parcels" => $data
-		);
-		$status = $this->_soap->generateParcelLabel($args);
+    /**
+     * TODO
+     *
+     * @param array $data TODO
+     *
+     * @return TODO
+     */
+    function generateParcelLabel($data)
+    {
+        $authentication = array(
+            "customerNo" => $this->_customerNo,
+            "password" => $this->_password
+        );
+        $args = array(
+            "authentication" => $authentication,
+            "parcels" => $data
+        );
+        $status = $this->_soap->generateParcelLabel($args);
 
-		if ($status->parcelLabel->parcels->parcel->errorMsg) {
-			throw new exception($status->parcelLabel->parcels->parcel->errorMsg);
-		}
+        if ($status->parcelLabel->parcels->parcel->errorMsg) {
+            throw new exception($status->parcelLabel->parcels->parcel->errorMsg);
+        }
 
-		if (!$status->parcelLabel->label) {
-			throw new exception(_("No label was returned from Webpack2."));
-		}
+        if (!$status->parcelLabel->label) {
+            throw new exception(_("No label was returned from Webpack2."));
+        }
 
-		return $status;
-	}
+        return $status;
+    }
 }
 
