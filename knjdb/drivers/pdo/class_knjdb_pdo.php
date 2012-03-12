@@ -16,7 +16,7 @@ class knjdb_pdo
         $this->args = $args;
         $this->knjdb = $knjdb;
 
-        require_once("knj/functions_knj_extensions.php");
+        require_once "knj/functions_knj_extensions.php";
         knj_dl("pdo");
 
         if ($args["dbtype"] == "sqlite3") {
@@ -31,7 +31,7 @@ class knjdb_pdo
     function tables()
     {
         if (!$this->tables_driver) {
-            require_once(dirname(__FILE__) . "/../" . $this->args["dbtype"] . "/class_knjdb_" . $this->args["dbtype"] . "_tables.php");
+            require_once dirname(__FILE__) . "/../" . $this->args["dbtype"] . "/class_knjdb_" . $this->args["dbtype"] . "_tables.php";
             $obname = "knjdb_" . $this->args["dbtype"] . "_tables";
             $this->tables_driver = new $obname($this->knjdb);
         }
@@ -42,7 +42,7 @@ class knjdb_pdo
     function columns()
     {
         if (!$this->columns_driver) {
-            require_once(dirname(__FILE__) . "/../" . $this->args["dbtype"] . "/class_knjdb_" . $this->args["dbtype"] . "_columns.php");
+            require_once dirname(__FILE__) . "/../" . $this->args["dbtype"] . "/class_knjdb_" . $this->args["dbtype"] . "_columns.php";
             $obname = "knjdb_" . $this->args["dbtype"] . "_columns";
             $this->columns_driver = new $obname($this->knjdb);
         }
@@ -53,7 +53,7 @@ class knjdb_pdo
     function indexes()
     {
         if (!$this->indexes_driver) {
-            require_once(dirname(__FILE__) . "/../" . $this->args["dbtype"] . "/class_knjdb_" . $this->args["dbtype"] . "_indexes.php");
+            require_once dirname(__FILE__) . "/../" . $this->args["dbtype"] . "/class_knjdb_" . $this->args["dbtype"] . "_indexes.php";
             $obname = "knjdb_" . $this->args["dbtype"] . "_indexes";
             $this->indexes_driver = new $obname($this->knjdb);
         }

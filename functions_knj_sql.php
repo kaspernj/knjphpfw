@@ -33,12 +33,12 @@ function sql_setDBType($dbtype)
 
         if ($dbtype == "sqlite" || $dbtype == "sqlite3") {
             if (!function_exists("sqlite_escape_string")) {
-                require_once("knj/functions_knj_extensions.php");
+                require_once "knj/functions_knj_extensions.php";
                 knj_dl("sqlite");
             }
         } elseif ($dbtype == "mysql") {
             if (!function_exists("mysql_escape_string")) {
-                require_once("knj/functions_knj_extensions.php");
+                require_once "knj/functions_knj_extensions.php";
                 knj_dl("mysql");
             }
         }

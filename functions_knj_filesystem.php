@@ -314,8 +314,8 @@ class knj_fs
             throw new Exception("The file does not exist (" . $file . ").");
         }
 
-        require_once("knj/os.php");
-        require_once("knj/strings.php");
+        require_once "knj/os.php";
+        require_once "knj/strings.php";
 
         $result = knj_os::shellCMD("file " .knj_strings::UnixSafe($file));
         $result = substr($result["result"], strlen($file) + 2, -1);

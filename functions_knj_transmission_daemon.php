@@ -4,7 +4,7 @@
  */
 function transdaemon_getList($cont)
 {
-    require_once("knj/functions_knj_strings.php");
+    require_once "knj/functions_knj_strings.php";
 
     if (!preg_match_all("/(.+) \(([0-9.]+) (\S+)\) - ([0-9.]+)% .*/", $cont, $matches)) {
         throw new Exception("Could not parse list.\n\n" . "Content:\n" . $cont);

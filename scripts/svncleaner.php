@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-require_once("knj/functions_knj_filesystem.php");
+require_once "knj/functions_knj_filesystem.php";
 
 function killSVN($dir)
 {

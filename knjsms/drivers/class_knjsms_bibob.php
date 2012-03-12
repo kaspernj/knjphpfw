@@ -3,7 +3,7 @@ class knjsms_bibob implements knjsms_driver
 {
     function __construct($args)
     {
-        require_once("knj/functions_knj_extensions.php");
+        require_once "knj/functions_knj_extensions.php";
         knj_dl(array("soap", "openssl", "xml"));
 
         $this->opts = $args;

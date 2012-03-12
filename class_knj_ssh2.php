@@ -13,7 +13,7 @@ class knj_ssh2
             throw new Exception("No conn supplied in parameters.");
         }
 
-        require_once("knj/functions_knj_filesystem.php");
+        require_once "knj/functions_knj_filesystem.php";
         $this->conn = $args["conn"];
 
         if (!$args["shell"]) {
@@ -126,7 +126,7 @@ class knj_ssh2
      */
     function putFile($path, $content)
     {
-        require_once("knj/functions_knj_strings.php");
+        require_once "knj/functions_knj_strings.php";
 
         $lines = explode("\n", $content);
         $first = true;

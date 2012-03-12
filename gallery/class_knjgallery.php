@@ -123,7 +123,7 @@ class knj_gallery
         }
 
         if (!$this->groups[$id]) {
-            require_once("knj/gallery/class_knjgallery_group.php");
+            require_once "knj/gallery/class_knjgallery_group.php";
             $this->groups[$id] = new knj_gallery_group($this, $id, $data);
         }
 
@@ -148,7 +148,7 @@ class knj_gallery
     function getPerson($id, $data = null)
     {
         if (!$this->persons_list[$id]) {
-            require_once("knj/gallery/class_knjgallery_person.php");
+            require_once "knj/gallery/class_knjgallery_person.php";
             $this->persons_list[$id] = new knj_gallery_person($this, $id, $data);
         }
 
@@ -161,7 +161,7 @@ class knj_gallery
     function getView($id, $data = null)
     {
         if (!$this->views_list[$id]) {
-            require_once("knj/gallery/class_knjgallery_view.php");
+            require_once "knj/gallery/class_knjgallery_view.php";
             $this->views_list[$id] = new knj_gallery_view($this, $id, $data);
         }
 

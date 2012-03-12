@@ -1,6 +1,6 @@
 <?php
 
-require_once("knj/knjdb/interfaces/class_knjdb_driver_indexes.php");
+require_once "knj/knjdb/interfaces/class_knjdb_driver_indexes.php";
 
 class knjdb_mysql_indexes implements knjdb_driver_indexes
 {

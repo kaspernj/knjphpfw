@@ -22,13 +22,13 @@ class knj_SMS
                 //do nothing.
             } elseif ($key == "mode") {
                 if ($value == "bibob") {
-                    require_once("knj/functions_knj_extensions.php");
+                    require_once "knj/functions_knj_extensions.php";
                     knj_dl(array("soap", "openssl", "xml"));
                 } elseif ($value == "happii") {
-                    require_once("knj/class_knj_httpbrowser.php");
+                    require_once "knj/class_knj_httpbrowser.php";
                     $this->http = new knj_httpbrowser();
                 } elseif ($value == "cbb") {
-                    require_once("knj/class_knj_httpbrowser.php");
+                    require_once "knj/class_knj_httpbrowser.php";
                     $this->http = new knj_httpbrowser();
                 } elseif ($value == "gnokii") {
                     //valid.
@@ -86,7 +86,7 @@ class knj_SMS
                 throw new Exception("Could not log in.");
             }
         } elseif ($this->opts["mode"] == "gnokii") {
-            require_once("knj/functions_knj_os.php");
+            require_once "knj/functions_knj_os.php";
             $cmd = $this->opts["gnokiiexe"] . " --config " . $this->opts["gnokiiconf"] . " --identify";
             $res = knj_os::shellCMD($cmd);
 

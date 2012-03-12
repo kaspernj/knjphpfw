@@ -17,7 +17,7 @@ class ClassAdmin
 
         if (!$classes[$class_lower]) {
             $file = ClassAdmin::getPath() . "/class_" . $class_lower . ".php";
-            if (!include_once($file)) {
+            if (!include_once $file) {
                 throw new Exception("Could not include file: \"" . $file . "\".");
             }
 

@@ -1,14 +1,14 @@
 <?php
-require_once("knj/dbconn/class_dbconn_sqlconverter.php");
-require_once("knj/dbconn/class_dbconn_indexes.php");
-require_once("knj/dbconn/class_dbconn_columns.php");
-require_once("knj/dbconn/class_dbconn_tables.php");
-require_once("knj/dbconn/class_dbconn_dbs.php");
-require_once("knj/dbconn/class_dbconn_row.php");
-require_once("knj/dbconn/class_dbconn_fetchresult.php");
-require_once("knj/functions_knj_extensions.php");
-require_once("knj/functions_knj_sql.php");
-require_once("knj/class_exceptions.php");
+require_once "knj/dbconn/class_dbconn_sqlconverter.php";
+require_once "knj/dbconn/class_dbconn_indexes.php";
+require_once "knj/dbconn/class_dbconn_columns.php";
+require_once "knj/dbconn/class_dbconn_tables.php";
+require_once "knj/dbconn/class_dbconn_dbs.php";
+require_once "knj/dbconn/class_dbconn_row.php";
+require_once "knj/dbconn/class_dbconn_fetchresult.php";
+require_once "knj/functions_knj_extensions.php";
+require_once "knj/functions_knj_sql.php";
+require_once "knj/class_exceptions.php";
 
 /**
  * This class can connect to different type of databases. It can also output data from each database. 

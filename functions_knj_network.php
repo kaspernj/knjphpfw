@@ -1,5 +1,5 @@
 <?php
-require_once("functions_knj_os.php");
+require_once "functions_knj_os.php";
 
 /**
  * Returns information about a specific networking-device.

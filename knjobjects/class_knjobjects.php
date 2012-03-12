@@ -105,7 +105,7 @@ class knjobjects
                 throw new exception("File not found: " . $fn);
             }
 
-            require_once($fn);
+            require_once $fn;
         }
 
         if ($this->objects && !array_key_exists($obname, $this->objects)) {

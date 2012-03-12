@@ -1,5 +1,5 @@
 <?php
-require_once("knj/knjdb/interfaces/class_knjdb_driver_rows.php");
+require_once "knj/knjdb/interfaces/class_knjdb_driver_rows.php";
 
 class knjdb_mysql_rows implements knjdb_driver_rows
 {

@@ -1,7 +1,7 @@
 <?php
 //Check if function exists to make it compatible, if somehow the function already got loaded through another file.
 if (!function_exists("destroy_obj")) {
-    require_once("knj/functions_knj_objects.php");
+    require_once "knj/functions_knj_objects.php";
 }
 
 /**

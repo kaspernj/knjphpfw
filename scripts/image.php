@@ -2,7 +2,7 @@
 $config_fn = "image_config.php";
 
 if (file_exists($config_fn)) {
-    require_once($config_fn);
+    require_once $config_fn;
 }
 
 if (!$_GET["type"]) {
@@ -53,7 +53,7 @@ if ($image_config["tmpimagesdir"] && !$force && file_exists($cache_fn)) {
 }
 
 /** NOTE: The user does not have the picture, and it has not been cached - generate it. */
-require_once("knj/functions_knj_picture.php");
+require_once "knj/functions_knj_picture.php";
 $image = ImageOpen($_GET["picture"]);
 if (!$image) {
     if (!file_exists($_GET["picture"])) {

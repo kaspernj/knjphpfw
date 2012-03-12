@@ -17,7 +17,7 @@ class knjdb
      */
     function __construct($args = null)
     {
-        require_once("class_knjdb_result.php");
+        require_once "class_knjdb_result.php";
         $this->rows = array();
 
         if ($args) {
@@ -56,7 +56,7 @@ class knjdb
      */
     function connect()
     {
-        require_once("drivers/" .$this->args["type"] ."/class_knjdb_" .$this->args["type"] .".php");
+        require_once "drivers/" .$this->args["type"] ."/class_knjdb_" .$this->args["type"] .".php";
         $obname = "knjdb_" .$this->args["type"];
         $this->conn = new $obname($this, $this->args);
         $this->conn->connect();
@@ -79,14 +79,14 @@ class knjdb
         }
 
         if (!array_key_exists($module, $this->drivers)) {
-            require_once("interfaces/class_knjdb_driver_" . $module . ".php");
-            require_once("class_knjdb_" . $short . ".php");
+            require_once "interfaces/class_knjdb_driver_" . $module . ".php";
+            require_once "class_knjdb_" . $short . ".php";
 
             if (method_exists($this->conn, $module)) {
                 $this->drivers[$module] = $this->conn->$module();
             } else {
                 $obname = "knjdb_" . $this->args["type"] . "_" . $module;
-                require_once("drivers/" . $this->args["type"] . "/class_" . $obname . ".php");
+                require_once "drivers/" . $this->args["type"] . "/class_" . $obname . ".php";
                 $this->drivers[$module] = new $obname($this);
             }
         }
@@ -138,7 +138,7 @@ class knjdb
      */
     function getRow($id, $table, $data = null)
     {
-        require_once("class_knjdb_row.php");
+        require_once "class_knjdb_row.php";
 
         if (is_array($id)) {
             $data = $id;

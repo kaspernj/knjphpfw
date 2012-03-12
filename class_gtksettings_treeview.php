@@ -249,7 +249,7 @@ class GtkSettingsTreeview
             );
         }
 
-        require_once("knj/class_knj_popup.php");
+        require_once "knj/class_knj_popup.php";
         $popup = new knj_popup(
             $arr_popup,
             array(

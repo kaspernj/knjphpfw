@@ -51,7 +51,7 @@ class knj_gallery_group extends knjdb_row
     function getPicture($id, $data = null)
     {
         if (!$this->picture[$id]) {
-            require_once("knj/gallery/class_knjgallery_picture.php");
+            require_once "knj/gallery/class_knjgallery_picture.php";
             $this->pictures[$id] = new knj_gallery_picture($this, $id, $data);
         }
 
@@ -141,7 +141,7 @@ class knj_gallery_group extends knjdb_row
         }
 
         //Create a new view with all the pictures from this group.
-        require_once("knj/gallery/class_knjgallery_view.php");
+        require_once "knj/gallery/class_knjgallery_view.php";
         $view = knj_gallery_view::createNew($this->knj_gallery);
         $view->setData(array("group_id" => $this->get("id")));
 

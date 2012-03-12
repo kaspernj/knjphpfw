@@ -62,7 +62,7 @@ function knj_wl_getAPs($adapter)
         return false;
     }
 
-    require_once("knj/functions_knj_os.php");
+    require_once "knj/functions_knj_os.php";
     $aps_cmd = knj_os::shellCMD("iwlist " . $adapter . " scan");
     if (strlen($aps_cmd["error"]) > 0) {
         throw new Exception("Could not get aps: " . trim($aps_cmd["error"]));

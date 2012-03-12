@@ -41,7 +41,7 @@ class folder extends knjdb_row
 
         if ($paras["maxlength"]) {
             if (strlen($title) > $paras["maxlength"]) {
-                require_once("knj/functions_knj_strings.php");
+                require_once "knj/functions_knj_strings.php";
                 $title = trim(mb_substr($title, 0, $paras["maxlength"] - 1)) ."…";
             }
         }

@@ -39,7 +39,7 @@ if (!$outputlevel) {
 }
 
 
-require_once("knj/dbconn/class_dbconn.php");
+require_once "knj/dbconn/class_dbconn.php";
 $dbconn1 = new DBConn();
 if (!$dbconn1->openConn($db1[0], $db1[1], $db1[2], $db1[3], $db1[4], $db1[5])) {
     die("Could not make a connection to db1: \"" . $dbconn1->query_error() . "\".\n");
