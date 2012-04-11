@@ -596,7 +596,7 @@ class Knj_Httpbrowser
             }
 
             if ($state == "headers") {
-                if ($line == "\r\n" || $line == "\n" || $line == "\r\n") {
+                if ($line == "\r\n" || $line == "\n") {
                     if ($cont100 == true) {
                         unset($cont100);
                     } else {
