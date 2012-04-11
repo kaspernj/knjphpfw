@@ -89,26 +89,32 @@ class epay
     }
 
     /**
-     * TODO
+     * Get a specific transation
      *
-     * @param array $args TODO
+     * @param int $transactionid The epay id for the transation
      *
      * @return object TODO
      */
-    function transaction($args = array())
+    function transaction($transactionid)
     {
-        $args2 = array(
-            "merchantnumber" => $this->args["merchant_no"],
-            "epayresponse" => true
-        );
-        $res = $this->soap_client->__soapCall(
-            "gettransaction",
-            array("parameters" => array_merge($args, $args2))
+        $response = $this->soap_client->__soapCall(
+            'gettransaction',
+            array(
+                'parameters' => array_merge(
+                    array(
+                        'transactionid' => $transactionid
+                    ),
+                    array(
+                        'merchantnumber' => $this->args['merchant_no'],
+                        'epayresponse' => true
+                    )
+                )
+            )
         );
 
         $data = array(
             "epay" => $this,
-            "obj" => $res->transactionInformation,
+            "obj" => $response->transactionInformation,
             "soap_client" => $this->soap_client
         );
         return new epay_payment($data);
