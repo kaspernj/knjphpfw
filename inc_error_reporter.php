@@ -245,18 +245,18 @@ function knj_error_shutdown()
         $error = error_get_last();
 
         if ($error["type"] == E_USER_ERROR
-			|| $error["type"] == E_CORE_ERROR
-			|| $error["type"] == E_COMPILE_ERROR
-			|| $error["type"] == E_ERROR
-		) {
+            || $error["type"] == E_CORE_ERROR
+            || $error["type"] == E_COMPILE_ERROR
+            || $error["type"] == E_ERROR
+        ) {
             knj_error_reporter_error_handeler(
-				$error["type"],
-				$error["message"],
-				$error["file"],
-				$error["line"],
-				null,
-				array("hideerror" => true)
-			);
+                $error["type"],
+                $error["message"],
+                $error["file"],
+                $error["line"],
+                null,
+                array("hideerror" => true)
+            );
         }
     }
 }
