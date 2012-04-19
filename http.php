@@ -26,13 +26,16 @@ class Knj_Httpbrowser
     public $debug = false;
     public $maxRequests = 0;
     public $cookies = array();
-    public $timeout = 0;
-    public $useragent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)";
+    public $useragent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)';
     public $lastError = '';
 
-    private static $_redirects = 0;
+    private static $_sockets = array();
+    private static $_dns = array();
+    private $_redirects = 0;
     private $_host;
+    private $_ip;
     private $_port;
+    private $_timeout = 0;
     private $_httpauth;
     private $_ssl = false;
     private $_requestCount = 0;
@@ -42,10 +45,33 @@ class Knj_Httpbrowser
 
     /**
      * Set up default values.
+     *
+     * @param string $host Server to connect to.
+     * @param int    $port Default is 80.
+     * @param bool   $ssl  If the connection should use ssl encryption.
      */
-    function __construct()
+    function __construct(
+        $host,
+        $port = 80,
+        $ssl = false,
+        $timeout = 0,
+        $debug = false
+    )
     {
-        $this->timeout = (int) ini_get("default_socket_timeout");
+        $this->_debug = $debug;
+        if ($timeout) {
+            $timeout = ini_get('default_socket_timeout');
+        }
+        $this->_timeout = $timeout;
+        $this->_host = $host;
+        $this->_ip = $this->_getHost();
+        $this->_port = $port;
+        $this->_ssl = $ssl ? 1 : 0;
+        $this->cookies[$host] = (array) $this->cookies[$host];
+
+        $this->_socket =& self::$_sockets[$this->_ip][$this->_port][$this->_ssl];
+
+        $this->_checkConnected();
     }
 
     /**
@@ -57,28 +83,23 @@ class Knj_Httpbrowser
      */
     private function _debug($msg)
     {
-        if ($this->debug) {
+        if ($this->_debug) {
             echo $msg ."\n";
         }
     }
 
     /**
-     * Connects to a server.
+     * Resove host to IP and cache results
      *
-     * @param string $host Server to connect to.
-     * @param int    $port Default is 80.
-     * @param bool   $ssl  If the connection should use ssl encryption.
-     *
-     * @return bool Return true if connection was established.
+     * @return null
      */
-    public function connect($host, $port = 80, $ssl = false)
+    private function _getHost()
     {
-        $this->_host = $host;
-        $this->_port = $port;
-        $this->_ssl = $ssl;
-        $this->cookies[$host] = (array) $this->cookies[$host];
+        if (!self::$_dns[$this->_host]) {
+            self::$_dns[$this->_host] = gethostbyname($this->_host);
+        }
 
-        return $this->_reconnect();
+        return self::$_dns[$this->_host];
     }
 
     /**
@@ -92,9 +113,9 @@ class Knj_Httpbrowser
             $this->disconnect();
         }
 
-        $host = $this->_host;
+        $host = $this->_ip;
         if ($this->_ssl) {
-            $host = "ssl://" .$host;
+            $host = 'ssl://' .$this->_ip;
         }
 
         $attempts = 0;
@@ -111,7 +132,7 @@ class Knj_Httpbrowser
                 $this->_port,
                 $errno,
                 $errstr,
-                $this->timeout
+                $this->_timeout
             );
 
             if ($attempts > 5) {
@@ -134,8 +155,8 @@ class Knj_Httpbrowser
     public function setHTTPAuth($user, $passwd)
     {
         $this->_httpauth = array(
-            "user" => $user,
-            "passwd" => $passwd
+            'user' => $user,
+            'passwd' => $passwd
         );
     }
 
@@ -468,6 +489,7 @@ class Knj_Httpbrowser
             = "GET " .$addr ." HTTP/1.1\r\n"
             ."Host: " .$host ."\r\n"
             ."User-Agent: " .$this->useragent ."\r\n"
+            .'Accept-Encoding: gzip, deflate' ."\r\n"
             ."Connection: Keep-Alive\r\n";
 
         if ($args["addheader"]) {
@@ -565,7 +587,6 @@ class Knj_Httpbrowser
      */
     private function _handleResponce()
     {
-        //TODO handle Content-Type and charset
         $chunk = 0;
         $chunked = false;
         $state = "headers";
@@ -575,6 +596,9 @@ class Knj_Httpbrowser
         $cont100 = false;
         $html = '';
         $location = '';
+        $encoding = '';
+        $mime = array();
+        $charset = '';
 
         while (true) {
             if ($readsize == 0) {
@@ -582,7 +606,6 @@ class Knj_Httpbrowser
             }
 
             $line = fgets($this->_socket, $readsize);
-
             if (strlen($line) == 0) {
                 break;
             } elseif ($line === false) {
@@ -612,7 +635,17 @@ class Knj_Httpbrowser
                 } else {
                     $headers .= $line;
 
-                    if (preg_match("/^Content-Length: ([0-9]+)/", $line, $match)) {
+                    if (preg_match('/^Content-Type: (.+)/', $line, $match)) {
+                        $match = explode(';', $match[1]);
+                        $mime = explode('/', trim($match[0]));
+
+                        if ($match[1]) {
+                            $match = explode('=', $match[1]);
+                            if (trim($match[0]) == 'charset') {
+                                $charset = trim($match[1]);
+                            }
+                        }
+                    } elseif (preg_match("/^Content-Length: ([0-9]+)/", $line, $match)) {
                         $contentlength = $match[1];
                         $contentlength_set = true;
                     } elseif (preg_match("/^Transfer-Encoding: chunked/", $line, $match)) {
@@ -629,6 +662,8 @@ class Knj_Httpbrowser
                         $this->cookies[$this->_host][$key] = $value;
                     } elseif (preg_match("/^HTTP\/1\.1 100 Continue/", $line, $match)) {
                         $cont100 = true;
+                    } elseif (preg_match('/^Content-Encoding: (.+)/', $line, $match)) {
+                        $encoding = trim($match[1]);
                     } elseif (preg_match("/^Location: ([\S]*)/", $line, $match)) {
                         //FIXME If location isn't on same server this will fail!
                         $location = $match[1];
@@ -684,8 +719,28 @@ class Knj_Httpbrowser
             $first = false;
         }
 
-        $this->_debug(_("Response headers:") ."\n" .$headers);
-        $this->_debug(_("Received content:") ."\n" .$html ."\n");
+        if ($encoding == 'deflate') {
+            $tmp = @gzuncompress($html);
+            if (!$tmp) {
+                $tmp = gzinflate($html);
+            }
+            $html = $tmp;
+        } elseif ($encoding == 'gzip') {
+            $html = gzinflate(substr($html, 10, -8));
+        }
+
+        if ($charset) {
+            $html = iconv($charset, 'UTF-8', $html);
+        }
+
+        $this->_debug(_('Response headers:') ."\n" .$headers);
+
+        $msg = _('Received content:');
+        if ($mime[0] == 'text') {
+            $this->_debug($msg ."\n" .$html . "\n");
+        } else {
+            $this->_debug($msg . ' [BINERY]' . "\n");
+        }
 
         if (preg_match('/<h2>Object moved to <a href="([^"]*)">here<\/a>.<\/h2>/', $html, $match)) {
             $msg = _('Found "Object moved to" in HTML.');
@@ -695,10 +750,10 @@ class Knj_Httpbrowser
         }
 
         if ($location) {
-            if (self::$_redirects < 10) {
-                self::$_redirects++;
+            if ($this->_redirects < 10) {
+                $this->_redirects++;
                 $msg = _('Redirect attempts %s.');
-                $this->_debug(sprintf($msg, self::$_redirects));
+                $this->_debug(sprintf($msg, $this->_redirects));
                 return $this->get($location);
             } else {
                 $this->lastError = _('Too many redirects occured.');
@@ -708,7 +763,7 @@ class Knj_Httpbrowser
 
         $this->_responceHeader = $headers;
         $this->_responce = $html;
-        self::$_redirects = 0;
+        $this->_redirects = 0;
         return true;
     }
 
