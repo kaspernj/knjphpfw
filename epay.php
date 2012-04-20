@@ -175,7 +175,7 @@ class EPayTransaction
     {
         $this->id = $transaction->transactionid;
         $this->orderid = $transaction->orderid;
-        $this->_status = $transaction->status;
+        $this->status = $transaction->status;
         if ($transaction->capturedamount) {
             $this->amount = (int) $response->transactionInformation->capturedamount;
         } else {
@@ -194,7 +194,7 @@ class EPayTransaction
      */
     public function capture($amount = 0)
     {
-        if ($this->_status == 'PAYMENT_CAPTURED') {
+        if ($this->status == 'PAYMENT_CAPTURED') {
             return true;
         }
 
@@ -235,7 +235,7 @@ class EPayTransaction
      */
     public function delete()
     {
-        if ($this->_status == 'PAYMENT_DELETED') {
+        if ($this->status == 'PAYMENT_DELETED') {
             return true;
         }
 
