@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO
+ * Define the EPay and EPayTransaction calsses
  *
  * PHP version 5
  *
@@ -12,7 +12,7 @@
  */
 
 /**
- * TODO
+ * Class for fetching transations from ePay via the SOAP api
  *
  * @category Framework
  * @package  Knjphpfw
@@ -20,84 +20,112 @@
  * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
-class epay
+class EPay
 {
+    private $_merchantNo = 0;
+    private $_username = '';
+    private $_password = '';
+    private $_soap_client;
+
     /**
-     * TODO
+     * Set up variables
      *
-     * @param array $args TODO
+     * @param int    $merchantNo Merchant number
+     * @param string $username   Username
+     * @param string $password   Password
      */
-    function __construct($args)
+    function __construct($merchantNo, $username, $password)
     {
-        $this->args = $args;
-
-        if (!$this->args["username"]) {
-            throw new exception(_("No username was given."));
+        if (!$merchantNo || !$username || !$password) {
+            throw new exception(_('Missing argument'));
         }
 
-        if (!$this->args["password"]) {
-            throw new exception(_("No password was given."));
-        }
+        $this->_merchantNo = $merchantNo;
+        $this->_username = $username;
+        $this->_password = $password;
 
-        $data = array(
-            "verify_peer" => false,
-            "allow_self_signed" => true
-        );
-        $this->soap_client = new SoapClient(
-            "https://ssl.ditonlinebetalingssystem.dk/remote/payment.asmx?WSDL",
-            $data
+        $this->_soap_client = new SoapClient(
+            'https://ssl.ditonlinebetalingssystem.dk/remote/payment.asmx?WSDL',
+            array(
+                'verify_peer' => false,
+                'allow_self_signed' => true
+            )
         );
     }
 
     /**
-     * TODO
+     * Search for transation
      *
-     * @param array $args TODO
+     * @param string $datestart Start date "yyyy-MM-dd HH:mm:ss"
+     * @param string $dateend   End date "yyyy-MM-dd HH:mm:ss"
+     * @param string $orderid   Search for transation with defined order number
+     * @param string $group     Search for transation in a defined group.
+     * @param int    $status    0 = PAYMENT_UNDEFINED
+     *                          1 = PAYMENT_NEW
+     *                          2 = PAYMENT_CAPTURED
+     *                          3 = PAYMENT_DELETED
+     *                          4 = PAYMENT_DELETED
+     *                          5 = PAYMENT_SUBSCRIPTION_INI
      *
-     * @return array TODO
+     * @return array Array of EPayTransaction with id as key
      */
-    function transactions($args = array())
-    {
-        $args2 = array(
-            "merchantnumber" => $this->args["merchant_no"]
-        );
-        $res = $this->soap_client->__soapCall(
-            "gettransactionlist",
-            array("parameters" => array_merge($args, $args2))
-        );
-        $ret = array();
+    public function transactions(
+        $datestart,
+        $dateend,
+        $orderid = '',
+        $group = '',
+        $status = null
+    ) {
+        $transactions = array();
 
-        if (is_array($res->transactionInformationAry->TransactionInformationType)) {
-            foreach ($res->transactionInformationAry->TransactionInformationType as $trans_obj) {
-                $data = array(
-                    "epay" => $this,
-                    "obj" => $trans_obj,
-                    "soap_client" => $this->soap_client
-                );
-                $ret[] = new epay_payment($data);
-            }
-        } elseif ($res->transactionInformationAry->TransactionInformationType) {
-                $data = array(
-                "epay" => $this,
-                "obj" => $res->transactionInformationAry->TransactionInformationType,
-                "soap_client" => $this->soap_client
-            );
-            $ret[] = new epay_payment($data);
+        $search = array(
+            'merchantnumber' => $this->_merchantNo,
+            'Searchdatestart' => $datestart,
+            'Searchdateend' => $dateend
+        );
+        if ($orderid) {
+            $search['searchorderid'] = $orderid;
+        }
+        if ($group) {
+            $search['Searchgroup'] = $group;
+        }
+        if ($status !== null) {
+            $search['Status'] = $status;
         }
 
-        return $ret;
+        $result = $this->_soap_client->__soapCall(
+            'gettransactionlist',
+            array('parameters' => $search)
+        );
+        $result = $result->transactionInformationAry->TransactionInformationType;
+
+        if (is_array($result)) {
+            foreach ($result as $transaction) {
+                $transactions[$transaction->transactionid] = new EPayTransaction(
+                    $transaction,
+                    $this
+                );
+            }
+        } elseif ($result) {
+            $transactions[$result->transactionid] = new EPayTransaction(
+                $result,
+                $this
+            );
+        }
+
+        return $transactions;
     }
 
     /**
      * Get a specific transation
      *
-     * @param int $transactionid The epay id for the transation
+     * @param int $transactionid The ePay id for the transation
      *
-     * @return object TODO
+     * @return object EPayTransaction
      */
-    function transaction($transactionid)
+    public function transaction($transactionid)
     {
-        $response = $this->soap_client->__soapCall(
+        $response = $this->_soap_client->__soapCall(
             'gettransaction',
             array(
                 'parameters' => array_merge(
@@ -105,24 +133,22 @@ class epay
                         'transactionid' => $transactionid
                     ),
                     array(
-                        'merchantnumber' => $this->args['merchant_no'],
+                        'merchantnumber' => $this->_merchantNo,
                         'epayresponse' => true
                     )
                 )
             )
         );
 
-        $data = array(
-            "epay" => $this,
-            "obj" => $response->transactionInformation,
-            "soap_client" => $this->soap_client
+        return new EPayTransaction(
+            $response->transactionInformation,
+            $this
         );
-        return new epay_payment($data);
     }
 }
 
 /**
- * TODO
+ * Class to handle an ePay transation
  *
  * @category Framework
  * @package  Knjphpfw
@@ -130,122 +156,107 @@ class epay
  * @license  Public domain http://en.wikipedia.org/wiki/Public_domain
  * @link     https://github.com/kaspernj/knjphpfw
  */
-class epay_payment
+class EPayTransaction
 {
-    /**
-     * TODO
-     *
-     * @param array $args TODO
-     */
-    function __construct($args)
-    {
-        $this->args = $args;
-        $this->soap_client = $args["soap_client"];
+    public $id = 0;
+    public $status = '';
+    public $orderid = '';
+    public $amount = 0;
 
-        if ($args["obj"]->capturedamount) {
-            $amount = floatval($args["obj"]->capturedamount);
+    private $_ePay;
+
+    /**
+     * Setup variables
+     *
+     * @param object $transaction A transation as returned by the ePay SOAP api
+     * @param object &$ePay       The parent ePay object
+     */
+    function __construct($transaction, EPay &$ePay)
+    {
+        $this->id = $transaction->transactionid;
+        $this->orderid = $transaction->orderid;
+        $this->_status = $transaction->status;
+        if ($transaction->capturedamount) {
+            $this->amount = (int) $response->transactionInformation->capturedamount;
         } else {
-            $amount = floatval($args["obj"]->authamount);
+            $this->amount = (int) $response->transactionInformation->authamount;
         }
 
-        $this->data = array(
-            "amount" => $amount,
-            "orderid" => intval($args["obj"]->orderid),
-            "status" => $args["obj"]->status,
-            "transactionid" => $args["obj"]->transactionid
-        );
+        $this->_ePay = $ePay;
     }
 
     /**
-     * TODO
+     * Transfer the amount between the accounts
      *
-     * @param string $key TODO
+     * @param int $amount The amount in minor units
      *
-     * @return TODO
+     * @return bool Return true if payment is captured
      */
-    function get($key)
+    public function capture($amount = 0)
     {
-        if ($key == "id") {
-            $key = "transactionid";
+        if ($this->_status == 'PAYMENT_CAPTURED') {
+            return true;
         }
 
-        if (!array_key_exists($key, $this->data)) {
-            throw new exception(sprintf(_("No such key: %s"), $key));
-        }
-
-        return $this->data[$key];
-    }
-
-    /**
-     * TODO
-     *
-     * @return array TODO
-     */
-    function args()
-    {
-        return $this->args;
-    }
-
-    /**
-     * TODO
-     *
-     * @return bool TODO
-     */
-    function accept()
-    {
-        if ($this->data["status"] == "PAYMENT_CAPTURED") {
+        if ($amount > $this->amount) {
             return false;
         }
 
-        $parameters = array(
-            "merchantnumber" => $this->args["epay"]->args["merchant_no"],
-            "transactionid" => $this->data["transactionid"],
-            "amount" => $this->data["amount"],
-            "epayresponse" => true,
-            "pbsResponse" => true
-        );
-        $res = $this->soap_client->__soapCall(
-            "capture",
-            array("parameters" => $parameters)
+        if (!$amount) {
+            $amount = $this->amount;
+        }
+
+        $res = $this->_ePay->soap_client->__soapCall(
+            'capture',
+            array(
+                'parameters' => array(
+                    'merchantnumber' => $this->_ePay->_merchantNo,
+                    'transactionid' => $this->id,
+                    'amount' => $amount,
+                    'epayresponse' => true,
+                    'pbsResponse' => true
+                )
+            )
         );
 
         if (!$res->captureResult) {
-            $msg = _("Could not accept payment.");
-            throw new exception($msg ."\n\n" .print_r($res, true));
+            return false;
         }
+
+        $this->status = 'PAYMENT_CAPTURED';
+
+        return true;
     }
 
     /**
-     * TODO
+     * Cancle a payment
      *
-     * @return null
+     * @return bool Return true if payment is captured
      */
-    function delete()
+    public function delete()
     {
-        $parameters = array(
-            "merchantnumber" => $this->args["epay"]->args["merchant_no"],
-            "transactionid" => $this->data["transactionid"],
-            "epayresponse" => true
-        );
-        $res = $this->soap_client->__soapCall(
-            "delete",
-            array("parameters" => $parameters)
+        if ($this->_status == 'PAYMENT_DELETED') {
+            return true;
+        }
+
+        $res = $this->_ePay->soap_client->__soapCall(
+            'delete',
+            array(
+                'parameters' => array(
+                    'merchantnumber' => $this->_ePay->_merchantNo,
+                    'transactionid' => $this->id,
+                    'epayresponse' => true
+                )
+            )
         );
 
         if (!$res->deleteResult) {
-            $msg = _("Could not delete payment.");
-            throw new exception($msg ."\n\n" .print_r($res, true));
+            return false;
         }
-    }
 
-    /**
-     * TODO
-     *
-     * @return null
-     */
-    function state()
-    {
-        throw new exception(_("stub!"));
+        $this->status = 'PAYMENT_DELETED';
+
+        return true;
     }
 }
 
