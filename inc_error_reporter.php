@@ -23,11 +23,17 @@ function knj_error_last_error()
 
 /**
  * Handels error on FComputer's website.
+ *
+ * @return null
  */
 function knj_error_reporter_error_handeler($errno, $errmsg, $filename, $linenum, $vars, $args = null)
 {
-    if ($errno == E_NOTICE or $errno == E_STRICT or $errno == E_DEPRECATED) {
-        //Do not log notices and strict-errors.
+    if (error_reporting() === 0
+        || $errno == E_NOTICE
+        || $errno == E_STRICT
+        || $errno == E_DEPRECATED
+    ) {
+        //Don't log suppresed-errors, notices or strict-errors.
         return null;
     }
 
@@ -46,7 +52,7 @@ function knj_error_reporter_error_handeler($errno, $errmsg, $filename, $linenum,
         E_STRICT => 'Runtime Notice'
     );
 
-    if (!$args["hideerror"] && error_reporting() !== 0) {
+    if (!$args["hideerror"]) {
         echo $errortype[$errno] . ": " . utf8_encode($errmsg) . " in " . $filename . " on line " . $linenum . ".\n";
     }
 
