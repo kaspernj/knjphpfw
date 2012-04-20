@@ -177,9 +177,9 @@ class EPayTransaction
         $this->orderid = $transaction->orderid;
         $this->status = $transaction->status;
         if ($transaction->capturedamount) {
-            $this->amount = (int) $response->capturedamount;
+            $this->amount = (int) $transaction->capturedamount;
         } else {
-            $this->amount = (int) $response->authamount;
+            $this->amount = (int) $transaction->authamount;
         }
 
         $this->_ePay = $ePay;
