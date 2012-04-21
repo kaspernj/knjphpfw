@@ -219,7 +219,7 @@ class EPayTransaction
             )
         );
 
-        if (!$res->captureResult) {
+        if (!$response->captureResult) {
             return false;
         }
 
@@ -250,7 +250,7 @@ class EPayTransaction
             )
         );
 
-        if (!$res->deleteResult) {
+        if (!$response->deleteResult) {
             return false;
         }
 
