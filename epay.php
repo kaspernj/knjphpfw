@@ -22,7 +22,7 @@
  */
 class EPay
 {
-    private $_merchantNo = 0;
+    public $merchantNo = 0;
     private $_username = '';
     private $_password = '';
     public $soapClient;
@@ -40,7 +40,7 @@ class EPay
             throw new exception(_('Missing argument'));
         }
 
-        $this->_merchantNo = $merchantNo;
+        $this->merchantNo = $merchantNo;
         $this->_username = $username;
         $this->_password = $password;
 
@@ -79,7 +79,7 @@ class EPay
         $transactions = array();
 
         $search = array(
-            'merchantnumber' => $this->_merchantNo,
+            'merchantnumber' => $this->merchantNo,
             'Searchdatestart' => $datestart,
             'Searchdateend' => $dateend
         );
@@ -133,7 +133,7 @@ class EPay
                         'transactionid' => $transactionid
                     ),
                     array(
-                        'merchantnumber' => $this->_merchantNo,
+                        'merchantnumber' => $this->merchantNo,
                         'epayresponse' => true
                     )
                 )
@@ -210,7 +210,7 @@ class EPayTransaction
             'capture',
             array(
                 'parameters' => array(
-                    'merchantnumber' => $this->_ePay->_merchantNo,
+                    'merchantnumber' => $this->_ePay->merchantNo,
                     'transactionid' => $this->id,
                     'amount' => $amount,
                     'epayresponse' => true,
@@ -243,7 +243,7 @@ class EPayTransaction
             'delete',
             array(
                 'parameters' => array(
-                    'merchantnumber' => $this->_ePay->_merchantNo,
+                    'merchantnumber' => $this->_ePay->merchantNo,
                     'transactionid' => $this->id,
                     'epayresponse' => true
                 )
