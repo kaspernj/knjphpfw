@@ -25,7 +25,7 @@ class EPay
     private $_merchantNo = 0;
     private $_username = '';
     private $_password = '';
-    private $_soap_client;
+    public $soapClient;
 
     /**
      * Set up variables
@@ -44,7 +44,7 @@ class EPay
         $this->_username = $username;
         $this->_password = $password;
 
-        $this->_soap_client = new SoapClient(
+        $this->soapClient = new SoapClient(
             'https://ssl.ditonlinebetalingssystem.dk/remote/payment.asmx?WSDL',
             array(
                 'verify_peer' => false,
@@ -93,7 +93,7 @@ class EPay
             $search['Status'] = $status;
         }
 
-        $result = $this->_soap_client->__soapCall(
+        $result = $this->soapClient->__soapCall(
             'gettransactionlist',
             array('parameters' => $search)
         );
@@ -125,7 +125,7 @@ class EPay
      */
     public function transaction($transactionid)
     {
-        $response = $this->_soap_client->__soapCall(
+        $response = $this->soapClient->__soapCall(
             'gettransaction',
             array(
                 'parameters' => array_merge(
@@ -206,7 +206,7 @@ class EPayTransaction
             $amount = $this->amount;
         }
 
-        $res = $this->_ePay->soap_client->__soapCall(
+        $response = $this->_ePay->soapClient->__soapCall(
             'capture',
             array(
                 'parameters' => array(
@@ -239,7 +239,7 @@ class EPayTransaction
             return true;
         }
 
-        $res = $this->_ePay->soap_client->__soapCall(
+        $response = $this->_ePay->soapClient->__soapCall(
             'delete',
             array(
                 'parameters' => array(
