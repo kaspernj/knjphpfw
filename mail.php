@@ -23,14 +23,14 @@ class knj_mail
  */
 function knjimap_getBody($imap, $msg_no)
 {
-    $struc = imap_fetchstructure($imap, $msg_no) or throwexception("Could not fetch the structure.");
+    $struc = imap_fetchstructure($imap, $msg_no) or throwexception('Could not fetch the structure.');
     $body = knjimap_getBodyRec($imap, $struc, $msg_no);
 
     if (!$body) {
-        throw new Exception("Could not find any body.");
+        throw new Exception('Could not find any body.');
     }
 
-    if (strpos($body, "Content-Type: ") !== false || strpos($body, "User-Agent: ") !== false) {
+    if (strpos($body, 'Content-Type: ') !== false || strpos($body, 'User-Agent: ') !== false) {
         $pos = strpos($body, "\r\n\r\n");
         $body = substr($body, $pos);
     }
@@ -47,12 +47,16 @@ function knjimap_getBodyRec($imap, $struc, $msg_no, $part_no = null)
         $body = imap_fetchbody($imap, $msg_no, $part_no);
         $body = knjimap_parse($body, $struc);
 
-        if ($struc->subtype == "PLAIN") {
+        if ($struc->subtype == 'PLAIN') {
             //do nothing
-        } elseif ($struc->subtype == "HTML") {
+        } elseif ($struc->subtype == 'HTML') {
             $body = strip_tags($body);
         } else {
-            echo("Warning: Unknown subtype: " . $struc->subtype . ".\n");
+            $msg = sprintf(
+                _('Warning: Unknown subtype: %s.'),
+                $struc->subtype
+            );
+            echo($msg . "\n");
         }
 
         if ($body) {
@@ -63,8 +67,8 @@ function knjimap_getBodyRec($imap, $struc, $msg_no, $part_no = null)
                 $paras[$para->attribute] = $para->value;
             }
 
-            if ($paras["CHARSET"]) {
-                $body = iconv($paras["CHARSET"], "utf-8", $body);
+            if ($paras['CHARSET']) {
+                $body = iconv($paras['CHARSET'], 'utf-8', $body);
             }
         }
 
@@ -76,11 +80,16 @@ function knjimap_getBodyRec($imap, $struc, $msg_no, $part_no = null)
 
             $tha_part_no = null;
             if (strlen($tha_part_no) >= 1) {
-                $tha_part_no .= ".";
+                $tha_part_no .= '.';
             }
             $tha_part_no .= $count;
 
-            $body = knjimap_getBodyRec($imap, $part, $msg_no, $tha_part_no);
+            $body = knjimap_getBodyRec(
+                $imap,
+                $part,
+                $msg_no,
+                $tha_part_no
+            );
 
             if ($body) {
                 return $body;
