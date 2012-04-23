@@ -24,7 +24,6 @@
 class Knj_Httpbrowser
 {
     public $debug = false;
-    public $maxRequests = 0;
     public $cookies = array();
     public $useragent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)';
     public $lastError = '';
@@ -38,7 +37,6 @@ class Knj_Httpbrowser
     private $_timeout = 0;
     private $_httpauth;
     private $_ssl = false;
-    private $_requestCount = 0;
     private $_socket;
     private $_responceHeader = '';
     private $_responce = '';
@@ -46,32 +44,35 @@ class Knj_Httpbrowser
     /**
      * Set up default values.
      *
-     * @param string $host Server to connect to.
-     * @param int    $port Default is 80.
-     * @param bool   $ssl  If the connection should use ssl encryption.
+     * @param string $host    Server to connect to.
+     * @param int    $port    Default is 80.
+     * @param bool   $ssl     If the connection should use ssl encryption.
+     * @param int    $timeout How log before giving up on connecting.
+     * @param bool   $debug   Weather to print debug info.
      */
     function __construct(
-        $host,
+        $host = '',
         $port = 80,
         $ssl = false,
         $timeout = 0,
-        $debug = false
-    )
-    {
+        $debug = true
+    ) {
         $this->_debug = $debug;
-        if ($timeout) {
+        if (!$timeout) {
             $timeout = ini_get('default_socket_timeout');
         }
         $this->_timeout = $timeout;
         $this->_host = $host;
-        $this->_ip = $this->_getHost();
+        if ($host) {
+            $this->_ip = $this->_getHost();
+        }
         $this->_port = $port;
         $this->_ssl = $ssl ? 1 : 0;
         $this->cookies[$host] = (array) $this->cookies[$host];
 
-        $this->_socket =& self::$_sockets[$this->_ip][$this->_port][$this->_ssl];
-
-        $this->_checkConnected();
+        if ($this->_ip) {
+            $this->_socket =& self::$_sockets[$this->_ip][$this->_port][$this->_ssl];
+        }
     }
 
     /**
@@ -139,8 +140,6 @@ class Knj_Httpbrowser
                 return false;
             }
         }
-
-        $this->_requestCount = 0;
         return true;
     }
 
@@ -161,115 +160,25 @@ class Knj_Httpbrowser
     }
 
     /**
-     * Check if the current connection is still valid.
-     *
-     * @return null
-     */
-    private function _checkConnected()
-    {
-        if (!$this->_socket) {
-            $this->_reconnect();
-        }
-
-        if ($this->maxRequests
-            && $this->_requestCount >= $this->maxRequests
-        ) {
-            $this->_reconnect();
-        }
-        $this->_requestCount++;
-    }
-
-    /**
      * Posts a message to a page.
      *
      * @param string $addr Absolute URI to the desired page
-     * @param array  $post TODO
+     * @param array  $post Name as key
      *
      * @return string Response as a string.
      */
     public function post($addr, $post)
     {
-        $this->_checkConnected();
-
-        $addr = $this->_encodeUrl($addr);
-
-        $postdata = "";
-        foreach ($post as $key => $value) {
-            if ($postdata) {
-                $postdata .= "&";
-            }
-
-            $postdata .= urlencode($key) ."=" .urlencode($value);
+        $postdata = array();
+        foreach ($post as $name => $value) {
+            $postdata[] = urlencode($name) .'=' .urlencode($value);
         }
 
-        //URI must be absolute
-        if (substr($addr, 0, 1) != "/") {
-            $addr = "/".$addr;
-        }
-
-        $headers
-            = "POST " .$addr ." HTTP/1.1\r\n"
-            ."Content-Type: application/x-www-form-urlencoded\r\n"
-            ."User-Agent: " .$this->useragent ."\r\n"
-            ."Host: " .$this->_host ."\r\n"
-            ."Content-Length: " .strlen($postdata) ."\r\n"
-            ."Connection: Keep-Alive\r\n";
-
-        $headers .= $this->_getAuthHeader();
-
-        if ($this->cookies[$this->_host]) {
-            foreach ($this->cookies[$this->_host] as $key => $value) {
-                $headers .= "Cookie: " .urlencode($key) ."=" .$value ."\r\n";
-            }
-        }
-
-        $headers .= "\r\n";
-
-        if (!fwrite($this->_socket, $headers .$postdata)) {
-            throw new exception(_("Could not write to socket."));
-        }
-
-        $this->last_url = "http://" .$this->_host .$addr;
-        $this->_handleResponce();
-        return $this->_responce;
-    }
-
-    /**
-     * TODO
-     *
-     * @param string $addr     Absolute URI to the desired page
-     * @param string $postdata TODO
-     *
-     * @return string Response as a string.
-     */
-    public function postRaw($addr, $postdata)
-    {
-        $this->_checkConnected();
-
-        $addr = $this->_encodeUrl($addr);
-
-        //URI must be absolute
-        if (substr($addr, 0, 1) != "/") {
-            $addr = "/".$addr;
-        }
-
-        $headers = "POST " .$addr ." HTTP/1.1\r\n";
-        $headers .= "Authorization: Basic "
-            .base64_encode("306761540:XXnz*2ms") ."\r\n";
-        $headers .= "Host: " .$host ."\r\n";
-
-        $headers .= "Connection: close\r\n";
-        $headers .= "Content-Length: " .strlen($postdata) ."\r\n";
-        $headers .= "Content-Type: text/xml; charset=\"utf-8\"\r\n";
-        $headers .= "\r\n";
-
-        if (!fwrite($this->_socket, $headers .$postdata)) {
-            throw new exception(_("Could not write to socket."));
-        }
-
-        $this->last_url = "http://" .$this->_host .$addr;
-        $this->_handleResponce();
-        return $this->_responce;
+        return request(
+            $addr,
+            implode('&', $postdata),
+            array('Content-Type' => 'application/x-www-form-urlencoded')
+        );
     }
 
     /**
@@ -282,63 +191,23 @@ class Knj_Httpbrowser
      */
     public function postFormData($addr, $post)
     {
-        $this->_checkConnected();
-
-        $addr = $this->_encodeUrl($addr);
-
         $boundary = "---------------------------" .round(mktime(true));
 
         $postdata = "";
         foreach ($post as $key => $value) {
-            if ($postdata) {
-                $postdata .= "\r\n";
-            }
-
             $postdata .= "--" .$boundary ."\r\n";
-            $postdata .= 'Content-Disposition: form-data; name="'
-                .$key .'"' ."\r\n";
+            $postdata .= 'Content-Disposition: form-data; name="' .$key .'"' ."\r\n";
             $postdata .= "\r\n";
             $postdata .= $value;
         }
 
-        $postdata .= "\r\n--" .$boundary ."--";
+        $postdata .= "\r\n--" .$boundary ."--\r\n";
 
-        //URI must be absolute
-        if (substr($addr, 0, 1) != "/") {
-            $addr = "/".$addr;
-        }
-
-        $headers
-            = "POST " .$addr ." HTTP/1.1\r\n"
-            ."Host: " .$this->_host ."\r\n\r\n"
-            ."User-Agent: " .$this->useragent ."\r\n"
-            ."Keep-Alive: 300\r\n"
-            ."Connection: keep-alive\r\n"
-            ."Content-Length: " .strlen($postdata) ."\r\n"
-            ."Content-Type: multipart/form-data; boundary=" .$boundary ."\r\n";
-
-        $headers .= $this->_getAuthHeader();
-
-        if ($this->cookies[$this->_host]) {
-            foreach ($this->cookies[$this->_host] as $key => $value) {
-                $headers .= "Cookie: " .urlencode($key) ."=" .urlencode($value)
-                    ."; FService=Password=miden&Fkode=F0623\r\n";
-            }
-        }
-
-        $headers .= "\r\n";
-
-        fputs($this->_socket, $headers);
-
-        $count = 0;
-        while ($count < strlen($postdata)) {
-            fputs($this->_socket, substr($postdata, $count, 2048));
-            $count += 2048;
-        }
-
-        $this->last_url = "http://" .$this->_host .$addr;
-        $this->_handleResponce();
-        return $this->_responce;
+        return $this->request(
+            $addr,
+            $postdata,
+            array('Content-Type' => 'multipart/form-data; boundary=' .$boundary)
+        );
     }
 
     /**
@@ -352,10 +221,6 @@ class Knj_Httpbrowser
      */
     public function postFile($addr, $post, $file)
     {
-        $this->_checkConnected();
-
-        $addr = $this->_encodeUrl($addr);
-
         if (is_array($file)
             && $file["content"]
             && $file["filename"]
@@ -363,8 +228,8 @@ class Knj_Httpbrowser
         ) {
             $boundary = "---------------------------" .round(mktime(true));
 
-            $postdata .= "--" .$boundary . "\r\n";
-            $postdata .= "Content-Disposition: form-data; name=\""
+            $postdata .= "--" .$boundary ."\r\n";
+            $postdata .= 'Content-Disposition: form-data; name="'
                 .htmlspecialchars($file["inputname"]) ."\"; filename=\""
                 .htmlspecialchars($file["filename"]) ."\"\r\n";
             $postdata .= "Content-Type: application/octet-stream\r\n";
@@ -380,7 +245,7 @@ class Knj_Httpbrowser
             $info = pathinfo($file);
 
             $postdata .= "--" .$boundary ."\r\n";
-            $postdata .= "Content-Disposition: form-data; name=\""
+            $postdata .= 'Content-Disposition: form-data; name="'
                 .htmlspecialchars($input_name) ."\"; filename=\""
                 .htmlspecialchars($info["basename"]) ."\"\r\n";
             $postdata .= "Content-Type: application/octet-stream\r\n";
@@ -399,166 +264,25 @@ class Knj_Httpbrowser
             }
         }
 
-        //URI must be absolute
-        if (substr($addr, 0, 1) != "/") {
-            $addr = "/".$addr;
-        }
-
-        $headers .= "POST " .$addr ." HTTP/1.1\r\n";
-        $headers .= "Host: " .$this->_host ."\r\n";
-        $headers .= "Content-Type: multipart/form-data; boundary="
-            .$boundary ."\r\n";
-        $headers .= "Content-Length: " .strlen($postdata) ."\r\n";
-        $headers .= "Connection: Keep-Alive\r\n";
-        $headers .= "User-Agent: " .$this->useragent ."\r\n";
-        $headers .= $this->_getAuthHeader();
-
-        if ($this->cookies[$this->_host]) {
-            foreach ($this->cookies[$this->_host] as $key => $value) {
-                $headers .= "Cookie: " .urlencode($key) ."=" .$value ."\r\n";
-            }
-        }
-
-        $headers .= "\r\n";
-
-
-        $sendd = $headers .$postdata;
-        $length = strlen($sendd);
-
-        while ($sendd && $count < ($length + 2048)) {
-            if (fwrite($this->_socket, substr($sendd, $count, 2048)) === false) {
-                $msg = _("Could not write to socket. Is the connection closed?");
-                throw new exception($msg);
-            }
-
-            $count += 2048;
-        }
-
-        $this->_handleResponce();
-        return $this->_responce;
+        return $this->request(
+            $addr,
+            $postdata,
+            array('Content-Type' => 'multipart/form-data; boundary=' .$boundary)
+        );
     }
 
     /**
-     * Generate the auth header if needed.
+     * Glue the hader togeather and sent the request
      *
-     * @return string Header line.
-     */
-    private function _getAuthHeader()
-    {
-        $headers = "";
-
-        if ($this->_httpauth) {
-            $auth = base64_encode(
-                $this->_httpauth["user"] .":" .$this->_httpauth["passwd"]
-            );
-            $headers .= "Authorization: Basic " .$auth ."\r\n";
-        }
-
-        return $headers;
-    }
-
-    /**
-     * Fetch a page via get.
-     *
-     * @param string $addr Absolute URI to the desired page
-     * @param mixed  $args TODO
+     * @param string $URI          Absolute URI to the desired page
+     * @param string $post         Post data
+     * @param array  $extraHeaders Key as type
      *
      * @return string Response as a string.
      */
-    public function get($addr, $args = null)
+    public function request($URI, $post = '', $extraHeaders =  array())
     {
-        $this->_checkConnected();
-
-        $addr = $this->_encodeUrl($addr);
-
-        if (is_string($args)) {
-            $host = $args;
-        }
-
-        if (!$host) {
-            $host = $this->_host;
-        }
-
-        //URI must be absolute
-        if (substr($addr, 0, 1) != "/") {
-            $addr = "/".$addr;
-        }
-
-
-        $headers
-            = "GET " .$addr ." HTTP/1.1\r\n"
-            ."Host: " .$host ."\r\n"
-            ."User-Agent: " .$this->useragent ."\r\n"
-            .'Accept-Encoding: gzip, deflate' ."\r\n"
-            ."Connection: Keep-Alive\r\n";
-
-        if ($args["addheader"]) {
-            foreach ($args["addheader"] as $header) {
-                $headers .= $header ."\r\n";
-            }
-        }
-
-        if ($this->cookies[$this->_host]) {
-            foreach ($this->cookies[$this->_host] as $key => $value) {
-                $headers .= "Cookie: " .urlencode($key) ."="
-                    .urlencode($value) ."\r\n";
-            }
-        }
-
-        $headers .= $this->_getAuthHeader();
-        $headers .= "\r\n";
-
-        $this->_debug(_("Request headers:") ."\n" .$headers);
-
-        //Sometimes trying more times than one fixes the problem.
-        $tries = 0;
-        $tries_max = 5;
-        while (!fwrite($this->_socket, $headers)) {
-            sleep(1);
-            $this->_reconnect();
-
-            $tries++;
-            if ($tries >= $tries_max) {
-                throw new exception(_("Could not write to socket."));
-            }
-        }
-
-        $this->last_url = "http://" .$this->_host .$addr;
-        $this->_handleResponce();
-        return $this->_responce;
-    }
-
-    /**
-     * Build a url string from an array
-     *
-     * @param array $parsed_url Array as returned by parse_url()
-     *
-     * @return string The URL
-     */
-    public function unparseUrl($parsed_url)
-    {
-        $scheme   = $parsed_url['scheme'] ? $parsed_url['scheme'] .'://' : '';
-        $host     = $parsed_url['host'] ? $parsed_url['host'] : '';
-        $port     = $parsed_url['port'] ? ':' .$parsed_url['port'] : '';
-        $user     = $parsed_url['user'] ? $parsed_url['user'] : '';
-        $pass     = $parsed_url['pass'] ? ':' . $parsed_url['pass'] : '';
-        $pass     .= ($user || $pass) ? '@' : '';
-        $path     = $parsed_url['path'] ? $parsed_url['path'] : '';
-        $query    = $parsed_url['query'] ? '?' . $parsed_url['query'] : '';
-        $fragment = $parsed_url['fragment'] ? '#' . $parsed_url['fragment'] : '';
-        return $scheme .$user .$pass .$host .$port .$path .$query .$fragment;
-    }
-
-    /**
-     * Make sure url is properly encoded
-     *
-     * @param string $url The url that must be checked
-     *
-     * @return string Encoded URL
-     */
-    private function _encodeUrl($url)
-    {
-        $url = parse_url($url);
+        $url = parse_url($URI);
         $url['path'] = explode('/', $url['path']);
         $url['path'] = array_map('urldecode', $url['path']);
         $url['path'] = array_map('rawurlencode', $url['path']);
@@ -573,20 +297,86 @@ class Knj_Httpbrowser
         }
         $url['query'] = implode('=', $url['query']);
 
+        $reconnect = false;
+
+        if ($url['host'] && $url['host'] != $this->_host) {
+            $this->_host = $url['host'];
+            $this->_ip = $this->_getHost();
+            $reconnect = true;
+        }
+
+        if ($url['port'] && $url['port'] != $this->_port) {
+            $this->_port = $url['port'];
+            $reconnect = true;
+        }
+
+        if (($url['scheme'] == 'https' && $this->_ssl == false)
+            || ($url['scheme'] == 'http' && $this->_ssl == true)
+        ) {
+            $this->_ssl = $url['scheme'] == 'https' ? true : false;
+            $reconnect = true;
+        }
+
+        if ($reconnect) {
+            $this->_socket =& self::$_sockets[$this->_ip][$this->_port][$this->_ssl];
+        }
+
         unset($url['scheme']);
         unset($url['host']);
         unset($url['port']);
 
-        return $this->unparseUrl($url);
-    }
+        $URI = $this->unparseUrl($url);
 
-    /**
-     * Read the HTML after sending a request and handle any HTTP commands.
-     *
-     * @return bool Return true on sucess.
-     */
-    private function _handleResponce()
-    {
+        //URI must be absolute
+        if (substr($URI, 0, 1) != '/') {
+            $URI = '/' .$URI;
+        }
+
+        $headers['Host'] = $this->_host;
+        $headers['User-Agent'] = $this->useragent;
+        $headers['Accept-Encoding'] = 'gzip, deflate';
+        $headers['Connection'] = 'Keep-Alive';
+
+        $header = 'GET';
+        if ($post) {
+            $header = 'POST';
+            $headers['Content-Type'] = 'application/octet-stream';
+            $headers['Content-Length'] = mb_strlen($post, '8bit');
+        }
+
+        $header .= ' ' .$URI .' HTTP/1.1' ."\r\n";
+
+        $headers = array_merge($headers, $extraHeaders);
+
+        foreach ($headers as $key => $value) {
+            $header .= $key . ': ' . $value ."\r\n";
+        }
+
+        if ($this->cookies[$this->_host]) {
+            $cookies = array();
+            foreach ($this->cookies[$this->_host] as $key => $value) {
+                $cookies[] = urlencode($key) .'=' .urlencode($value);
+            }
+            $header = 'Cookie: ' . implode('; ' . $cookies) ."\r\n";
+        }
+
+        if ($this->_httpauth) {
+            $auth = base64_encode(
+                $this->_httpauth['user'] .':' .$this->_httpauth['passwd']
+            );
+            $header .= 'Authorization: Basic ' .$auth ."\r\n";
+        }
+        $header .= "\r\n";
+
+        $this->_debug(_('Request header:') ."\n" .$header);
+
+        $data = $header . $post;
+
+        if (!$this->_socket) {
+            $this->_reconnect();
+        }
+        fwrite($this->_socket, $data);
+
         $chunk = 0;
         $chunked = false;
         $state = "headers";
@@ -606,7 +396,7 @@ class Knj_Httpbrowser
             }
 
             $line = fgets($this->_socket, $readsize);
-            if (strlen($line) == 0) {
+            if (mb_strlen($line, '8bit') == 0) {
                 break;
             } elseif ($line === false) {
                 throw new exception(_("Could not read from socket."));
@@ -650,12 +440,7 @@ class Knj_Httpbrowser
                         $contentlength_set = true;
                     } elseif (preg_match("/^Transfer-Encoding: chunked/", $line, $match)) {
                         $chunked = true;
-                    } elseif (preg_match("/^Set-Cookie: (\S+)=(\S+)(;|)( path=\/;| path=\/)\s*/U", $line, $match)) {
-                        $key = urldecode($match[1]);
-                        $value = urldecode($match[2]);
-
-                        $this->cookies[$this->_host][$key] = $value;
-                    } elseif (preg_match("/^Set-Cookie: (\S+)=(\S+)\s*$/U", urldecode($line), $match)) {
+                    } elseif (preg_match("/^Set-Cookie: (\S*?);/", $line, $match)) {
                         $key = urldecode($match[1]);
                         $value = urldecode($match[2]);
 
@@ -665,10 +450,7 @@ class Knj_Httpbrowser
                     } elseif (preg_match('/^Content-Encoding: (.+)/', $line, $match)) {
                         $encoding = trim($match[1]);
                     } elseif (preg_match("/^Location: ([\S]*)/", $line, $match)) {
-                        //FIXME If location isn't on same server this will fail!
                         $location = $match[1];
-                    } else {
-                        //echo "NU: " .$line;
                     }
                 }
             } elseif ($state == "body") {
@@ -681,12 +463,12 @@ class Knj_Httpbrowser
                     if ($chunk == 0) {
                         $chunk = hexdec($line);
                     } else {
-                        if (strlen($line) > $chunk) {
+                        if (mb_strlen($line, '8bit') > $chunk) {
                             $html .= $line;
                             $chunk = 0;
                         } else {
                             $html .= $line;
-                            $chunk -= strlen($line);
+                            $chunk -= mb_strlen($line, '8bit');
                         }
                     }
                 } else {
@@ -697,15 +479,15 @@ class Knj_Httpbrowser
                          * Ellers fuckede det helt, og serveren vil i nogen
                          * tilfælde slet ikke svare, før der sendes et nyt request.
                          */
-                        if (($contentlength - strlen($html)) < 1024) {
-                            $readsize = $contentlength - strlen($html) + 1;
+                        if (($contentlength - mb_strlen($html, '8bit')) < 1024) {
+                            $readsize = $contentlength - mb_strlen($html, '8bit') + 1;
 
                             if ($readsize <= 0) {
                                 $readsize = 1024;
                             }
                         }
 
-                        if (strlen($html) >= $contentlength) {
+                        if (mb_strlen($html, '8bit') >= $contentlength) {
                             break;
                         }
 
@@ -754,7 +536,7 @@ class Knj_Httpbrowser
                 $this->_redirects++;
                 $msg = _('Redirect attempts %s.');
                 $this->_debug(sprintf($msg, $this->_redirects));
-                return $this->get($location);
+                return $this->request($location);
             } else {
                 $this->lastError = _('Too many redirects occured.');
                 return false;
@@ -764,7 +546,28 @@ class Knj_Httpbrowser
         $this->_responceHeader = $headers;
         $this->_responce = $html;
         $this->_redirects = 0;
-        return true;
+        return $this->_responce;
+    }
+
+    /**
+     * Build a url string from an array
+     *
+     * @param array $parsed_url Array as returned by parse_url()
+     *
+     * @return string The URL
+     */
+    public function unparseUrl($parsed_url)
+    {
+        $scheme   = $parsed_url['scheme'] ? $parsed_url['scheme'] .'://' : '';
+        $host     = $parsed_url['host'] ? $parsed_url['host'] : '';
+        $port     = $parsed_url['port'] ? ':' .$parsed_url['port'] : '';
+        $user     = $parsed_url['user'] ? $parsed_url['user'] : '';
+        $pass     = $parsed_url['pass'] ? ':' . $parsed_url['pass'] : '';
+        $pass     .= ($user || $pass) ? '@' : '';
+        $path     = $parsed_url['path'] ? $parsed_url['path'] : '';
+        $query    = $parsed_url['query'] ? '?' . $parsed_url['query'] : '';
+        $fragment = $parsed_url['fragment'] ? '#' . $parsed_url['fragment'] : '';
+        return $scheme .$user .$pass .$host .$port .$path .$query .$fragment;
     }
 
     /**
@@ -789,7 +592,7 @@ class Knj_Httpbrowser
     public function disconnect()
     {
         fclose($this->_socket);
-        unset($this->_socket);
+        unset(self::$_sockets[$this->_ip][$this->_port][$this->_ssl]);
     }
 }
 
