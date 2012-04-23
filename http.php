@@ -174,7 +174,7 @@ class Knj_Httpbrowser
             $postdata[] = urlencode($name) .'=' .urlencode($value);
         }
 
-        return request(
+        return $this->request(
             $addr,
             implode('&', $postdata),
             array('Content-Type' => 'application/x-www-form-urlencoded')
