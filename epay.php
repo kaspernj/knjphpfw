@@ -194,6 +194,8 @@ class EPayTransaction
      */
     public function capture($amount = 0)
     {
+        $amount = (int) $amount;
+
         if ($this->status == 'PAYMENT_CAPTURED') {
             return true;
         }
