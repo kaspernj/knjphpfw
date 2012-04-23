@@ -527,7 +527,6 @@ class Knj_Httpbrowser
         if (preg_match('/<h2>Object moved to <a href="([^"]*)">here<\/a>.<\/h2>/', $html, $match)) {
             $msg = _('Found "Object moved to" in HTML.');
             $this->_debug($msg);
-            //FIXME If location isn't on same server this will fail!
             $location = $match[1];
         }
 
