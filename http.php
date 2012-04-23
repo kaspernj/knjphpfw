@@ -227,7 +227,7 @@ class knj_httpbrowser{
 		
 		if ($this->cookies[$this->host]){
 			foreach($this->cookies[$this->host] AS $key => $value){
-				$headers .= "Cookie: " . urlencode($key) . "=" . urlencode($value) . "; FService=Password=miden&Fkode=F0623" .  $this->nl;
+				$headers .= "Cookie: " . urlencode($key) . "=" . urlencode($value) .  $this->nl;
 			}
 		}
 		
