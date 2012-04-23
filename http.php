@@ -176,9 +176,12 @@ class knj_httpbrowser{
 		$this->countAutoReconnect();
 		
 		$headers = "POST /" . $addr . " HTTP/1.1" . $this->nl;
-		$headers .= "Authorization: Basic " . base64_encode("306761540:XXnz*2ms") . $this->nl;
-		$headers .= "Host: " . $host . $this->nl;
 		
+		if ($this->auth_basic){
+      $headers .= "Authorization: Basic " . base64_encode($this->auth_basic["user"] . ":" . $this->auth_basic["passwd"]) . $this->nl;
+    }
+    
+		$headers .= "Host: " . $host . $this->nl;
 		$headers .= "Connection: close" . $this->nl;
 		$headers .= "Content-Length: " . strlen($postdata) . $this->nl;
 		$headers .= "Content-Type: text/xml; charset=\"utf-8\"" . $this->nl;
