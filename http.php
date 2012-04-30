@@ -55,7 +55,7 @@ class Knj_Httpbrowser
         $port = 80,
         $ssl = false,
         $timeout = 0,
-        $debug = true
+        $debug = false
     ) {
         $this->_debug = $debug;
         if (!$timeout) {
