@@ -595,5 +595,6 @@ class Knj_Httpbrowser
         fclose($this->_socket);
         unset(self::$_sockets[$this->_ip][$this->_port][$this->_ssl]);
     }
+
 }
 
