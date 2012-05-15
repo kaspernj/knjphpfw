@@ -26,10 +26,10 @@ class knj_SMS
                     knj_dl(array("soap", "openssl", "xml"));
                 } elseif ($value == "happii") {
                     require_once "knj/class_knj_httpbrowser.php";
-                    $this->http = new knj_httpbrowser();
+                    $this->http = new knj_httpbrowser('www.happiimobil.dk', 443);
                 } elseif ($value == "cbb") {
                     require_once "knj/class_knj_httpbrowser.php";
-                    $this->http = new knj_httpbrowser();
+                    $this->http = new knj_httpbrowser('cbb.dk');
                 } elseif ($value == "gnokii") {
                     //valid.
                     if (!$this->opts["gnokiiexe"]) {
@@ -64,7 +64,6 @@ class knj_SMS
         }
 
         if ($this->opts["mode"] == "cbb") {
-            $this->http->connect("cbb.dk");
             $html = $this->http->post("cbb?cmd=login", array(
                 "mobilenumber" => $this->opts["mobilenumber"],
                 "password" => $this->opts["password"]
@@ -75,12 +74,11 @@ class knj_SMS
                 "allow_self_signed" => true
             ));
         } elseif ($this->opts["mode"] == "happii") {
-            $this->http->connect("www.happiimobil.dk", 443);
             $this->http->post("login/check.asp", array(
                 "username" => $this->opts["mobilenumber"],
                 "password" => $this->opts["password"]
             ));
-            $html = $this->http->get("login/");
+            $html = $this->http->request("login/");
 
             if (strpos($html, "<div class=\"login_menu_txt\"><a href=\"/login/websms/\">WebSMS</a></div>") === false) {
                 throw new Exception("Could not log in.");

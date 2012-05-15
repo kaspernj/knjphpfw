@@ -43,8 +43,7 @@ class dkcvr
     function __construct()
     {
         include_once "knj/class_knj_httpbrowser.php";
-        $this->_http = new knj_httpbrowser();
-        $this->_http->connect("cvr.dk");
+        $this->_http = new knj_httpbrowser('cvr.dk');
     }
 
     /**
@@ -56,7 +55,7 @@ class dkcvr
      */
     function getByCVR($cvr)
     {
-        $html = $this->_http->get(
+        $html = $this->_http->request(
             "/Site/Forms/PublicService/DisplayCompany.aspx?cvrnr=" .$cvr
         );
 
