@@ -593,8 +593,8 @@ class Knj_Httpbrowser
     public function disconnect()
     {
         fclose($this->_socket);
+        unset($this->_socket);
         unset(self::$_sockets[$this->_ip][$this->_port][$this->_ssl]);
     }
-
 }
 
