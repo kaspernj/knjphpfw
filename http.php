@@ -375,14 +375,22 @@ class Knj_Httpbrowser
         if (!$this->_socket) {
             $this->_reconnect();
         }
-        fwrite($this->_socket, $data);
 
+        $retry = 1;
+        while (!fwrite($this->_socket, $data)) {
+            if ($retry > 5) {
+                throw new exception(_('Could not write to socket.'));
+            }
+            $this->_reconnect();
+            $retry++;
+        }
+
+        $contentlength = 0;
         $chunk = 0;
         $chunked = false;
         $state = "headers";
         $readsize = 1024;
-        $first = true;
-        $headers = "";
+        $headers = '';
         $cont100 = false;
         $html = '';
         $location = '';
@@ -396,22 +404,18 @@ class Knj_Httpbrowser
             }
 
             $line = fgets($this->_socket, $readsize);
-            if (mb_strlen($line, '8bit') == 0) {
+            if ($headers && mb_strlen($line, '8bit') == 0) {
                 break;
             } elseif ($line === false) {
-                throw new exception(_("Could not read from socket."));
-            } elseif ($first && $line == "\r\n") {
-                /**
-                 * Fixes an error when some servers sometimes sends \r\n in the end,
-                 * if this is a second request.
-                 */
-                $line = fgets($this->_socket, $readsize);
+                throw new exception(_('Could not read from socket.'));
+            } elseif (!$headers && $line == "\r\n") {
+                continue;
             }
 
             if ($state == "headers") {
                 if ($line == "\r\n" || $line == "\n") {
                     if ($cont100 == true) {
-                        unset($cont100);
+                        $cont100 = false;
                     } else {
                         $state = "body";
                         if ($contentlength == 0 && $contentlength !== null) {
@@ -497,8 +501,6 @@ class Knj_Httpbrowser
                     }
                 }
             }
-
-            $first = false;
         }
 
         if ($encoding == 'deflate') {
