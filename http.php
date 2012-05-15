@@ -385,7 +385,7 @@ class Knj_Httpbrowser
             $retry++;
         }
 
-        $contentlength = 0;
+        $contentlength = null;
         $chunk = 0;
         $chunked = false;
         $state = "headers";
