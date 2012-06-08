@@ -11,6 +11,7 @@ class knjobjects
     {
         $this->config = $args;
         $this->args = &$this->config;
+        $this->objects = array();
 
         if (!array_key_exists("class_sep", $this->config)) {
             $this->config["class_sep"] = "_";
@@ -449,7 +450,7 @@ class knjobjects
       }
         }
 
-    if (isset($this->objects[$ob]) && !array_key_exists($ob, $this->objects[$ob])) {
+    if (isset($this->objects[$ob]) && array_key_exists($ob, $this->objects[$ob])) {
       $this->requirefile($ob);
     }
 

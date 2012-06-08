@@ -177,7 +177,7 @@ class knj_fs
         }
 
         if (is_file($fn)) {
-            if ($args["ignore_backups"]) {
+            if (array_key_exists("ignore_backups", $args) && $args["ignore_backups"]) {
                 if (substr($name, -1) == "~") {
                     $add = false;
                 }
@@ -197,7 +197,7 @@ class knj_fs
                 }
             }
 
-            if ($args["filetypes"] && !in_array($pathinfo["extension"], $args["filetypes"])) {
+            if (array_key_exists("filetypes", $args) && $args["filetypes"] && !in_array($pathinfo["extension"], $args["filetypes"])) {
                 $add = false;
             }
 
