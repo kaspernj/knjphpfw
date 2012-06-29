@@ -138,10 +138,10 @@ class web
 
         if (!headers_sent() && !$knj_web["alert_sent"]) {
             $url = parse_url($url);
-            if ($url['scheme']) {
+            if (!$url['scheme']) {
                 $url['scheme'] = $_SERVER['HTTPS'] != 'on' ? 'http' : 'https';
             }
-            if ($url['host']) {
+            if (!$url['host']) {
                 $url['host'] = $_SERVER['HTTP_HOST'];
             }
             if (!$url['path']) {
