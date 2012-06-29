@@ -124,15 +124,44 @@ class web
     }
 
     /**
-     * TODO
+     * Redirect browser to a new address
      *
-     * @param string $url TODO
+     * @param string $url    Address to go to.
+     * @param int    $status The http status code tog give.
+     * @param bool   $exit   End execution emidiatly after the redirect
      *
-     * @return string TODO
+     * @return null
      */
-    function redirect($url)
+    function redirect($url, $status = 307, $exit = true)
     {
-        return redirect($url);
+        global $knj_web;
+
+        if (!headers_sent() && !$knj_web["alert_sent"]) {
+            $url = parse_url($url);
+            if ($url['scheme']) {
+                $url['scheme'] = $_SERVER['HTTPS'] != 'on' ? 'http' : 'https';
+            }
+            if ($url['host']) {
+                $url['host'] = $_SERVER['HTTP_HOST'];
+            }
+            if (!$url['path']) {
+                $url['path'] = $_SERVER['REQUEST_URL'];
+            } elseif (substr($url['path'], 0, 1) != '/') {
+                preg_match('#^\S+/#u', $_SERVER['REQUEST_URL'], $path);
+                $url['path'] = $path[0] . $url['path'];
+            }
+            $url = Knj_Httpbrowser::unparseUrl($url);
+
+            header('Location: ' . $url, true, $status);
+        } else {
+            echo '<script type="text/javascript"><!--
+                location.href = "' .$url .'";
+            --></script>';
+        }
+
+        if ($exit) {
+            exit;
+        }
     }
 
     /**
@@ -267,29 +296,6 @@ function secCheckInclude($file)
 }
 
 /**
- * Function to redirect. You can use this instead of using the header()-function.
- *
- * @param string $url  Name of function to use.
- * @param bool   $exit TODO
- *
- * @return null
- */
-function redirect($url, $exit = true)
-{
-    global $knj_web;
-
-    if (!headers_sent() && !$knj_web["alert_sent"]) {
-        header("Location: " .$url);
-    } else {
-        jsredirect($url);
-    }
-
-    if ($exit == true) {
-        exit;
-    }
-}
-
-/**
  * Alias of Web::rewrite_replaces()
  *
  * @param string $msg See Web::rewrite_replaces()
@@ -309,21 +315,6 @@ function alert($msg)
 function jsback()
 {
     Web::rewrite_replaces();
-}
-
-/**
- * TODO
- *
- * @param string $url TODO
- *
- * @return null
- */
-function jsredirect($url)
-{
-    echo '<script type="text/javascript"><!--
-        location.href="' .$url .'";
-    --></script>';
-    exit;
 }
 
 /**
