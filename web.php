@@ -152,6 +152,9 @@ class web
             }
             $url = Knj_Httpbrowser::unparseUrl($url);
 
+            apache_setenv('no-gzip', 1);
+            ini_set('zlib.output_compression', 0);
+
             header('Location: ' . $url, true, $status);
         } else {
             echo '<script type="text/javascript"><!--
