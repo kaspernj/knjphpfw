@@ -11,6 +11,7 @@ class knjobjects
     {
         $this->config = $args;
         $this->args = &$this->config;
+        $this->objects = array();
 
         if (!array_key_exists("class_sep", $this->config)) {
             $this->config["class_sep"] = "_";
@@ -282,7 +283,7 @@ class knjobjects
 
     function listOpts($ob, $getkey, $args = array())
     {
-    return $this->list_opts($ob, $getkey, $args);
+        return $this->list_opts($ob, $getkey, $args);
     }
 
     function list_opts($ob, $getkey, $args = null)
@@ -430,7 +431,7 @@ class knjobjects
         }
 
         if ($id_exists) {
-      if ($this->weakmap) {
+            if ($this->weakmap) {
         $ref = $this->objects[$ob][$id];
 
         if ($this->weakmap_refs[$ref]) {
@@ -449,7 +450,7 @@ class knjobjects
       }
         }
 
-    if (isset($this->objects[$ob]) && !array_key_exists($ob, $this->objects[$ob])) {
+    if (isset($this->objects[$ob]) && array_key_exists($ob, $this->objects[$ob])) {
       $this->requirefile($ob);
     }
 
