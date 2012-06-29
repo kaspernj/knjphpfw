@@ -132,7 +132,7 @@ class web
      *
      * @return null
      */
-    function redirect($url, $status = 307, $exit = true)
+    function redirect($url, $status = 303, $exit = true)
     {
         global $knj_web;
 
