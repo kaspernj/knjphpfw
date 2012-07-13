@@ -198,7 +198,7 @@ class knj_strings
      *
      * @return string
      */
-    static function shorten($string, $maxlength = 50, $ellipsis = '…')
+    static function shorten($string, $maxlength = 0, $ellipsis = '…')
     {
         if (!$maxlength || mb_strlen($string) <= $maxlength) {
             return $string;
