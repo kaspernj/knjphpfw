@@ -355,9 +355,9 @@ class Knj_Httpbrowser
         if ($this->cookies[$this->_host]) {
             $cookies = array();
             foreach ($this->cookies[$this->_host] as $key => $value) {
-                $cookies[] = urlencode($key) .'=' .urlencode($value);
+                $cookies[] = urlencode($key) .'=' . $value;
             }
-            $header = 'Cookie: ' . implode('; ' . $cookies) ."\r\n";
+            $header .= 'Cookie: ' . implode('; ', $cookies) ."\r\n";
         }
 
         if ($this->_httpauth) {
@@ -444,11 +444,8 @@ class Knj_Httpbrowser
                         $contentlength_set = true;
                     } elseif (preg_match("/^Transfer-Encoding: chunked/", $line, $match)) {
                         $chunked = true;
-                    } elseif (preg_match("/^Set-Cookie: (\S*?);/", $line, $match)) {
-                        $key = urldecode($match[1]);
-                        $value = urldecode($match[2]);
-
-                        $this->cookies[$this->_host][$key] = $value;
+                    } elseif (preg_match("/^Set-Cookie: (\S*?)=(\S*?);/", $line, $match)) {
+                        $this->cookies[$this->_host][$match[1]] = $match[2];
                     } elseif (preg_match("/^HTTP\/1\.1 100 Continue/", $line, $match)) {
                         $cont100 = true;
                     } elseif (preg_match('/^Content-Encoding: (.+)/', $line, $match)) {
