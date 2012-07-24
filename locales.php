@@ -215,7 +215,7 @@ function knjlocales_localeconv($lang = null)
 
     if (!$lang) {
         $lang = $functions_knjlocales["language"];
-    }$lang)
+    }
 
     if ($functions_knjlocales["module"] == "ext") {
         putenv('LC_MONETARY=' . $lang);
