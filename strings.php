@@ -198,13 +198,16 @@ class knj_strings
      *
      * @return string
      */
-    static function shorten($text, $maxlength = 0)
+    static function shorten($string, $maxlength = 0, $ellipsis = '…')
     {
-        if (!$maxlength || mb_strlen($text) <= $maxlength) {
-            return $text;
+        if (!$maxlength || mb_strlen($string) <= $maxlength) {
+            return $string;
         }
 
-        return trim(mb_substr($text, 0, $maxlength-1)) ."…";
+        $string = mb_substr($string, 0, $maxlength - mb_strlen($ellipsis));
+        $string = preg_replace('/\s+\S*$/u', '', $string);
+
+        return $string . $ellipsis;
     }
 
     /**
