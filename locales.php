@@ -77,10 +77,12 @@ function knjlocales_setmodule($domain, $dir, $module = "ext", $language = "auto"
         putenv("LC_ALL=" . $language);
         putenv("LC_MESSAGE=" . $language);
         putenv("LANG=" . $language);
+        putenv("LC_NUMERIC=C");
 
         $locales_language_real = $language . ".utf8";
         setlocale(LC_ALL, $locales_language_real);
         setlocale(LC_MESSAGES, $locales_language_real);
+        setlocale(LC_NUMERIC, 'C');
 
         bindtextdomain($domain, $dir);
         bind_textdomain_codeset($domain, "UTF-8");
@@ -207,49 +209,55 @@ function date_in($date_string)
     return mktime($hour, $min, $sec, $month, $date, $year);
 }
 
-function knjlocales_localeconv()
+function knjlocales_localeconv($lang = null)
 {
+    global $functions_knjlocales;
+
+    if (!$lang) {
+        $lang = $functions_knjlocales["language"];
+    }$lang)
+
     if ($functions_knjlocales["module"] == "ext") {
-        return localeconv();
+        putenv('LC_MONETARY=' . $lang);
+        setlocale(LC_MONETARY, $lang . '.utf8');
+
+        $return = localeconv();
+
+        putenv('LC_MONETARY=' . $functions_knjlocales["language"]);
+        setlocale(LC_MONETARY, $functions_knjlocales["language"] . '.utf8');
+
+        return $return;
     }
 
-    global $functions_knjlocales;
-    $lang = substr($functions_knjlocales["language"], 0, 5);
-
-    if ($lang == "da_DK") {
+    if (in_array($lang, array('da_DK', 'de_DE'))) {
         return array(
-            "decimal_point" => ",",
-            "thousands_sep" => "."
+            "mon_decimal_point" => ",",
+            "mon_thousands_sep" => "."
         );
     } else {
         return array(
-            "decimal_point" => ".",
-            "thousands_sep" => ","
+            "mon_decimal_point" => ".",
+            "mon_thousands_sep" => ","
         );
     }
 }
 
-function number_out($number, $len = 0)
+function number_out($number, $len = 0, $local = null)
 {
-    $moneyformat = knjlocales_localeconv();
-    return number_format($number, $len, $moneyformat["decimal_point"], $moneyformat["thousands_sep"]);
+    $moneyformat = knjlocales_localeconv($local);
+    return number_format($number, $len, $moneyformat["mon_decimal_point"], $moneyformat["mon_thousands_sep"]);
 }
 
-function number_in($number)
+function number_in($number, $local = null)
 {
-    $moneyformat = knjlocales_localeconv();
+    $moneyformat = knjlocales_localeconv($local = null);
 
-    $number = str_replace($moneyformat["thousands_sep"], "", $number);
-    if ($moneyformat["decimal_point"] != ".") {
-        $temp = explode($moneyformat["decimal_point"], $number);
-        if ($temp[1]) {
-            $number = $temp[0] . "." . $temp[1];
-        } else {
-            $number = $temp[0];
-        }
+    $number = str_replace($moneyformat["mon_thousands_sep"], "", $number);
+    if ($moneyformat["mon_decimal_point"] != ".") {
+        $number = str_replace($moneyformat["mon_decimal_point"], ".", $number);
     }
 
-    return $number;
+    return (float) $number;
 }
 
 function number_in_dk($num)
