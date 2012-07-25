@@ -432,54 +432,54 @@ class knjobjects
 
         if ($id_exists) {
             if ($this->weakmap) {
-        $ref = $this->objects[$ob][$id];
+                $ref = $this->objects[$ob][$id];
 
-        if ($this->weakmap_refs[$ref]) {
-          print "Reusing! " . $ob . "-" . $id . "\n";
-          return $this->weakmap_refs[$ref];
+                if ($this->weakmap_refs[$ref]) {
+                    print "Reusing! " . $ob . "-" . $id . "\n";
+                    return $this->weakmap_refs[$ref];
+                }
+            } elseif ($this->weakref) {
+                if ($this->objects[$ob][$id]->acquire()) {
+                    print "Reusing! " . $ob . "-" . $id . "\n";
+                    $obj = $this->objects[$ob][$id]->get();
+                    $this->objects[$ob][$id]->release();
+                    return $obj;
+                }
+            } else {
+                return $this->objects[$ob][$id];
+            }
         }
-      } elseif ($this->weakref) {
-        if ($this->objects[$ob][$id]->acquire()) {
-          print "Reusing! " . $ob . "-" . $id . "\n";
-          $obj = $this->objects[$ob][$id]->get();
-          $this->objects[$ob][$id]->release();
-          return $obj;
-        }
-      } else {
-        return $this->objects[$ob][$id];
-      }
+
+        if (isset($this->objects[$ob]) && array_key_exists($ob, $this->objects[$ob])) {
+            $this->requirefile($ob);
         }
 
-    if (isset($this->objects[$ob]) && array_key_exists($ob, $this->objects[$ob])) {
-      $this->requirefile($ob);
-    }
+        if ($this->args["get_array"]) {
+            $obj = new $ob(array(
+                "data" => $rdata,
+                "db" => $this->args["db"],
+                "ob" => $this
+            ));
+        } elseif ($this->args["version"] == 2) {
+            $obj = new $ob(array(
+                "ob" => $this,
+                "data" => $rdata
+            ));
+        } else {
+            $obj = new $ob($id, $data);
+        }
 
-    if ($this->args["get_array"]) {
-      $obj = new $ob(array(
-        "data" => $rdata,
-        "db" => $this->args["db"],
-        "ob" => $this
-      ));
-    } elseif ($this->args["version"] == 2) {
-      $obj = new $ob(array(
-        "ob" => $this,
-        "data" => $rdata
-      ));
-    } else {
-      $obj = new $ob($id, $data);
-    }
+        if ($this->weakref) {
+            $this->objects[$ob][$id] = new weakref($obj);
+        } elseif ($this->weakmap) {
+            $ref = new stdclass;
+            $this->weakmap_refs[$ref] = $obj;
+            $this->objects[$ob][$id] = $ref;
+        } else {
+            $this->objects[$ob][$id] = $obj;
+        }
 
-    if ($this->weakref) {
-      $this->objects[$ob][$id] = new weakref($obj);
-    } elseif ($this->weakmap) {
-      $ref = new stdclass;
-      $this->weakmap_refs[$ref] = $obj;
-      $this->objects[$ob][$id] = $ref;
-    } else {
-      $this->objects[$ob][$id] = $obj;
-    }
-
-    return $obj;
+        return $obj;
     }
 
     function get_try($ob, $key, $obname = null)
@@ -505,9 +505,9 @@ class knjobjects
             return false;
         }
 
-        try{
+        try {
             return $this->get($obname, $id);
-        }catch(knjdb_rownotfound_exception $e) {
+        } catch (knjdb_rownotfound_exception $e) {
             return false;
         }
     }
@@ -606,7 +606,9 @@ class knjobjects
                 $found = true;
             } elseif ($dbrows_exist and in_array($list_key, $args["cols_dbrows"])) {
                 if (is_array($list_val)) {
-                    if (empty($list_val)) throw new exception("No elements was given in array.");
+                    if (empty($list_val)) {
+                        throw new exception("No elements was given in array.");
+                    }
 
                     $sql_where .= " AND " . $table . $colsep . $db->escape_column($list_key) . $colsep . " IN (" . knjarray::implode(array("array" => $list_val, "impl" => ",", "surr" => "'", "self_callback" => array($db, "sql"))) . ")";
                 } else {
@@ -632,7 +634,7 @@ class knjobjects
                 $sql_where .= " AND " . $table . $colsep . $db->escape_column($match[1]) . $colsep;
                 $found = true;
 
-                switch($match[2]) {
+                switch ($match[2]) {
                     case "from":
                         $sql_where .= " >= '" . $db->sql($list_val) . "'";
                         break;
@@ -645,31 +647,31 @@ class knjobjects
             } elseif (array_key_exists("cols_dates", $args) and preg_match("/^(.+)_(date|time|from|to)/", $list_key, $match) and in_array($match[1], $args["cols_dates"])) {
                 $found = true;
 
-                switch($match[2]) {
+                switch ($match[2]) {
                     case "date":
-            if (is_array($list_val)) {
-              if (empty($list_val)) {
-                throw new exception("Array was empty!");
-              }
+                        if (is_array($list_val)) {
+                            if (empty($list_val)) {
+                                throw new exception("Array was empty!");
+                            }
 
-              $sql_where .= " AND (";
-              $first = true;
+                            $sql_where .= " AND (";
+                            $first = true;
 
-              foreach ($list_val as $time_s) {
-                if ($first) {
-                  $first = false;
-                } else {
-                  $sql_where .= " OR ";
-                }
+                            foreach ($list_val as $time_s) {
+                                if ($first) {
+                                    $first = false;
+                                } else {
+                                    $sql_where .= " OR ";
+                                }
 
-                $sql_where .= "DATE(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ")";
-                $sql_where .= " = '" . $db->sql($db->date_format($time_s, array("time" => false))) . "'";
-              }
+                                $sql_where .= "DATE(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ")";
+                                $sql_where .= " = '" . $db->sql($db->date_format($time_s, array("time" => false))) . "'";
+                            }
 
-              $sql_where .= ")";
-            } else {
-              $sql_where .= " AND DATE(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ")";
-              $sql_where .= " = '" . $db->sql($db->date_format($list_val, array("time" => false))) . "'";
+                            $sql_where .= ")";
+                        } else {
+                            $sql_where .= " AND DATE(" . $table . $colsep . $db->escape_column($match[1]) . $colsep . ")";
+                            $sql_where .= " = '" . $db->sql($db->date_format($list_val, array("time" => false))) . "'";
                         }
 
                         break;
@@ -748,5 +750,6 @@ class knjobjects
             "sql_order" => $sql_order
         );
     }
+
 }
 
