@@ -104,7 +104,7 @@ class knjdb_mysqli_tables implements knjdb_driver_tables
             $sql .= " TEMPORARY";
         }
 
-        $sql = ." TABLE " .$this->knjdb->conn->sep_table .$tablename
+        $sql .= " TABLE " .$this->knjdb->conn->sep_table .$tablename
         .$this->knjdb->conn->sep_table ." (";
         $prim_keys = array();
 
