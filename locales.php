@@ -27,7 +27,7 @@ function knjlocales_setmodule($domain, $dir, $module = "ext", $language = "auto"
             }
         } elseif ($_SERVER["LANG"]) {
             if (preg_match("/^([a-z]{2}_[A-Z]{2})/", $_SERVER["LANG"], $match)) {
-            $language = $match[1];
+                $language = $match[1];
             } else {
                 //Language could not be matched - default english.
                 $language = "en_GB";

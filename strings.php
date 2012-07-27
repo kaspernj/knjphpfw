@@ -205,7 +205,7 @@ class knj_strings
         }
 
         $string = mb_substr($string, 0, $maxlength - mb_strlen($ellipsis));
-        $string = preg_replace('/\s+\S*$/u', '', $string);
+        $string = preg_replace('/\s+\S*$/u', ' ', $string);
 
         return $string . $ellipsis;
     }

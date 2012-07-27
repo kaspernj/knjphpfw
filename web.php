@@ -515,7 +515,7 @@ function form_drawInput($args)
     }
 
     $js_tags = "";
-    $js_tags_arr = array("onkeyup", "onkeydown", "onchange");
+    $js_tags_arr = array("onkeyup", "onkeydown", "onchange", 'onclick');
     foreach ($js_tags_arr as $js_tag) {
         if ($args[$js_tag]) {
             $js_tags .= " " . $js_tag . "=\"" . $args[$js_tag] . "\"";
@@ -546,13 +546,17 @@ function form_drawInput($args)
         if ($args["disabled"]) {
             echo ' disabled="disabled"';
         }
-        echo ' type="' .$args["type"] .'" name="' .$args["name"] .'" id="' .$id .'"';
+        echo ' type="' .$args["type"] .'" class="'. $args['class'] .'" name="' .$args["name"] .'" id="' .$id .'"';
         if ($value) {
             echo ' checked="checked"';
         }
         echo $js_tags .' /><label for="' .$id .'">' .$title_html .'</label></td>';
     } elseif ($args["type"] == "select") {
         $etags = "";
+        if ($args["disabled"]) {
+            $etags .= " disabled=\"disabled\"";
+        }
+
         if ($args["multiple"]) {
             $etags .= " multiple=\"multiple\"";
         }
@@ -618,6 +622,9 @@ function form_drawInput($args)
         if ($args["height"]) {
             echo ' style="height: ' .$args["height"] .';"';
         }
+        if ($args["disabled"]) {
+            echo " disabled=\"disabled\"";
+        }
         echo $js_tags .'>' .htmlspecialchars($value, null, 'UTF-8') .'</textarea>' .$td_end_html;
     } elseif ($args["type"] == "fckeditor") {
         echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html;
@@ -649,6 +656,9 @@ function form_drawInput($args)
         echo '<td' .$rowspan .' class="tdheadline" colspan="2">' .$title_html .'</td>';
     } else {
         echo '<td' .$rowspan .' class="tdt">' .$title_html .'</td>' .$td_html .'<input type="' .htmlspecialchars($args["type"]) .'"';
+        if ($args["readonly"]) {
+            echo ' readonly="readonly"';
+        }
         if ($args["disabled"]) {
             echo ' disabled="disabled"';
         }
