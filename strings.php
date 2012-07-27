@@ -200,10 +200,13 @@ class knj_strings
      */
     static function shorten($string, $maxlength = 0, $ellipsis = '…')
     {
+        $string = trim($string);
+
         if (!$maxlength || mb_strlen($string) <= $maxlength) {
             return $string;
         }
 
+        $string .= ' ';
         $string = mb_substr($string, 0, $maxlength - mb_strlen($ellipsis));
         $string = preg_replace('/\s+\S*$/u', ' ', $string);
 
