@@ -150,7 +150,7 @@ class web
                 preg_match('#^\S+/#u', $_SERVER['REQUEST_URL'], $path);
                 $url['path'] = $path[0] . $url['path'];
             }
-            $url = Knj_Httpbrowser::unparseUrl($url);
+            $url = self::unparseUrl($url);
 
             apache_setenv('no-gzip', 1);
             ini_set('zlib.output_compression', 0);
@@ -281,6 +281,27 @@ class web
     static function sxml_esc($str)
     {
         return strtr($str, array("&" => "&amp;"));
+    }
+
+    /**
+     * Build a url string from an array
+     *
+     * @param array $parsed_url Array as returned by parse_url()
+     *
+     * @return string The URL
+     */
+    static function unparseUrl($parsed_url)
+    {
+        $scheme   = $parsed_url['scheme'] ? $parsed_url['scheme'] .'://' : '';
+        $host     = $parsed_url['host'] ? $parsed_url['host'] : '';
+        $port     = $parsed_url['port'] ? ':' .$parsed_url['port'] : '';
+        $user     = $parsed_url['user'] ? $parsed_url['user'] : '';
+        $pass     = $parsed_url['pass'] ? ':' . $parsed_url['pass'] : '';
+        $pass     .= ($user || $pass) ? '@' : '';
+        $path     = $parsed_url['path'] ? $parsed_url['path'] : '';
+        $query    = $parsed_url['query'] ? '?' . $parsed_url['query'] : '';
+        $fragment = $parsed_url['fragment'] ? '#' . $parsed_url['fragment'] : '';
+        return $scheme .$user .$pass .$host .$port .$path .$query .$fragment;
     }
 }
 

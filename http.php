@@ -325,7 +325,7 @@ class Knj_Httpbrowser
         unset($url['host']);
         unset($url['port']);
 
-        $URI = $this->unparseUrl($url);
+        $URI = web::unparseUrl($url);
 
         //URI must be absolute
         if (substr($URI, 0, 1) != '/') {
@@ -545,27 +545,6 @@ class Knj_Httpbrowser
         $this->_responce = $html;
         $this->_redirects = 0;
         return $this->_responce;
-    }
-
-    /**
-     * Build a url string from an array
-     *
-     * @param array $parsed_url Array as returned by parse_url()
-     *
-     * @return string The URL
-     */
-    public function unparseUrl($parsed_url)
-    {
-        $scheme   = $parsed_url['scheme'] ? $parsed_url['scheme'] .'://' : '';
-        $host     = $parsed_url['host'] ? $parsed_url['host'] : '';
-        $port     = $parsed_url['port'] ? ':' .$parsed_url['port'] : '';
-        $user     = $parsed_url['user'] ? $parsed_url['user'] : '';
-        $pass     = $parsed_url['pass'] ? ':' . $parsed_url['pass'] : '';
-        $pass     .= ($user || $pass) ? '@' : '';
-        $path     = $parsed_url['path'] ? $parsed_url['path'] : '';
-        $query    = $parsed_url['query'] ? '?' . $parsed_url['query'] : '';
-        $fragment = $parsed_url['fragment'] ? '#' . $parsed_url['fragment'] : '';
-        return $scheme .$user .$pass .$host .$port .$path .$query .$fragment;
     }
 
     /**
