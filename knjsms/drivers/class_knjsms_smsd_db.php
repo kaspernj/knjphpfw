@@ -1,17 +1,22 @@
 <?php
-	class knjsms_smsd_db implements knjsms_driver{
-		public $db;
-		
-		function __construct($args){
-			require_once("knj/knjdb/class_knjdb.php");
-			$this->db = new knjdb($args["knjdb_args"]);
-		}
-		
-		function sendSMS($number, $text){
-			$this->db->insert("outbox", array(
-				"number" => $number,
-				"text" => utf8_decode($text)
-			));
-		}
-	}
+class Knjsms_Smsd_DB implements knjsms_driver
+{
+    private $_db;
+
+    function __construct(knjdb $knjdb)
+    {
+        $this->_db = $knjdb;
+    }
+
+    function sendSMS($number, $text)
+    {
+        $this->_db->insert(
+            "outbox",
+            array(
+                "number" => $number,
+                "text" => $text
+            )
+        );
+    }
+}
 

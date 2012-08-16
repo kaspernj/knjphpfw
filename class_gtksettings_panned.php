@@ -1,5 +1,5 @@
 <?php
-	class gtksettings_panned(){
-		
-	}
+class gtksettings_panned()
+{
+}
 

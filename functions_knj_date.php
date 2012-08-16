@@ -1,3 +1,3 @@
-<?
-require_once(dirname(__FILE__) . "/date.php");
+<?php
+require_once dirname(__FILE__) . "/date.php";
 
