@@ -11,8 +11,11 @@ class knj_os{
 			2 => array("pipe", "w")		// stderr is a file to write to
 		);
 		$process = proc_open($cmd, $descriptorspec, $pipes);
+		if (!$process){
+      throw new exception("Could not start process from command: '" . $cmd . "'.");
+    }
 		
-		//Read result-
+		//Read result.
 		$result = "";
 		while(!feof($pipes[1])){
 			$result .= fread($pipes[1], 4096);
