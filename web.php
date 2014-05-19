@@ -53,6 +53,12 @@ class web{
 		return jsback();
 	}
 	
+	function html($str){
+		$str = str_replace("<", "&lt;", $str);
+		$str = str_replace(">", "&gt;", $str);
+		return $str;
+	}
+	
 	function rewrite_replaces(){
 		return array(
 			"&" => "",
