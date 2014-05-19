@@ -165,7 +165,7 @@
 			}
 			
 			if (is_file($fn)){
-				if ($args["ignore_backups"]){
+				if (array_key_exists("ignore_backups", $args) and $args["ignore_backups"]){
 					if (substr($name, -1) == "~"){
 						$add = false;
 					}
@@ -185,7 +185,7 @@
 					}
 				}
 				
-				if ($args["filetypes"] && !in_array($pathinfo["extension"], $args["filetypes"])){
+				if (array_key_exists("filetypes", $args) and $args["filetypes"] and !in_array($pathinfo["extension"], $args["filetypes"])){
 					$add = false;
 				}
 				

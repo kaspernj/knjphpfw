@@ -339,6 +339,7 @@ class knj_httpbrowser{
 	function getAddr($addr, $args = null){
 		$this->countAutoReconnect();
 		
+		$host = null;
 		if (is_string($args)){
 			$host = $args;
 		}
@@ -508,7 +509,7 @@ class knj_httpbrowser{
 		$this->debug("Received HTML:\n" . $html . "\n\n\n");
 		
 		if ($location){
-			$this->debug("Received location-header - trying to follow \"" . $match[1] . "\".\n");
+			$this->debug("Received location-header - trying to follow \"" . $location . "\".\n");
 			return $this->getAddr($location);
 		}
 		
