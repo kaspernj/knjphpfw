@@ -17,7 +17,7 @@ You can then use the functions of the part like this:
 
 ```php
 <?php
-   if (!knj_dl("gtk2)){
+   if (!knj_dl("gtk2")){
    	die("Could not load the PHP5-GTK2-module.\n");
    }
 ?>
